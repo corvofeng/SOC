@@ -1,0 +1,14 @@
+Vivado Simulator 2016.2
+Copyright 1986-1999, 2001-2016 Xilinx, Inc. All Rights Reserved.
+Running: /run/media/corvo/Work/Vivado/Vivado/2016.2/bin/unwrapped/lnx64.o/xelab -wto b564e5385ea5425997b6464c781686d9 --debug typical --relax --mt 8 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot test_sim_behav xil_defaultlib.test_sim xil_defaultlib.glbl -log elaborate.log 
+Using 8 slave threads.
+Starting static elaboration
+WARNING: [VRFC 10-426] cannot find port zero on this module [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:79]
+ERROR: [VRFC 10-2063] Module <alu_bd_my_8mux1_1_0> not found while processing module instance <my_8mux1_1> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:91]
+ERROR: [VRFC 10-2063] Module <alu_bd_my_alu_ctr_input_0_0> not found while processing module instance <my_alu_ctr_input_0> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:102]
+ERROR: [VRFC 10-2063] Module <alu_bd_my_shift_0_0> not found while processing module instance <my_shift_0> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:110]
+ERROR: [VRFC 10-2063] Module <alu_bd_norgate_0_0> not found while processing module instance <norgate_0> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:116]
+ERROR: [VRFC 10-2063] Module <alu_bd_orgate_0_0> not found while processing module instance <orgate_0> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:120]
+ERROR: [VRFC 10-2063] Module <alu_bd_xorgate_0_0> not found while processing module instance <xorgate_0> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:124]
+ERROR: [VRFC 10-2063] Module <alu_bd_xorgate_1_0> not found while processing module instance <xorgate_1> [/home/corvo/Learning/verilog/CourseSubmit/IPModule/IPModuleTest/IPModuleTest/IPModuleTest.ip_user_files/bd/test_db/ipshared/cse/alu_bd_v1_0/src/alu_bd.v:128]
+ERROR: [XSIM 43-3322] Static elaboration of top level Verilog design unit(s) in library work failed.

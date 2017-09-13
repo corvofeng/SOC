@@ -1,0 +1,136 @@
+{
+   comment_0: "add",
+   comment_1: "add",
+   comment_10: "nor",
+   comment_2: "sltu",
+   comment_3: "addu",
+   comment_4: "subu",
+   comment_5: "and",
+   comment_6: "sub",
+   comment_7: "xor
+",
+   comment_8: "or",
+   comment_9: "slt",
+   commentid: "comment_0|comment_9|comment_10|comment_7|comment_8|comment_5|comment_4|comment_6|comment_3|comment_1|comment_2|",
+   fillcolor_comment_1: "",
+   fillcolor_comment_10: "",
+   fillcolor_comment_2: "",
+   fillcolor_comment_3: "",
+   fillcolor_comment_4: "",
+   fillcolor_comment_5: "",
+   fillcolor_comment_6: "",
+   fillcolor_comment_7: "",
+   fillcolor_comment_8: "",
+   fillcolor_comment_9: "",
+   font_comment_0: "10",
+   font_comment_1: "15",
+   font_comment_10: "13",
+   font_comment_2: "11",
+   font_comment_3: "15",
+   font_comment_4: "15",
+   font_comment_5: "15",
+   font_comment_6: "15",
+   font_comment_7: "13",
+   font_comment_8: "13",
+   font_comment_9: "13",
+   guistr: "# # String gsaved with Nlview 6.5.12  2016-01-29 bk=1.3547 VDI=39 GEI=35 GUI=JA:1.6
+#  -string -flagsOSRD
+preplace portBus func -pg 1 -y -60 -defaultsOSRD
+preplace portBus op -pg 1 -y -360 -defaultsOSRD
+preplace inst my_not_21 -pg 1 -lvl 3 -y 900 -defaultsOSRD -resize 100 62
+preplace inst my_not_15 -pg 1 -lvl 2 -y 100 -defaultsOSRD -resize 100 62
+preplace inst my_not_22 -pg 1 -lvl 3 -y 990 -defaultsOSRD -resize 100 62
+preplace inst my_not_16 -pg 1 -lvl 3 -y 350 -defaultsOSRD -resize 100 62
+preplace inst my_not_23 -pg 1 -lvl 3 -y 1090 -defaultsOSRD -resize 100 62
+preplace inst my_not_17 -pg 1 -lvl 3 -y 440 -defaultsOSRD -resize 100 62
+preplace inst my_not_18 -pg 1 -lvl 3 -y 530 -defaultsOSRD -resize 100 62
+preplace inst my_and6_0 -pg 1 -lvl 4 -y -1180 -defaultsOSRD
+preplace inst my_not_1 -pg 1 -lvl 3 -y -940 -defaultsOSRD -resize 100 62
+preplace inst my_not_19 -pg 1 -lvl 3 -y 670 -defaultsOSRD -resize 100 62
+preplace inst my_and6_1 -pg 1 -lvl 4 -y -940 -defaultsOSRD -resize 120 160
+preplace inst my_not_3 -pg 1 -lvl 3 -y -760 -defaultsOSRD -resize 100 62
+preplace inst my_and6_2 -pg 1 -lvl 4 -y -720 -defaultsOSRD -resize 120 160
+preplace inst my_and6_3 -pg 1 -lvl 4 -y -460 -defaultsOSRD -resize 120 160
+preplace inst my_6split1_0 -pg 1 -lvl 2 -y -360 -defaultsOSRD
+preplace inst my_not_5 -pg 1 -lvl 3 -y -580 -defaultsOSRD -resize 100 62
+preplace inst my_and6_4 -pg 1 -lvl 4 -y -260 -defaultsOSRD -resize 120 160
+preplace inst my_6split1_1 -pg 1 -lvl 1 -y -60 -defaultsOSRD -resize 160 160
+preplace inst my_and6_10 -pg 1 -lvl 4 -y 1290 -defaultsOSRD -resize 120 160
+preplace inst my_not_10 -pg 1 -lvl 3 -y -130 -defaultsOSRD -resize 100 62
+preplace inst my_not_6 -pg 1 -lvl 3 -y -490 -defaultsOSRD -resize 100 62
+preplace inst my_and6_5 -pg 1 -lvl 4 -y -30 -defaultsOSRD -resize 120 160
+preplace inst my_not_11 -pg 1 -lvl 3 -y -40 -defaultsOSRD -resize 100 62
+preplace inst my_and6_6 -pg 1 -lvl 4 -y 230 -defaultsOSRD -resize 120 160
+preplace inst my_and6_11 -pg 1 -lvl 4 -y 1510 -defaultsOSRD -resize 120 160
+preplace inst my_not_8 -pg 1 -lvl 3 -y -310 -defaultsOSRD -resize 100 62
+preplace inst my_and6_7 -pg 1 -lvl 4 -y 460 -defaultsOSRD -resize 120 160
+preplace inst my_not_13 -pg 1 -lvl 3 -y 100 -defaultsOSRD -resize 100 62
+preplace inst my_and6_8 -pg 1 -lvl 4 -y 780 -defaultsOSRD -resize 120 160
+preplace inst my_not_20 -pg 1 -lvl 3 -y 760 -defaultsOSRD -resize 100 62
+preplace inst my_not_14 -pg 1 -lvl 3 -y 190 -defaultsOSRD -resize 100 62
+preplace inst my_and6_9 -pg 1 -lvl 4 -y 1010 -defaultsOSRD -resize 120 160
+preplace netloc my_not_23_out 1 3 1 550
+preplace netloc my_not_3_out 1 3 1 560
+preplace netloc my_not_19_out 1 3 1 450
+preplace netloc my_not_16_out 1 3 1 450
+preplace netloc op_1 1 0 2 N -360 N
+preplace netloc my_not_14_out 1 3 1 450
+preplace netloc my_not_5_out 1 3 1 540
+preplace netloc my_6split1_1_out0 1 1 3 N -110 NJ -880 NJ
+preplace netloc my_not_11_out 1 3 1 N
+preplace netloc my_6split1_1_out1 1 1 3 N -90 NJ -700 550
+preplace netloc my_not_22_out 1 3 1 550
+preplace netloc my_not_8_out 1 3 1 450
+preplace netloc my_not_6_out 1 3 1 N
+preplace netloc my_6split1_1_out2 1 1 3 N -70 NJ -250 460
+preplace netloc my_not_20_out 1 3 1 450
+preplace netloc my_not_17_out 1 3 1 450
+preplace netloc my_not_15_out 1 2 2 NJ 50 490
+preplace netloc my_not_13_out 1 3 1 470
+preplace netloc my_6split1_1_out3 1 1 3 N -50 NJ -180 530
+preplace netloc my_not_1_out 1 3 1 450
+preplace netloc my_6split1_1_out4 1 1 3 N -30 NJ 20 480
+preplace netloc my_6split1_1_out5 1 1 1 60
+preplace netloc my_not_10_out 1 3 1 520
+preplace netloc my_not_21_out 1 3 1 450
+preplace netloc my_not_18_out 1 3 1 500
+preplace netloc func_1 1 0 1 N
+preplace cgraphic comment_3 place abs 518 -967 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_2 place abs 677 978 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_1 place abs 515 -1220 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_0 place abs -1344 -889 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_7 place abs 531 198 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_6 place abs 519 -764 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_5 place abs 522 -302 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_4 place abs 516 -490 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_10 place abs 518 421 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_9 place abs 524 746 textcolor 4 linecolor 3 linewidth 2
+preplace cgraphic comment_8 place abs 536 -60 textcolor 4 linecolor 3 linewidth 2
+levelinfo -pg 1 -160 -40 160 380 650 1050 -top -1320 -bot 1610
+",
+   linecolor_comment_1: "",
+   linecolor_comment_10: "",
+   linecolor_comment_2: "",
+   linecolor_comment_3: "",
+   linecolor_comment_4: "",
+   linecolor_comment_5: "",
+   linecolor_comment_6: "",
+   linecolor_comment_7: "",
+   linecolor_comment_8: "",
+   linecolor_comment_9: "",
+   linktoobj_comment_1: "/my_and6_0",
+   linktoobj_comment_6: "/my_and6_2",
+   linktotype_comment_1: "bd_cell",
+   linktotype_comment_6: "bd_cell",
+   textcolor_comment_1: "",
+   textcolor_comment_10: "",
+   textcolor_comment_2: "",
+   textcolor_comment_3: "",
+   textcolor_comment_4: "",
+   textcolor_comment_5: "",
+   textcolor_comment_6: "",
+   textcolor_comment_7: "",
+   textcolor_comment_8: "",
+   textcolor_comment_9: "",
+}
+0

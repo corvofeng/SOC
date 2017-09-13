@@ -1,0 +1,661 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<bd:repository xmlns:bd="http://www.xilinx.com/bd" bd:synthFlowMode="None" bd:tool_version="2016.2" bd:top="top_bd" bd:version="1.00.a">
+
+  <spirit:component xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009">
+    <spirit:vendor>xilinx.com</spirit:vendor>
+    <spirit:library>BlockDiagram</spirit:library>
+    <spirit:name>top_bd</spirit:name>
+    <spirit:version>1.00.a</spirit:version>
+    <spirit:parameters>
+      <spirit:parameter>
+        <spirit:name>isTop</spirit:name>
+        <spirit:value spirit:format="bool" spirit:resolve="immediate">true</spirit:value>
+      </spirit:parameter>
+    </spirit:parameters>
+    <spirit:busInterfaces>
+      <spirit:busInterface>
+        <spirit:name>CLK.CLK</spirit:name>
+        <spirit:displayName>Clk</spirit:displayName>
+        <spirit:description>Clock</spirit:description>
+        <spirit:busType spirit:library="signal" spirit:name="clock" spirit:vendor="xilinx.com" spirit:version="1.0"/>
+        <spirit:abstractionType spirit:library="signal" spirit:name="clock_rtl" spirit:vendor="xilinx.com" spirit:version="1.0"/>
+        <spirit:slave/>
+        <spirit:portMaps>
+          <spirit:portMap>
+            <spirit:logicalPort>
+              <spirit:name>CLK</spirit:name>
+            </spirit:logicalPort>
+            <spirit:physicalPort>
+              <spirit:name>clk</spirit:name>
+            </spirit:physicalPort>
+          </spirit:portMap>
+        </spirit:portMaps>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>FREQ_HZ</spirit:name>
+            <spirit:value>1000000</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:busInterface>
+    </spirit:busInterfaces>
+    <spirit:model>
+      <spirit:views>
+        <spirit:view>
+          <spirit:name>BlockDiagram</spirit:name>
+          <spirit:envIdentifier>:vivado.xilinx.com:</spirit:envIdentifier>
+          <spirit:hierarchyRef spirit:library="BlockDiagram" spirit:name="top_bd_imp" spirit:vendor="xilinx.com" spirit:version="1.00.a"/>
+        </spirit:view>
+      </spirit:views>
+      <spirit:ports>
+        <spirit:port>
+          <spirit:name>clk</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>pc_reset</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+        <spirit:port>
+          <spirit:name>res_reset</spirit:name>
+          <spirit:wire>
+            <spirit:direction>in</spirit:direction>
+          </spirit:wire>
+        </spirit:port>
+      </spirit:ports>
+    </spirit:model>
+  </spirit:component>
+
+  <spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009">
+    <spirit:vendor>xilinx.com</spirit:vendor>
+    <spirit:library>BlockDiagram</spirit:library>
+    <spirit:name>top_bd_imp</spirit:name>
+    <spirit:version>1.00.a</spirit:version>
+    <spirit:componentInstances>
+      <spirit:componentInstance>
+        <spirit:instanceName>dist_mem_gen_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="ip" spirit:name="dist_mem_gen" spirit:vendor="xilinx.com" spirit:version="8.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_dist_mem_gen_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="depth">32768</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="data_width">32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="memory_type">rom</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="input_options">non_registered</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="coefficient_file">../../../../../../../测试程序/斐波那契数列测试/prgmip32.coe</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">5</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_0_1</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">5</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_2</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_2_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>dist_mem_gen_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="ip" spirit:name="dist_mem_gen" spirit:vendor="xilinx.com" spirit:version="8.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_dist_mem_gen_1_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="depth">65536</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="data_width">32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="coefficient_file">../../../../../../../测试程序/斐波那契数列测试/dmem32.coe</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_3</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_3_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_4</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_4_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_5</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_5_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>andgate_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="andgate" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_andgate_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>andgate_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="andgate" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_andgate_0_1</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>notgate_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="notgate" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_notgate_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>orgate_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="orgate" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_orgate_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_expend_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_expend" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_expend_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_expend</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_expand32_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_expand32" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_expand32_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">26</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_expand32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_simple_add_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_simple_add" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_simple_add_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_simple_add</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_6</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_5_1</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_7</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_6_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>instruct_split_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="instruct_split" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_instruct_split_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">instruct_split</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_8</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_8_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>mux2to1_9</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="mux2to1" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_mux2to1_9_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>input16_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="input16" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_input16_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">input16</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>xorgate_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="xorgate" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_xorgate_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_right_shift2_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_right_shift2" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_right_shift2_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_right_shift2</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_pc_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_pc" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_pc_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_pc</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_shift2_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_shift2" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_shift2_0_1</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_shift2</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>input31_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="input31" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_input31_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">input31</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_control_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_control" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_control_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_control</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_reg_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="my_reg" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_reg_0_0</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>alu_bd_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="CSE" spirit:name="alu_bd" spirit:vendor="CSE" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_alu_bd_1_1</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_expand32_1</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_expand32" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_expand32_0_1</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">5</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_expand32</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+      <spirit:componentInstance>
+        <spirit:instanceName>my_shift2_0</spirit:instanceName>
+        <spirit:componentRef spirit:library="module_ref" spirit:name="my_shift2" spirit:vendor="user.org" spirit:version="1.0"/>
+        <spirit:configurableElementValues>
+          <spirit:configurableElementValue spirit:referenceId="bd:xciName">top_bd_my_shift2_0_0</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="WIDTH">26</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceName">my_shift2</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:subInstancePath"></spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="bd:referenceType">hdl</spirit:configurableElementValue>
+        </spirit:configurableElementValues>
+      </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:adHocConnections>
+      <spirit:adHocConnection>
+        <spirit:name>my_pc_0_pc_out</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_pc_0" spirit:portRef="pc_out"/>
+        <spirit:internalPortReference spirit:componentRef="my_right_shift2_0" spirit:portRef="i"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>dist_mem_gen_0_spo</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_0" spirit:portRef="spo"/>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_31_0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_31_26</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_31_26"/>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="op"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_5_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_5_0"/>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="func"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_15_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_15_0"/>
+        <spirit:internalPortReference spirit:componentRef="my_expend_0" spirit:portRef="im_15_0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_jal</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="jal"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_1" spirit:portRef="s"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_4" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_RegDst</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="RegDst"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_0" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_0_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_0" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_1" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_expend_0_im_31_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_expend_0" spirit:portRef="im_31_0"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_2" spirit:portRef="a1"/>
+        <spirit:internalPortReference spirit:componentRef="my_shift2_1" spirit:portRef="in"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_ALUsrc</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="ALUsrc"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_2" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_MemWrite</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="MemWrite"/>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_1" spirit:portRef="we"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>dist_mem_gen_1_spo</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_1" spirit:portRef="spo"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_3" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_MemToReg</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="MemToReg"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_3" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_pc_0_pc_add4</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_pc_0" spirit:portRef="pc_add4"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_4" spirit:portRef="a1"/>
+        <spirit:internalPortReference spirit:componentRef="my_simple_add_0" spirit:portRef="a"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_5" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_3_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_3" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_4" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_Extop</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="Extop"/>
+        <spirit:internalPortReference spirit:componentRef="my_expend_0" spirit:portRef="Extop"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>andgate_0_c</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="andgate_0" spirit:portRef="c"/>
+        <spirit:internalPortReference spirit:componentRef="orgate_0" spirit:portRef="a"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>andgate_1_c</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="andgate_1" spirit:portRef="c"/>
+        <spirit:internalPortReference spirit:componentRef="orgate_0" spirit:portRef="b"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_nBranch</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="nBranch"/>
+        <spirit:internalPortReference spirit:componentRef="andgate_1" spirit:portRef="b"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_Branch</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="Branch"/>
+        <spirit:internalPortReference spirit:componentRef="andgate_0" spirit:portRef="b"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>orgate_0_c</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="orgate_0" spirit:portRef="c"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_5" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_shift2_1_out</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_shift2_1" spirit:portRef="out"/>
+        <spirit:internalPortReference spirit:componentRef="my_simple_add_0" spirit:portRef="b"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_simple_add_0_sum</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_simple_add_0" spirit:portRef="sum"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_5" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_5_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_5" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_6" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_jrn</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="jrn"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_6" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_6_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_6" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_7" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_expand32_0_out_31_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_expand32_0" spirit:portRef="out_31_0"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_7" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_jmp</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="jmp"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_7" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_7_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_7" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="my_pc_0" spirit:portRef="pc_in"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>clk_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="clk"/>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_1" spirit:portRef="clk"/>
+        <spirit:internalPortReference spirit:componentRef="my_pc_0" spirit:portRef="clk"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="clk"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>pc_reset_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="pc_reset"/>
+        <spirit:internalPortReference spirit:componentRef="my_pc_0" spirit:portRef="reset"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_10_6</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_10_6"/>
+        <spirit:internalPortReference spirit:componentRef="my_expand32_1" spirit:portRef="in_WIDTH_0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_lui</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="lui"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_9" spirit:portRef="s"/>
+        <spirit:internalPortReference spirit:componentRef="xorgate_0" spirit:portRef="a"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>input16_0_out</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="input16_0" spirit:portRef="out"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_9" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_expand32_1_out_31_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_expand32_1" spirit:portRef="out_31_0"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_9" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_9_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_9" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_8" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_ShiftShamt</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="ShiftShamt"/>
+        <spirit:internalPortReference spirit:componentRef="xorgate_0" spirit:portRef="b"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>xorgate_0_c</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="xorgate_0" spirit:portRef="c"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_8" spirit:portRef="s"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_right_shift2_0_Result</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_right_shift2_0" spirit:portRef="Result"/>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_0" spirit:portRef="a"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_15_11</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_15_11"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_0" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>input31_0_out</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="input31_0" spirit:portRef="out"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_1" spirit:portRef="a1"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>notgate_0_c</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="notgate_0" spirit:portRef="c"/>
+        <spirit:internalPortReference spirit:componentRef="andgate_1" spirit:portRef="a"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_shift2_0_out</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_shift2_0" spirit:portRef="out"/>
+        <spirit:internalPortReference spirit:componentRef="my_expand32_0" spirit:portRef="in_WIDTH_0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_25_0</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_25_0"/>
+        <spirit:internalPortReference spirit:componentRef="my_shift2_0" spirit:portRef="in"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>res_reset_1</spirit:name>
+        <spirit:externalPortReference spirit:portRef="res_reset"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="reset"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_1_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_1" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="Rw"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_25_21</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_25_21"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="Ra"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>instruct_split_0_inst_20_16</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="instruct_split_0" spirit:portRef="inst_20_16"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_0" spirit:portRef="a0"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="Rb"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_RegWrite</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="RegWrite"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="WriteEnable"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_4_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_4" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="busW"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_reg_0_Qa</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="Qa"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_6" spirit:portRef="a1"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_8" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_reg_0_Qb</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_reg_0" spirit:portRef="Qb"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_2" spirit:portRef="a0"/>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_1" spirit:portRef="d"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_8_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_8" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="alu_bd_1" spirit:portRef="A"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>my_control_0_ALUctr</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="my_control_0" spirit:portRef="ALUctr"/>
+        <spirit:internalPortReference spirit:componentRef="alu_bd_1" spirit:portRef="ALUctr"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>mux2to1_2_q</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_2" spirit:portRef="q"/>
+        <spirit:internalPortReference spirit:componentRef="alu_bd_1" spirit:portRef="B"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>alu_bd_1_Zero</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="alu_bd_1" spirit:portRef="Zero"/>
+        <spirit:internalPortReference spirit:componentRef="andgate_0" spirit:portRef="a"/>
+        <spirit:internalPortReference spirit:componentRef="notgate_0" spirit:portRef="a"/>
+        <spirit:internalPortReference spirit:componentRef="mux2to1_3" spirit:portRef="a0"/>
+      </spirit:adHocConnection>
+      <spirit:adHocConnection>
+        <spirit:name>alu_bd_1_Result</spirit:name>
+        <spirit:internalPortReference spirit:componentRef="alu_bd_1" spirit:portRef="Result"/>
+        <spirit:internalPortReference spirit:componentRef="dist_mem_gen_1" spirit:portRef="a"/>
+      </spirit:adHocConnection>
+    </spirit:adHocConnections>
+  </spirit:design>
+
+</bd:repository>
