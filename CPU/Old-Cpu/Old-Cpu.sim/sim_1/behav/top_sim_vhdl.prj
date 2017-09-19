@@ -1,0 +1,7 @@
+# compile vhdl design source files
+vhdl dist_mem_gen_v8_0_9  "../../../Old-Cpu.ip_user_files/ipstatic/dist_mem_gen_v8_0_9/simulation/dist_mem_gen_v8_0.vhd"
+vhdl xil_defaultlib  "../../../Old-Cpu.ip_user_files/ip/dist_mem_gen_ram/sim/dist_mem_gen_ram.vhd"
+vhdl xil_defaultlib  "../../../Old-Cpu.ip_user_files/ip/dist_mem_gen_0/sim/dist_mem_gen_0.vhd"
+
+# Do not sort compile order
+nosort

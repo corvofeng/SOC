@@ -1,0 +1,507 @@
+#-----------------------------------------------------------
+# Vivado v2015.4 (64-bit)
+# SW Build 1412921 on Wed Nov 18 09:44:32 MST 2015
+# IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+# Start of session at: Tue Sep 19 09:06:49 2017
+# Process ID: 24898
+# Current directory: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1
+# Command line: vivado -log dist_mem_gen_ram.vds -mode batch -messageDb vivado.pb -notrace -source dist_mem_gen_ram.tcl
+# Log file: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/dist_mem_gen_ram.vds
+# Journal file: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/vivado.jou
+#-----------------------------------------------------------
+source dist_mem_gen_ram.tcl -notrace
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/opt/Vivado2015.4/Vivado/2015.4/data/ip'.
+WARNING: [IP_Flow 19-3664] IP 'dist_mem_gen_ram' generated file not found '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram.dcp'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'dist_mem_gen_ram' generated file not found '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_stub.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'dist_mem_gen_ram' generated file not found '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_stub.vhdl'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'dist_mem_gen_ram' generated file not found '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_sim_netlist.v'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'dist_mem_gen_ram' generated file not found '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_sim_netlist.vhdl'. Please regenerate to continue.
+Command: synth_design -top dist_mem_gen_ram -part xc7a100tfgg484-1 -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1050.055 ; gain = 213.801 ; free physical = 139 ; free virtual = 2704
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'dist_mem_gen_ram' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/synth/dist_mem_gen_ram.vhd:69]
+	Parameter C_FAMILY bound to: artix7 - type: string 
+	Parameter C_ADDR_WIDTH bound to: 16 - type: integer 
+	Parameter C_DEFAULT_DATA bound to: 0 - type: string 
+	Parameter C_DEPTH bound to: 65536 - type: integer 
+	Parameter C_HAS_CLK bound to: 1 - type: integer 
+	Parameter C_HAS_D bound to: 1 - type: integer 
+	Parameter C_HAS_DPO bound to: 0 - type: integer 
+	Parameter C_HAS_DPRA bound to: 0 - type: integer 
+	Parameter C_HAS_I_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CLK bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_SPO bound to: 1 - type: integer 
+	Parameter C_HAS_WE bound to: 1 - type: integer 
+	Parameter C_MEM_INIT_FILE bound to: no_coe_file_loaded - type: string 
+	Parameter C_ELABORATION_DIR bound to: ./ - type: string 
+	Parameter C_MEM_TYPE bound to: 1 - type: integer 
+	Parameter C_PIPELINE_STAGES bound to: 0 - type: integer 
+	Parameter C_QCE_JOINED bound to: 0 - type: integer 
+	Parameter C_QUALIFY_WE bound to: 0 - type: integer 
+	Parameter C_READ_MIF bound to: 0 - type: integer 
+	Parameter C_REG_A_D_INPUTS bound to: 0 - type: integer 
+	Parameter C_REG_DPRA_INPUT bound to: 0 - type: integer 
+	Parameter C_SYNC_ENABLE bound to: 1 - type: integer 
+	Parameter C_WIDTH bound to: 32 - type: integer 
+	Parameter C_PARSER_TYPE bound to: 1 - type: integer 
+INFO: [Synth 8-3491] module 'dist_mem_gen_v8_0_9' declared at '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:140' bound to instance 'U0' of component 'dist_mem_gen_v8_0_9' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/synth/dist_mem_gen_ram.vhd:135]
+INFO: [Synth 8-638] synthesizing module 'dist_mem_gen_v8_0_9' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:196]
+	Parameter C_FAMILY bound to: artix7 - type: string 
+	Parameter C_ADDR_WIDTH bound to: 16 - type: integer 
+	Parameter C_DEFAULT_DATA bound to: 0 - type: string 
+	Parameter C_DEPTH bound to: 65536 - type: integer 
+	Parameter C_HAS_CLK bound to: 1 - type: integer 
+	Parameter C_HAS_D bound to: 1 - type: integer 
+	Parameter C_HAS_DPO bound to: 0 - type: integer 
+	Parameter C_HAS_DPRA bound to: 0 - type: integer 
+	Parameter C_HAS_I_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CLK bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_SPO bound to: 1 - type: integer 
+	Parameter C_HAS_WE bound to: 1 - type: integer 
+	Parameter C_MEM_INIT_FILE bound to: no_coe_file_loaded - type: string 
+	Parameter C_ELABORATION_DIR bound to: ./ - type: string 
+	Parameter C_MEM_TYPE bound to: 1 - type: integer 
+	Parameter C_PIPELINE_STAGES bound to: 0 - type: integer 
+	Parameter C_QCE_JOINED bound to: 0 - type: integer 
+	Parameter C_QUALIFY_WE bound to: 0 - type: integer 
+	Parameter C_READ_MIF bound to: 0 - type: integer 
+	Parameter C_REG_A_D_INPUTS bound to: 0 - type: integer 
+	Parameter C_REG_DPRA_INPUT bound to: 0 - type: integer 
+	Parameter C_SYNC_ENABLE bound to: 1 - type: integer 
+	Parameter C_WIDTH bound to: 32 - type: integer 
+	Parameter C_PARSER_TYPE bound to: 1 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'dist_mem_gen_v8_0_9_synth' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:2877]
+	Parameter C_FAMILY bound to: artix7 - type: string 
+	Parameter C_ADDR_WIDTH bound to: 16 - type: integer 
+	Parameter C_DEFAULT_DATA bound to: 0 - type: string 
+	Parameter C_DEPTH bound to: 65536 - type: integer 
+	Parameter C_HAS_CLK bound to: 1 - type: integer 
+	Parameter C_HAS_D bound to: 1 - type: integer 
+	Parameter C_HAS_DPO bound to: 0 - type: integer 
+	Parameter C_HAS_DPRA bound to: 0 - type: integer 
+	Parameter C_HAS_I_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_CLK bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QDPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_CE bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_RST bound to: 0 - type: integer 
+	Parameter C_HAS_QSPO_SRST bound to: 0 - type: integer 
+	Parameter C_HAS_SPO bound to: 1 - type: integer 
+	Parameter C_HAS_WE bound to: 1 - type: integer 
+	Parameter C_MEM_INIT_FILE bound to: no_coe_file_loaded - type: string 
+	Parameter C_ELABORATION_DIR bound to: ./ - type: string 
+	Parameter C_MEM_TYPE bound to: 1 - type: integer 
+	Parameter C_PIPELINE_STAGES bound to: 0 - type: integer 
+	Parameter C_QCE_JOINED bound to: 0 - type: integer 
+	Parameter C_QUALIFY_WE bound to: 0 - type: integer 
+	Parameter C_READ_MIF bound to: 0 - type: integer 
+	Parameter C_REG_A_D_INPUTS bound to: 0 - type: integer 
+	Parameter C_REG_DPRA_INPUT bound to: 0 - type: integer 
+	Parameter C_SYNC_ENABLE bound to: 1 - type: integer 
+	Parameter C_WIDTH bound to: 32 - type: integer 
+	Parameter C_PARSER_TYPE bound to: 0 - type: integer 
+	Parameter c_addr_width bound to: 16 - type: integer 
+	Parameter c_depth bound to: 65536 - type: integer 
+	Parameter c_width bound to: 32 - type: integer 
+	Parameter c_default_data bound to: 0 - type: string 
+	Parameter c_mem_init_file bound to: no_coe_file_loaded - type: string 
+	Parameter c_elaboration_dir bound to: ./ - type: string 
+	Parameter c_read_mif bound to: 0 - type: integer 
+	Parameter c_has_i_ce bound to: 0 - type: integer 
+	Parameter c_qualify_we bound to: 0 - type: integer 
+	Parameter c_reg_a_d_inputs bound to: 0 - type: integer 
+	Parameter c_pipeline_stages bound to: 0 - type: integer 
+	Parameter c_has_qspo_ce bound to: 0 - type: integer 
+	Parameter c_has_qspo_rst bound to: 0 - type: integer 
+	Parameter c_has_qspo_srst bound to: 0 - type: integer 
+	Parameter c_has_spo bound to: 1 - type: integer 
+	Parameter c_has_qspo bound to: 0 - type: integer 
+	Parameter c_sync_enable bound to: 1 - type: integer 
+	Parameter c_parser_type bound to: 0 - type: integer 
+INFO: [Synth 8-3491] module 'spram' declared at '/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:972' bound to instance 'spram_inst' of component 'spram' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:2930]
+INFO: [Synth 8-638] synthesizing module 'spram' [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:1005]
+	Parameter c_addr_width bound to: 16 - type: integer 
+	Parameter c_depth bound to: 65536 - type: integer 
+	Parameter c_width bound to: 32 - type: integer 
+	Parameter c_default_data bound to: 0 - type: string 
+	Parameter c_mem_init_file bound to: no_coe_file_loaded - type: string 
+	Parameter c_elaboration_dir bound to: ./ - type: string 
+	Parameter c_read_mif bound to: 0 - type: integer 
+	Parameter c_has_i_ce bound to: 0 - type: integer 
+	Parameter c_qualify_we bound to: 0 - type: integer 
+	Parameter c_reg_a_d_inputs bound to: 0 - type: integer 
+	Parameter c_pipeline_stages bound to: 0 - type: integer 
+	Parameter c_has_qspo_ce bound to: 0 - type: integer 
+	Parameter c_has_qspo_rst bound to: 0 - type: integer 
+	Parameter c_has_qspo_srst bound to: 0 - type: integer 
+	Parameter c_has_spo bound to: 1 - type: integer 
+	Parameter c_has_qspo bound to: 0 - type: integer 
+	Parameter c_sync_enable bound to: 1 - type: integer 
+	Parameter c_parser_type bound to: 0 - type: integer 
+INFO: [Synth 8-5534] Detected attribute (* keep = "true" *) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:1206]
+INFO: [Synth 8-5534] Detected attribute (* ram_style = "pipe_distributed" *) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:1207]
+WARNING: [Synth 8-3848] Net qspo in module/entity spram does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:1002]
+INFO: [Synth 8-256] done synthesizing module 'spram' (1#1) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:1005]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3064]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3070]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3075]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3081]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3087]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3092]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3097]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3102]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3110]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3115]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3123]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3128]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3136]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3144]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3152]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3157]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3162]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3167]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3175]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3180]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3189]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3194]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3199]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3204]
+WARNING: [Synth 8-312] ignoring unsynthesizable construct: assertion statement [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:3209]
+WARNING: [Synth 8-3848] Net dpo in module/entity dist_mem_gen_v8_0_9_synth does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:2869]
+WARNING: [Synth 8-3848] Net qdpo in module/entity dist_mem_gen_v8_0_9_synth does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:2871]
+INFO: [Synth 8-256] done synthesizing module 'dist_mem_gen_v8_0_9_synth' (2#1) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd:2877]
+WARNING: [Synth 8-3848] Net gnd_bus in module/entity dist_mem_gen_v8_0_9 does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:224]
+WARNING: [Synth 8-3848] Net vcc in module/entity dist_mem_gen_v8_0_9 does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:225]
+WARNING: [Synth 8-3848] Net gnd in module/entity dist_mem_gen_v8_0_9 does not have driver. [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:223]
+INFO: [Synth 8-256] done synthesizing module 'dist_mem_gen_v8_0_9' (3#1) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:196]
+INFO: [Synth 8-256] done synthesizing module 'dist_mem_gen_ram' (4#1) [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/synth/dist_mem_gen_ram.vhd:69]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:04:35 ; elapsed = 00:04:38 . Memory (MB): peak = 1366.422 ; gain = 530.168 ; free physical = 163 ; free virtual = 1914
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[15] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[14] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[13] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[12] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[11] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[10] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[9] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[8] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[7] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[6] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[5] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[4] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[3] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[2] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[1] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :dpra[0] to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :i_ce to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qspo_ce to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qdpo_ce to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qdpo_clk to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qspo_rst to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qdpo_rst to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qspo_srst to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+WARNING: [Synth 8-3295] tying undriven pin \synth_options.dist_mem_inst :qdpo_srst to constant 0 [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd:232]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:04:36 ; elapsed = 00:04:38 . Memory (MB): peak = 1366.422 ; gain = 530.168 ; free physical = 163 ; free virtual = 1915
+---------------------------------------------------------------------------------
+INFO: [Device 21-403] Loading part xc7a100tfgg484-1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_ooc.xdc] for cell 'U0'
+Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/dont_touch.xdc]
+Completed Processing XDC Constraints
+
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.12 . Memory (MB): peak = 1398.438 ; gain = 0.000 ; free physical = 136 ; free virtual = 1903
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 26409 
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:04:44 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.438 ; gain = 562.184 ; free physical = 140 ; free virtual = 1905
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a100tfgg484-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:04:44 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.438 ; gain = 562.184 ; free physical = 140 ; free virtual = 1906
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property DONT_TOUCH = true for U0. (constraint file  auto generated constraint, line ).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:04:44 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.438 ; gain = 562.184 ; free physical = 140 ; free virtual = 1906
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:04:44 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.438 ; gain = 562.184 ; free physical = 138 ; free virtual = 1905
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module spram 
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 1     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 240 (col length:80)
+BRAMs: 270 (col length: RAMB18 80 RAMB36 40)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:04:45 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.445 ; gain = 562.191 ; free physical = 137 ; free virtual = 1905
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:04:45 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.445 ; gain = 562.191 ; free physical = 138 ; free virtual = 1907
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:04:45 ; elapsed = 00:04:50 . Memory (MB): peak = 1398.445 ; gain = 562.191 ; free physical = 138 ; free virtual = 1907
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+
+Distributed RAM: 
++-----------------+-----------------------------------------------------------+----------------+----------------------+--------------------+---------------------------------------------+
+|Module Name      | RTL Object                                                | Inference      | Size (Depth x Width) | Primitives         | Hierarchical Name                           | 
++-----------------+-----------------------------------------------------------+----------------+----------------------+--------------------+---------------------------------------------+
+|dist_mem_gen_ram | synth_options.dist_mem_inst/gen_sp_ram.spram_inst/ram_reg | User Attribute | 64 K x 32            | RAM256X1S x 8192   | dist_mem_gen_ram/dist_mem_gen_v8_0_9/ram__2 | 
++-----------------+-----------------------------------------------------------+----------------+----------------------+--------------------+---------------------------------------------+
+
+Note: The table above shows the Distributed RAMs at the current stage of the synthesis flow. Some Distributed RAMs may be reimplemented as non Distributed RAM primitives later in the synthesis flow. Multiple instantiated RAMs are reported only once. "Hierarchical Name" reflects the Distributed RAM name as it appears in the hierarchical module and only part of it is displayed.
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:05:01 ; elapsed = 00:05:07 . Memory (MB): peak = 1577.102 ; gain = 740.848 ; free physical = 244 ; free virtual = 1784
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:05:01 ; elapsed = 00:05:07 . Memory (MB): peak = 1577.102 ; gain = 740.848 ; free physical = 244 ; free virtual = 1784
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:05:11 ; elapsed = 00:05:18 . Memory (MB): peak = 1577.102 ; gain = 740.848 ; free physical = 203 ; free virtual = 1768
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:05:13 ; elapsed = 00:05:20 . Memory (MB): peak = 1588.102 ; gain = 751.848 ; free physical = 179 ; free virtual = 1753
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:05:19 ; elapsed = 00:05:26 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 176 ; free virtual = 1624
+---------------------------------------------------------------------------------
+Finished Parallel Technology Mapping Optimization  : Time (s): cpu = 00:05:19 ; elapsed = 00:05:26 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 176 ; free virtual = 1624
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:05:19 ; elapsed = 00:05:26 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 176 ; free virtual = 1624
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:05:21 ; elapsed = 00:05:28 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 170 ; free virtual = 1620
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:05:21 ; elapsed = 00:05:29 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 170 ; free virtual = 1620
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 170 ; free virtual = 1618
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 170 ; free virtual = 1618
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 169 ; free virtual = 1618
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 169 ; free virtual = 1618
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+----------+------+
+|      |Cell      |Count |
++------+----------+------+
+|1     |LUT2      |  1446|
+|2     |LUT3      |   211|
+|3     |LUT4      |  2378|
+|4     |LUT5      |   850|
+|5     |LUT6      |  5626|
+|6     |MUXF7     |  1044|
+|7     |MUXF8     |   522|
+|8     |RAM256X1S |  8192|
+|9     |FDRE      |    32|
++------+----------+------+
+
+Report Instance Areas: 
++------+----------------------------------+--------------------------+------+
+|      |Instance                          |Module                    |Cells |
++------+----------------------------------+--------------------------+------+
+|1     |top                               |                          | 20301|
+|2     |  U0                              |dist_mem_gen_v8_0_9       | 20301|
+|3     |    \synth_options.dist_mem_inst  |dist_mem_gen_v8_0_9_synth | 20301|
+|4     |      \gen_sp_ram.spram_inst      |spram                     | 20301|
++------+----------------------------------+--------------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 169 ; free virtual = 1618
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 0 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:05:16 ; elapsed = 00:05:20 . Memory (MB): peak = 1712.852 ; gain = 700.781 ; free physical = 164 ; free virtual = 1616
+Synthesis Optimization Complete : Time (s): cpu = 00:05:23 ; elapsed = 00:05:30 . Memory (MB): peak = 1712.852 ; gain = 876.598 ; free physical = 163 ; free virtual = 1617
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 8192 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 6 CPU seconds
+WARNING: [Netlist 29-101] Netlist 'dist_mem_gen_ram' is not ideal for floorplanning, since the cellview 'spram' contains a large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_ooc.xdc] for cell 'U0'
+Finished Parsing XDC File [/home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.srcs/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram_ooc.xdc] for cell 'U0'
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 8192 instances were transformed.
+  RAM256X1S => RAM256X1S (MUXF7, MUXF7, MUXF8, RAMS64E, RAMS64E, RAMS64E, RAMS64E): 8192 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+26 Infos, 61 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:05:37 ; elapsed = 00:05:47 . Memory (MB): peak = 1712.852 ; gain = 802.266 ; free physical = 148 ; free virtual = 1581
+INFO: [Coretcl 2-1174] Renamed 3 cell refs.
+write_checkpoint: Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 1720.855 ; gain = 8.004 ; free physical = 166 ; free virtual = 1572
+report_utilization: Time (s): cpu = 00:00:00.51 ; elapsed = 00:00:00.98 . Memory (MB): peak = 1720.855 ; gain = 0.000 ; free physical = 159 ; free virtual = 1571
+write_vhdl: Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 1720.855 ; gain = 0.000 ; free physical = 139 ; free virtual = 1556
+INFO: [Common 17-206] Exiting Vivado at Tue Sep 19 09:13:02 2017...

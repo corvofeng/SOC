@@ -6,4 +6,4 @@
 # Copyright 1986-2015 Xilinx, Inc. All Rights Reserved.
 #
 
-vivado -log Learn.vds -m64 -mode batch -messageDb vivado.pb -notrace -source Learn.tcl
+vivado -log rom64k.vds -m64 -mode batch -messageDb vivado.pb -notrace -source rom64k.tcl

@@ -27,8 +27,30 @@
   <FileSets Version="1" Minor="31">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
       <Filter Type="Srcs"/>
+      <File Path="$PSRCDIR/sources_1/new/rom64k.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/new/Learn.v">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../UnitTest/fib/dmem32.coe">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/ram64k.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -36,7 +58,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="Learn"/>
+        <Option Name="TopModule" Val="rom64k"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
       </Config>
     </FileSet>
@@ -47,8 +69,24 @@
       </Config>
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1">
+      <File Path="$PSRCDIR/sim_1/new/rom64k_sim.v">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sim_1/new/Learn_sim.v">
         <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sim_1/new/ram64k_sim.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -56,10 +94,61 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="Learn_sim"/>
+        <Option Name="TopModule" Val="rom64k_sim"/>
         <Option Name="TopLib" Val="xil_defaultlib"/>
-        <Option Name="TopAutoSet" Val="TRUE"/>
         <Option Name="SrcSet" Val="sources_1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="dist_mem_gen_rom" Type="BlockSrcs" RelSrcDir="$PSRCDIR/dist_mem_gen_rom">
+      <File Path="$PSRCDIR/sources_1/ip/dist_mem_gen_rom/dist_mem_gen_rom.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_rom.xml"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_rom.vho"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="synth/dist_mem_gen_rom.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_rom_ooc.xdc"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_rom.veo"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_rom.mif"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="dist_mem_gen_v8_0_9/simulation/dist_mem_gen_v8_0.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="sim/dist_mem_gen_rom.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="doc/dist_mem_gen_v8_0_changelog.txt"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_rom.xci" FileRelPathName="/home/corvo/Learning/verilog/SOC/CPU/UnitTest/fib/dmem32.coe"/>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="dist_mem_gen_rom"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="dist_mem_gen_ram" Type="BlockSrcs" RelSrcDir="$PSRCDIR/dist_mem_gen_ram">
+      <File Path="$PSRCDIR/sources_1/ip/dist_mem_gen_ram/dist_mem_gen_ram.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram.vho"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram.veo"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram_stub.v"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram_stub.vhdl"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram_sim_netlist.vhdl"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="sim/dist_mem_gen_ram.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram_sim_netlist.v"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram_ooc.xdc"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0_vhsyn_rfs.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_v8_0_9/hdl/dist_mem_gen_v8_0.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="synth/dist_mem_gen_ram.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_ram.xml"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="dist_mem_gen_v8_0_9/simulation/dist_mem_gen_v8_0.vhd"/>
+        <CompFileExtendedInfo CompFileName="dist_mem_gen_ram.xci" FileRelPathName="doc/dist_mem_gen_v8_0_changelog.txt"/>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="dist_mem_gen_ram"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
   </FileSets>
@@ -94,7 +183,24 @@
       </Strategy>
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
-    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7a100tfgg484-1" ConstrsSet="constrs_1" Description="Vivado Implementation Defaults" State="current" Dir="$PRUNDIR/impl_1" SynthRun="synth_1" IncludeInArchive="true">
+    <Run Id="dist_mem_gen_rom_synth_1" Type="Ft3:Synth" SrcSet="dist_mem_gen_rom" Part="xc7a100tfgg484-1" ConstrsSet="dist_mem_gen_rom" Description="Vivado Synthesis Defaults" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+    </Run>
+    <Run Id="dist_mem_gen_ram_synth_1" Type="Ft3:Synth" SrcSet="dist_mem_gen_ram" Part="xc7a100tfgg484-1" ConstrsSet="dist_mem_gen_ram" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/dist_mem_gen_ram_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2015">
+          <Desc>Vivado Synthesis Defaults</Desc>
+        </StratHandle>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7a100tfgg484-1" ConstrsSet="constrs_1" Description="Vivado Implementation Defaults" State="current" SynthRun="synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015">
           <Desc>Vivado Implementation Defaults</Desc>
@@ -109,7 +215,38 @@
         <Step Id="post_route_phys_opt_design"/>
         <Step Id="write_bitstream"/>
       </Strategy>
-      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="dist_mem_gen_rom_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tfgg484-1" ConstrsSet="dist_mem_gen_rom" Description="Vivado Implementation Defaults" SynthRun="dist_mem_gen_rom_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015">
+          <Desc>Vivado Implementation Defaults</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+    </Run>
+    <Run Id="dist_mem_gen_ram_impl_1" Type="Ft2:EntireDesign" Part="xc7a100tfgg484-1" ConstrsSet="dist_mem_gen_ram" Description="Vivado Implementation Defaults" SynthRun="dist_mem_gen_ram_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015">
+          <Desc>Vivado Implementation Defaults</Desc>
+        </StratHandle>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
     </Run>
   </Runs>
 </Project>

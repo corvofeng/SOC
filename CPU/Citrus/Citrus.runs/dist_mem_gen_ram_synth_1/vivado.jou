@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2015.4 (64-bit)
+# SW Build 1412921 on Wed Nov 18 09:44:32 MST 2015
+# IP Build 1412160 on Tue Nov 17 13:47:24 MST 2015
+# Start of session at: Tue Sep 19 09:06:49 2017
+# Process ID: 24898
+# Current directory: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1
+# Command line: vivado -log dist_mem_gen_ram.vds -mode batch -messageDb vivado.pb -notrace -source dist_mem_gen_ram.tcl
+# Log file: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/dist_mem_gen_ram.vds
+# Journal file: /home/corvo/Learning/verilog/SOC/CPU/Citrus/Citrus.runs/dist_mem_gen_ram_synth_1/vivado.jou
+#-----------------------------------------------------------
+source dist_mem_gen_ram.tcl -notrace
