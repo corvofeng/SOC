@@ -26,6 +26,5 @@ module Learn(
     );
 
     assign led = sw;
-    //dist_mem_gen_0 dist()
 
 endmodule
