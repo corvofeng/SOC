@@ -29,24 +29,24 @@ module pri_sim();
 	wire out_enable;
 	
 	PriorityEncoder8_3 uut(
-		.in_data(in_data),
-		.in_enable(in_enable),
-		.out_data(out_data),
-		.out_gs(out_gs),
-		.out_enable(out_enable)
+		.in_data_n(in_data),
+		.in_enable_n(in_enable),
+		.out_data_n(out_data),
+		.out_gs_n(out_gs),
+		.out_enable_n(out_enable)
 	);
 	
 	initial begin
-		#10 in_enable = 0;
+		#10 in_enable = 1;
 		#10	in_data = 8'b11111111;
-		#10 in_enable = 1;
-		#10	in_data = 8'b01111111;
-		#10	in_data = 8'b00111111;
-		#10	in_data = 8'b00011111;
 		#10 in_enable = 0;
+		#10	in_data = 8'b11111110;
 		#10	in_data = 8'b11111100;
-		#10 in_enable = 1;
+		#10	in_data = 8'b11111000;
+		#10	in_data = 8'b11110000;
+		#10	in_data = 8'b11100000;
+		#10	in_data = 8'b11000000;
+		#10	in_data = 8'b10000000;
 		#10	in_data = 8'b00000000;
-		#10 in_enable = 0;
     end
 endmodule

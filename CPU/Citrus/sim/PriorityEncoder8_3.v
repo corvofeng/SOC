@@ -21,32 +21,33 @@
 
 
 module PriorityEncoder8_3(
-	in_data,//数据输入端
-	in_enable,//使能输入端,1
-	out_data,//数据输出端
-	out_gs,//片优先编码输出端
-	out_enable//使能输出端
+	in_data_n,//数据输入端	低电平有效
+	in_enable_n,//EI使能输入端	低电平有效
+	out_data_n,//数据输出端
+	out_gs_n,//GS片优先编码输出端	低电平代表有输入
+	out_enable_n//EI使能输出端 低电平表示EI有效但没有输入
     );
-	input [7:0] in_data ;
-	input in_enable ;
+	input [7:0] in_data_n ;
+	input in_enable_n ;
 
-	output reg [2:0] out_data ;
-	output reg out_gs ;
-	output reg out_enable ;
+	output reg [2:0] out_data_n ;
+	output reg out_gs_n ;
+	output reg out_enable_n ;
 
-	always @ ( in_data  or in_enable ) begin
-		out_data[2]=(in_data[4]||in_data[5]||in_data[6]||in_data[7])&&in_enable;
-		out_data[1]=(in_data[2]&&~in_data[4]&&~in_data[5]
-					||in_data[3]&&~in_data[4]&&~in_data[5]
-					||in_data[6]
-					||in_data[7])&&in_enable;
-		out_data[0]=(in_data[1]&&~in_data[2]&&~in_data[4]&&~in_data[6]
-					||in_data[3]&&~in_data[4]&&~in_data[6]
-					||in_data[5]&&~in_data[6]
-					||in_data[7])&&in_enable;
-		out_enable=~in_data[0]&&~in_data[1]&&~in_data[2]&&~in_data[3]&&~in_data[4]
-					&&~in_data[5]&&~in_data[6]&&~in_data[7]&&in_enable;
-		out_gs=(in_data[0]||in_data[1]||in_data[2]||in_data[3]||in_data[4]
-					||in_data[5]||in_data[6]||in_data[7])&&in_enable;
+	always @ ( in_data_n  or in_enable_n ) begin
+		out_data_n[2]=in_data_n[4]&&in_data_n[5]&&in_data_n[6]&&in_data_n[7]||in_enable_n;
+		out_data_n[1]=~in_data_n[4]&&in_data_n[6]&&in_data_n[7]
+				||~in_data_n[5]&&in_data_n[6]&&in_data_n[7]
+				||in_data_n[2]&&in_data_n[3]&&in_data_n[6]&&in_data_n[7]
+				||in_enable_n;
+		out_data_n[0]=in_data_n[1]&&in_data_n[3]&&in_data_n[5]&&in_data_n[7]
+				||~in_data_n[4]&&in_data_n[5]&&in_data_n[7]
+				||~in_data_n[2]&&in_data_n[3]&&in_data_n[5]&&in_data_n[7]
+				||~in_data_n[6]&&in_data_n[7]
+				||in_enable_n;
+		out_enable_n=~(in_data_n[0]&&in_data_n[1]&&in_data_n[2]&&in_data_n[3]&&in_data_n[4]
+					&&in_data_n[5]&&in_data_n[6]&&in_data_n[7])||in_enable_n;
+		out_gs_n=in_data_n[0]&&in_data_n[1]&&in_data_n[2]&&in_data_n[3]&&in_data_n[4]
+					&&in_data_n[5]&&in_data_n[6]&&in_data_n[7]||in_enable_n;
 	end
 endmodule
