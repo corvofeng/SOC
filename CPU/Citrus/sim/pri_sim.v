@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: IceTesla
 // 
 // Create Date: 2017/09/19 19:45:43
 // Design Name: 
@@ -29,11 +29,11 @@ module pri_sim();
 	wire out_enable;
 	
 	PriorityEncoder8_3 uut(
-		.in_data_n(in_data),
-		.in_enable_n(in_enable),
-		.out_data_n(out_data),
-		.out_gs_n(out_gs),
-		.out_enable_n(out_enable)
+		.i_data_n(in_data),
+		.i_enable_n(in_enable),
+		.o_data_n(out_data),
+		.o_gs_n(out_gs),
+		.o_enable_n(out_enable)
 	);
 	
 	initial begin
