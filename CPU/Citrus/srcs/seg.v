@@ -9,8 +9,8 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: ÓÃÒ»¸ö32Î»µÄ¼Ä´æÆ÷´æÊäÈëµÄÊı¾İ£¬¶ÔÓ¦8¸öÊıÂë¹Ü£¬¼Ä´æÆ÷³õÊ¼»¯Îª0£¬Ä¿Ç°ÊÇÕâÑùÏëµÄ£¬ºóÃæ¿ÉÄÜ²»ĞèÒª¼Ä´æÆ÷£¬Ö±½ÓÊäÈë
-// ¸´Î»°´Å¥»¹Ã»ÓĞ°ó¶¨£¬Ä¿Ç°ÊÇÒ»¸öÁÙÊ±µÄ
+// Description: ç”¨ä¸€ä¸ª32ä½çš„å¯„å­˜å™¨å­˜è¾“å…¥çš„æ•°æ®ï¼Œå¯¹åº”8ä¸ªæ•°ç ç®¡ï¼Œå¯„å­˜å™¨åˆå§‹åŒ–ä¸º0ï¼Œç›®å‰æ˜¯è¿™æ ·æƒ³çš„ï¼Œåé¢å¯èƒ½ä¸éœ€è¦å¯„å­˜å™¨ï¼Œç›´æ¥è¾“å…¥
+// å¤ä½æŒ‰é’®è¿˜æ²¡æœ‰ç»‘å®šï¼Œç›®å‰æ˜¯ä¸€ä¸ªä¸´æ—¶çš„
 // Dependencies: 
 // 
 // Revision:
@@ -24,8 +24,8 @@ module seg(
     //input_data,
     sel_n,
     seg_n,
-    clk,  //ÏµÍ³Ê±ÖÓ100mhz
-    rst  //¸´Î»
+    clk,  //ç³»ç»Ÿæ—¶é’Ÿ100mhz
+    rst  //å¤ä½
     );
     input clk;
     input rst;
@@ -36,7 +36,7 @@ module seg(
     reg[25:0] div_counter = 0;
     reg[2:0] scanner;
     
-    always@(posedge clk or negedge rst)  //·ÖÆµ50hz
+    always@(posedge clk or negedge rst)  //åˆ†é¢‘50hz
     begin
     if(!rst) begin
       div_counter = 0; 
@@ -50,7 +50,7 @@ module seg(
       end
  
     
-    always@(posedge clk_50 or negedge rst)begin  // Ñ­»·É¨Ãè
+    always@(posedge clk_50 or negedge rst)begin  //å¾ªç¯æ‰«æ
       if(!rst) begin
         scanner<=0;
       end else if(scanner==3'd7) begin

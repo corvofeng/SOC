@@ -26,16 +26,16 @@ module key16(
     input reset;
     input cs;
     input clk;
-    input ior;  //¶ÁĞÅºÅ
-    input[1:0] address;  //¶Ë¿ÚºÅ
-    input[3:0] col;  //ÁĞÏß
-    output[3:0] line;  //ĞĞÏß
-    output[15:0] ioread_data;  //Êä³öµ½ÏµÍ³×ÜÏßÉÏµÄÊı¾İ
+    input ior;  //è¯»ä¿¡å·
+    input[1:0] address;  //ç«¯å£å·
+    input[3:0] col;  //åˆ—çº¿
+    output[3:0] line;  //è¡Œçº¿
+    output[15:0] ioread_data;  //è¾“å‡ºåˆ°ç³»ç»Ÿæ€»çº¿ä¸Šçš„æ•°æ®
     
     reg[15:0] ioread_data;
     reg[3:0] line;
-    reg[15:0] keyvalue;  //¼üÖµ¼Ä´æÆ÷
-    reg[15:0] keystat;  //×´Ì¬¼Ä´æÆ÷
+    reg[15:0] keyvalue;  //é”®å€¼å¯„å­˜å™¨
+    reg[15:0] keystat;  //çŠ¶æ€å¯„å­˜å™¨
     
     always@(negedge clk)
     begin
@@ -48,21 +48,21 @@ module key16(
       end else begin
         case(line)
           4'b0000:if(col!=4'b1111) line<=4'b1110;
-          4'b1110:if(col!=4'b1111)begin  //É¨Ãè0ĞĞ
+          4'b1110:if(col!=4'b1111)begin  //æ‰«æ0è¡Œ
             keyvalue[3:0]=col;
             keyvalue[7:4]=line;
             keystat=keystat|16'b0000000000000001;
             line<=4'b0000;
           end else 
-            line<=4'b1101;  //Èç¹û0ĞĞÎŞ¼ü£¬×¼±¸É¨Ãè1ĞĞ
-          4'b1101:if(col!=4'b1111)begin  //É¨Ãè1ĞĞ
+            line<=4'b1101;  //å¦‚æœ0è¡Œæ— é”®ï¼Œå‡†å¤‡æ‰«æ1è¡Œ
+          4'b1101:if(col!=4'b1111)begin  //æ‰«æ1è¡Œ
              keyvalue[3:0]=col;
              keyvalue[7:4]=line;
              keystat=keystat|16'b0000000000000001;
              line<=4'b0000;
            end else 
              line<=4'b1011;  
-          4'b1011:if(col!=4'b1111)begin  //É¨Ãè2ĞĞ
+          4'b1011:if(col!=4'b1111)begin  //æ‰«æ2è¡Œ
                 keyvalue[3:0]=col;
                 keyvalue[7:4]=line;
                 keystat=keystat|16'b0000000000000001;
@@ -80,7 +80,7 @@ module key16(
                  end
       endcase
       if((cs==1)&&(ior==1))begin
-        if(address==2'b00)  //¶Á¼üÖµ
+        if(address==2'b00)  //è¯»é”®å€¼
           ioread_data=keyvalue;
         else if(address==2'b10)begin 
           ioread_data=keystat;
