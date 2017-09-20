@@ -1,3 +1,0 @@
-Language File-Name              IP                Library              File-Path                                                                     
-VHDL,    dist_mem_gen_v8_0.vhd, dist_mem_gen_rom, dist_mem_gen_v8_0_9, ../../../ipstatic/dist_mem_gen_v8_0_9/simulation/dist_mem_gen_v8_0.vhd        
-VHDL,    dist_mem_gen_rom.vhd,  dist_mem_gen_rom, xil_defaultlib,      ../../../../Citrus.srcs/sources_1/ip/dist_mem_gen_rom/sim/dist_mem_gen_rom.vhd
