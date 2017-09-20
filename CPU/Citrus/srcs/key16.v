@@ -29,11 +29,11 @@ module key16(
     input ior;  //读信号
     input[1:0] address;  //端口号
     input[3:0] col;  //列线
-    output[3:0] line;  //行线
+    output reg[3:0] line;  //行线
     output[15:0] ioread_data;  //输出到系统总线上的数据
     
     reg[15:0] ioread_data;
-    reg[3:0] line;
+    // reg[3:0] line;
     reg[15:0] keyvalue;  //键值寄存器
     reg[15:0] keystat;  //状态寄存器
     
