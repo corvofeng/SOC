@@ -1,7 +1,4 @@
 
- 
-
-
 
 ```bash
 # sample.lex
@@ -12,11 +9,16 @@ $ flex sample.lex
 ```
 
 
-
 ```bash
 # sample.y
 # sample.y是.y文件的一个样例
 # y.tab.c
 # y.tab.c是Yacc用sample.y生成的文件，生成文件的命令如下：
 $ byacc sample.y
+```
+
+
+```bash
+# test.c
+# lex.yy.c的测试文件
 ```
