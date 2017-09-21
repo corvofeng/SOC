@@ -29,12 +29,12 @@ module key16(
     input ior;  //读信号
     input[1:0] address;  //端口号
     input[3:0] col;  //列线
-    output reg[3:0] line;  //行线
+    output[3:0] line;  //行线
     output[15:0] ioread_data;  //输出到系统总线上的数据
     
     reg[15:0] ioread_data;
-    // reg[3:0] line;
-    reg[15:0] keyvalue;  //键值寄存器
+    reg[3:0] line;
+    reg[15:0] keyvalue =16'h0000;  //键值寄存器,初始化为0
     reg[15:0] keystat;  //状态寄存器
     
     always@(negedge clk)
@@ -42,7 +42,7 @@ module key16(
       if(reset==1)
       begin
         ioread_data=16'b0000000000000000;
-        keyvalue=16'b0000000000000000;
+        keyvalue=16'h00ab;
         keystat=16'b0000000000000000;
         line=4'b0000;
       end else begin

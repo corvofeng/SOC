@@ -127,3 +127,5 @@ set_property IOSTANDARD LVCMOS33 [get_ports ior]
 set_property IOSTANDARD LVCMOS33 [get_ports reset]
 set_property PACKAGE_PIN Y8 [get_ports ior]
 set_property PACKAGE_PIN W4 [get_ports reset]
+
+set_property PACKAGE_PIN R4 [get_ports reset]
