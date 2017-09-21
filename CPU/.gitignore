@@ -1,3 +1,7 @@
+
+# Created by https://www.gitignore.io/api/vivado
+
+### Vivado ###
 #########################################################################################################
 ##	This is an example .gitignore file for Vivado, please treat it as an example as 
 ##	it might not be complete. In addition, XAPP 1165 should be followed.
@@ -8,6 +12,8 @@
 *
 !*/
 !.gitignore
+
+!*.md
 ###########################################################################
 ##	VIVADO
 ###########################################################################
@@ -84,3 +90,5 @@
 !*.elf
 !*.bmm
 !*.xmp
+
+# End of https://www.gitignore.io/api/vivado

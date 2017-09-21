@@ -21,7 +21,7 @@
 
 
 module seg(
-    //input_data,
+    input_data,
     sel_n,
     seg_n,
     clk,  //系统时钟100mhz
@@ -29,9 +29,10 @@ module seg(
     );
     input clk;
     input rst;
-    reg [31:0] input_data=32'b1000_0111_0110_0101_0100_0011_0010_0001;
-    output reg [7:0] sel_n;
-    output reg [7:0] seg_n;
+    // reg [31:0] input_data=32'b1000_0111_0110_0101_0100_0011_0010_0001;
+    input[32:0] input_data;
+    output reg[7:0] sel_n;
+    output reg[7:0] seg_n;
     reg clk_50=0;
     reg[25:0] div_counter = 0;
     reg[2:0] scanner;
