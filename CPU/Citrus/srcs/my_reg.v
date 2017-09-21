@@ -10,14 +10,14 @@
  *=============================================================================
  */
  
-// i_data0, i_data1 for register output
-// i_addr_0, i_addr_1 for input the addrress i_data0, i_data1
+// o_data_0, o_data_1 for register output
+// i_addr_0, i_addr_1 for input the addrress o_data_0, o_data_1
 //
 // 同步置数
 
 module my_reg(
-    i_data0,
-	i_data1,
+    o_data_0,
+	o_data_1,
     i_addr_w, 
 	i_addr_0, 
 	i_addr_1,
@@ -27,16 +27,16 @@ module my_reg(
     i_reset
     );
     
-    output[31:0] i_data0;
-    output[31:0] i_data1;
+    output[31:0] o_data_0;
+    output[31:0] o_data_1;
     input [4:0] i_addr_0, i_addr_1, i_addr_w;
     input i_reset;
     input i_wr;
     input i_clk;
     input[31:0] i_data;
     
-    wire[31:0] i_data0;
-    wire[31:0] i_data1;
+    wire[31:0] o_data_0;
+    wire[31:0] o_data_1;
     wire i_reset;
     wire i_clk;
 
@@ -47,8 +47,8 @@ module my_reg(
     wire[4:0] i_addr_1;
     wire[4:0] i_addr_w;
 
-    assign i_data0 = register[i_addr_0];
-    assign i_data1 = register[i_addr_1];
+    assign o_data_0 = register[i_addr_0];
+    assign o_data_1 = register[i_addr_1];
 
     integer i;
     always @(posedge i_clk) begin
