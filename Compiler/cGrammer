@@ -1,0 +1,243 @@
+var 
+	: IDENTIFIER	
+	| IDENTIFIER '[' CONSTANT ']'
+	| IDENTIFIER '[' CONSTANT ']' '[' CONSTANT ']'
+	;
+arg_var
+	: IDENTIFIER
+	| '*' IDENTIFIER
+        | IDENTIFIER '[' ']'
+	| '*' IDENTIFIER '[' CONSTANT ']'
+        | IDENTIFIER '[' ']' '[' CONSTANT ']'
+        ;
+variables
+	: var
+	| '*' var
+	| variables ',' var
+	| variables ',' '*' var
+	;
+struct_var
+	: IDENTIFIER
+	| IDENTIFIER '[' CONSTANT ']'
+	| struct_var ',' IDENTIFIER
+	| struct_var ',' IDENTIFIER '[' CONSTANT ']'
+	;
+type
+        : INT
+        | FLOAT
+        | CHAR
+        | VOID
+        ;
+inside_dec 
+	: IDENTIFIER
+	| inside_dec ',' IDENTIFIER
+	;
+struct_declaration
+	: type inside_dec ';'
+	;
+
+struct_list 
+	: struct_declaration
+	| struct_list struct_declaration
+	;
+struct 
+	: STRUCT IDENTIFIER '{' struct_list '}'
+	; 
+
+declaration 
+	: type variables ';'
+	| struct ';'
+	| STRUCT IDENTIFIER struct_var ';'
+	| struct struct_var ';'
+	;
+argument_list
+	: argument_list ',' type arg_var
+	| type arg_var
+	| argument_list ',' STRUCT IDENTIFIER IDENTIFIER 
+	| STRUCT IDENTIFIER arg_var
+	;
+
+read
+	: READ '(' type ',' IDENTIFIER ')'
+	| READ '(' type ',' IDENTIFIER '[' expression ']' ')'
+	| READ '(' type ',' IDENTIFIER '[' expression ']' '[' expression ']' ')'
+	| READ '(' type ',' IDENTIFIER '[' expression ']' '.' IDENTIFIER ')'
+	| READ '(' type ',' IDENTIFIER '.' IDENTIFIER ')'
+	;
+
+print
+        : PRINT '(' type ',' IDENTIFIER ')'
+        | PRINT '(' type ',' IDENTIFIER '[' expression ']' ')'
+        | PRINT '(' type ',' IDENTIFIER '[' expression ']' '[' expression ']' ')'
+        | PRINT '(' type ',' IDENTIFIER '[' expression ']' '.' IDENTIFIER ')'
+        | PRINT '(' type ',' IDENTIFIER '.' IDENTIFIER ')'
+	;
+
+myfunction
+	: read ';'
+	| print ';'
+	;
+statement
+        : body
+        | jump_statement
+	| iteration_statement
+	| selection_statement
+	| expression_statement
+	| declaration
+	| myfunction
+        ;
+
+iteration_statement
+        : WHILE '(' expression ')' statement
+        | FOR '(' expression_statement expression_statement ')' statement
+        | FOR '(' expression_statement expression_statement expression ')' statement
+        ;
+selection_statement
+        : IF '(' expression ')' body
+        | IF '(' expression ')' body ELSE statement
+	;
+
+jump_statement
+        : CONTINUE ';'
+        | BREAK ';'
+        | RETURN ';'
+        | RETURN expression ';'
+        ;
+
+
+ass_operator
+        : '='
+        | MUL_ASSIGN
+        | DIV_ASSIGN
+        | MOD_ASSIGN
+        | ADD_ASSIGN
+        | SUB_ASSIGN
+        | LEFT_ASSIGN
+        | RIGHT_ASSIGN
+        | AND_ASSIGN
+        | XOR_ASSIGN
+        | OR_ASSIGN
+        ;
+
+
+expression_statement
+        : ';'
+        | expression ';'
+        ;
+arg_list
+	: expression
+	| arg_list ',' expression
+	;
+starting
+        : IDENTIFIER
+        | CONSTANT
+        | STRING_LITERAL
+        | '(' expression ')'
+        ;
+main_exp
+	: starting
+	| IDENTIFIER '['expression']'
+	| IDENTIFIER '['expression']' '['expression']'
+	| IDENTIFIER '(' ')'
+	| IDENTIFIER '(' arg_list ')'
+	| IDENTIFIER '.' IDENTIFIER
+	| IDENTIFIER '[' expression ']' '.' IDENTIFIER
+	;
+unary_op
+	: '+'
+	| '-'
+	| '!'
+	| '~'
+	| '*'
+	| '&'
+	;
+unary_exp
+	: main_exp 
+	| unary_op unary_exp
+	| SIZEOF '(' type ')'
+	;
+mul_div_mod
+	: unary_exp
+	| mul_div_mod '*' unary_exp
+	| mul_div_mod '/' unary_exp
+	| mul_div_mod '%' unary_exp
+	;
+plus_minus
+	: mul_div_mod
+	| plus_minus '+' mul_div_mod
+	| plus_minus '-' mul_div_mod
+	;
+shift
+	: plus_minus
+	| shift LEFT_OP plus_minus
+	| shift RIGHT_OP plus_minus
+	;
+	
+lt_gt_lte_gte
+	: shift
+	| lt_gt_lte_gte '<' shift
+	| lt_gt_lte_gte '>' shift
+	| lt_gt_lte_gte LE_OP shift
+	| lt_gt_lte_gte GE_OP shift
+	;
+	
+eq_neq
+	: lt_gt_lte_gte
+	| eq_neq EQ_OP lt_gt_lte_gte
+	| eq_neq NE_OP	lt_gt_lte_gte 
+	;
+and
+	: eq_neq
+	| and '&' eq_neq
+	;
+xor 
+	: and
+	| xor '^' and
+	;
+or
+	: xor
+	| or '|' xor
+	;
+andand
+	: or
+	| andand AND_OP or
+	;
+oror
+	: andand
+	| oror OR_OP andand
+	;
+
+conditional_exp
+        : oror
+        ;
+expression
+	: conditional_exp
+	| unary_exp ass_operator expression 	
+	;
+statement_list
+	: statement
+	| statement_list statement
+	;
+
+body
+        : '{' '}'
+        | '{' statement_list '}'
+        ;
+
+function
+	: type IDENTIFIER '(' argument_list ')' body
+	| type IDENTIFIER '(' ')' body
+	| STRUCT IDENTIFIER IDENTIFIER '(' ')' body
+	| STRUCT IDENTIFIER IDENTIFIER '(' argument_list ')' body
+	| type '*' IDENTIFIER '(' argument_list ')' body
+	| type '*' IDENTIFIER '('  ')' body
+	| STRUCT IDENTIFIER '*' IDENTIFIER '(' ')' body
+	| STRUCT IDENTIFIER '*' IDENTIFIER '(' argument_list ')' body
+	;
+program
+	: declaration 
+	| function
+	| program declaration
+	| program function
+	;
+
