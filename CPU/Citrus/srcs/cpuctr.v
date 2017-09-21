@@ -129,12 +129,12 @@ module cpuctr(
 	and(ijal,   ~op[5],~op[4],~op[3],~op[2], op[1], op[0]);//op=000011
 
 //=============================================================================
-	wire irs= iadd | iaddu | isub | isubu | imfhi | imflo | iand | ior | ixor |
-	          inor | islt | isltu | isll  | isrl  | isra | isllv | isrlv | israv |
-			  jalr | ijr ;
-    wire irt= iaddi | iaddiu| iandi | iori | ixori | ilui  | ilb | ilh | ilw  |
-			  ilbu  | ilhu  | isw | isb | ish | islti| isltiu| ij | ijal | ibeq |
-			  ibne  | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
+	wire irs   = iadd  | iaddu  | isub  | isubu | imfhi | imflo | iand   | ior   | ixor  |
+	             inor  | islt   | isltu | isll  | isrl  | isra  | isllv  | isrlv | israv |
+			     jalr  | ijr ;
+    wire irt   = iaddi | iaddiu | iandi | iori  | ixori | ilui  | ilb    | ilh   | ilw   |
+			     ilbu  | ilhu   | isw   | isb   | ish   | islti | isltiu | ij | ijal | ibeq |
+			     ibne  | ibgez  | ibgtz | iblez | ibltz | ibgezal | ibltzal;
     assign nostall = ~(ewreg & em2reg & ( ern != 0 ) & (irs & ( ern == rs )|
 	                                                    irt & ( ern == rt )));
 	always @ (ewreg or mwreg or ern or mrn or em2reg or mm2reg or rs or rt) begin
@@ -143,17 +143,50 @@ module cpuctr(
             fwda = 2'b01;//exe_alu
         end else begin
             if (mwreg & (mrn != 0) & (mrn == rs) & ~mm2reg) begin
-                fwda = 2'b10;
+                fwda = 2'b10;//mem_alu
 			end else begin
         		if (mwreg & (mrn != 0) & (mrn == rs) &  mm2reg) begin
-				    fwda = 2'b11;
+				    fwda = 2'b11;//mem_lw
 				end
 			end
 		end
 		fwdb = 2'00;
-	assign wreg = iadd |  isub | iaddu | isubu | iand | ior   | ixor  | inor  |
-	              islt | isltu | isll  | isrl  | isra | isllv | isrlv | israv |
-				  jalr | iaddi | iaddiu| iandi | iori | ixori | ilui  | ilb   |
-				  ilh  | ilw   | ilbu  | ilhu  | islti| isltiu | imfhi | imflo| ijal;
-	assign 
+				if (ewreg & (ern != 0) & (ern == rt) & ~em2reg ) begin
+            fwdb = 2'b01;//exe_alu
+        end else begin
+            if (mwreg & (mrn != 0) & (mrn == rt) & ~mm2reg) begin
+                fwdb = 2'b10;//mem_alu
+			end else begin
+        		if (mwreg & (mrn != 0) & (mrn == rt) &  mm2reg) begin
+				    fwdb = 2'b11;//mem_lw
+				end
+			end
+		end
+	end
+	assign wreg    = iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | inor  |
+	                 islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
+				     jalr  | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
+				     ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
+					 ijal;
+	assign regrt   = iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
+                     ilh   | ilhu   | ilui   | islti | isltiu;
+	assign jal     = ijal  | ijalr;
+	assign m2reg   = ilb   | ilbu   | ilh | ilhu;
+	assign shift   = isll  | isrl   | isra;
+	assign aluimm  = iaddi | iaddiu | iandi | iori | ixori | ilw | ilb | ilbu | ilh |
+	                 ilhu  | ilui   | isw   | ish  | isb;
+	assign sext    = iaddi | iaddiu | ilw   | ilb  | ilh |isw | ish | isb    ibeq   |
+                     ibne  | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal | islti ; 
+	assign aluc[4] = ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
+	assign aluc[3] = ibeq  | ibne  | isub  | isubu | islt | islti | isltu | isltiu | isll | isrl | isra |
+	                 isllv | isrlv | israv;
+	assign aluc[2] = inor  | ixor  | ixori | isll | isrl | isra | isllv | isrlv | israv |
+	                 ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
+    assign aluc[1] = ixor  | ixori | iand | iandi | ior | iori | islt | islti | isltu | isltiu |
+                     isra  | israv | ibltz | iblez | ibltzal;
+    assign aluc[0] = iadd | iaddi | isub | ior | iori | islt | islti | isrl | isrlv |
+                     ibltz | ibgtz | ibltzal;
+    assign wmem    = (isw | isb | ish ) & nostall;
+    assign pcsource[1] = ij | ijr | ijal | ijalr;
+	assign pcsource[0] = ibeq & rerteqe | ibne & rerteqe | ij | ijal | ijalr;
 endmodule
