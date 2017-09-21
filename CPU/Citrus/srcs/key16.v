@@ -21,72 +21,127 @@
 
 
 module key16(
-  reset,cs,clk,ior,address,col,line,ioread_data
+    reset,cs,clk,ior,address,i_col,o_row,ioread_data,
+    key_flag
     );
-    input reset;
-    input cs;
-    input clk;
-    input ior;  //读信号
-    input[1:0] address;  //端口号
-    input[3:0] col;  //列线
-    output[3:0] line;  //行线
-    output[15:0] ioread_data;  //输出到系统总线上的数据
+  input reset;
+  input cs;
+  input clk;      // 100Mhz
+  input ior;      //读信号
+  input[1:0] address;  //端口号
+  input[3:0] i_col;  //列线
+  output[3:0] o_row;  //行线
+  output[3:0] ioread_data;  //输出到系统总线上的数据
+  output key_flag;  // 该值是否有效
     
-    reg[15:0] ioread_data;
-    reg[3:0] line;
-    reg[15:0] keyvalue =16'h0000;  //键值寄存器,初始化为0
-    reg[15:0] keystat;  //状态寄存器
-    
-    always@(negedge clk)
-    begin
-      if(reset==1)
+  reg[3:0] ioread_data;
+  reg[3:0] o_row;
+
+  reg[15:0] keyvalue =16'h0000;  //键值寄存器,初始化为0
+  reg[15:0] keystat;  //状态寄存器
+  reg key_flag;   //按键标志位
+  reg [2:0] state;  //状态标志
+
+
+  reg[3:0] col_reg;
+  reg[3:0] row_reg;
+
+  always@(posedge clk or negedge reset)
+  begin
+      if(!reset)
       begin
-        ioread_data=16'b0000000000000000;
-        keyvalue=16'h00ab;
-        keystat=16'b0000000000000000;
-        line=4'b0000;
-      end else begin
-        case(line)
-          4'b0000:if(col!=4'b1111) line<=4'b1110;
-          4'b1110:if(col!=4'b1111)begin  //扫描0行
-            keyvalue[3:0]=col;
-            keyvalue[7:4]=line;
-            keystat=keystat|16'b0000000000000001;
-            line<=4'b0000;
-          end else 
-            line<=4'b1101;  //如果0行无键，准备扫描1行
-          4'b1101:if(col!=4'b1111)begin  //扫描1行
-             keyvalue[3:0]=col;
-             keyvalue[7:4]=line;
-             keystat=keystat|16'b0000000000000001;
-             line<=4'b0000;
-           end else 
-             line<=4'b1011;  
-          4'b1011:if(col!=4'b1111)begin  //扫描2行
-                keyvalue[3:0]=col;
-                keyvalue[7:4]=line;
-                keystat=keystat|16'b0000000000000001;
-                line<=4'b0000;
+        o_row <= 4'b000;
+      end else 
+
+      begin
+
+        case(state)
+          0:
+            begin
+              o_row[3:0] <= 4'b0000;
+              key_flag <= 1'b0;
+              if(i_col[3:0] != 4'b1111) begin // 发现键盘被按下
+                state <= 1;
+                o_row[3:0] <= 4'b1110;  // 扫面第一列
               end else 
-                line<=4'b0111;  
-          4'b0111:if(col!=4'b1111)begin
-                   keyvalue[3:0]=col;
-                   keyvalue[7:4]=line;
-                   keystat=keystat|16'b0000000000000001;
-                   line<=4'b0000;
-                 end else begin
-                   line<=4'b0000;
-                   keystat=keystat&16'b1111111111111110;
-                 end
-      endcase
-      if((cs==1)&&(ior==1))begin
-        if(address==2'b00)  //读键值
-          ioread_data=keyvalue;
-        else if(address==2'b10)begin 
-          ioread_data=keystat;
-          keystat=keystat&16'b1111111111111110;
-        end
+              begin
+                state <= 0;
+              end
+            end
+          1:
+            begin
+              if(i_col != 4'b1111) begin
+                state <= 5;
+              end else begin
+                state <= 2;
+                o_row <= 4'b1101;
+              end
+            end
+          2:
+            begin
+              if(i_col != 4'b1111) begin state <= 5; end
+              else begin
+                state <= 3;
+                o_row <= 4'b1011;
+              end
+            end
+          3:
+            begin
+              if(i_col != 4'b1111) begin state <= 5; end
+              else begin
+                state <= 4;
+                o_row <= 4'b0111;
+              end
+            end
+
+          4:
+            begin
+              if(i_col != 4'b1111) begin
+                state <= 5;
+              end else begin
+                state <= 0;
+              end
+            end
+          5:
+            begin
+              if(i_col != 4'b1111) begin
+                col_reg <= i_col;
+                row_reg <= o_row;
+                state <= 5;
+                key_flag <= 1'b1;
+              end else
+                state <= 0;
+            end
+        endcase
+
       end
-    end
   end
+      
+  always @(clk or row_reg or col_reg)
+  begin
+    if(key_flag == 1'b1) begin
+      case ({col_reg, row_reg})
+            8'b1110_1110:ioread_data <= 4'hd;
+            8'b1110_1101:ioread_data <= 4'hc;
+            8'b1110_1011:ioread_data <= 4'hb;
+            8'b1110_0111:ioread_data <= 4'ha;
+
+            8'b1101_1110:ioread_data <= 4'hf;
+            8'b1101_1101:ioread_data <= 4'h9;
+            8'b1101_1011:ioread_data <= 4'h6;
+            8'b1101_0111:ioread_data <= 4'h3;
+
+            8'b1011_1110:ioread_data <= 4'h0;
+            8'b1011_1101:ioread_data <= 4'h8;
+            8'b1011_1011:ioread_data <= 4'h5;
+            8'b1011_0111:ioread_data <= 4'h2;
+
+            8'b0111_1110:ioread_data <= 4'he;
+            8'b0111_1101:ioread_data <= 4'h7;
+            8'b0111_1011:ioread_data <= 4'h4;
+            8'b0111_0111:ioread_data <= 4'h1;
+      endcase
+   end
+  end
+
 endmodule
