@@ -14,25 +14,65 @@ int search(char *instruction);
 
 // Array that holds the supported instructions
 char *instructions[] = {
-		"la",	// 0
-		"lui",	// 1
-		"lw",	// 2
-		"sw",	// 3
-		"add",	// 4
-		"sub",	// 5
-		"addi",	// 6
-		"or",	// 7
-		"and",	// 8
-		"ori",	// 9
-		"andi",	// 10
-		"slt",	// 11
-		"slti",	// 12
-		"sll",	// 13
-		"srl",	// 14
-		"beq",	// 15
-		"j",	// 16
-		"jr",	// 17
-		"jal"	// 18
+		"la",	// I0
+		"lui",	// I1
+		"lw",	// I2
+		"sw",	// I3
+		"ori",	// I4
+		"andi",	// I5
+		"addi",	// I6
+		"beq",	// I7
+		"slti", // I8
+		"xori", // I9
+		"lb",   // I10
+		"lh",   // I11
+		"lbu",  // I12
+		"lhu",  // I13
+		"sb",   // I14
+		"sh",   // I15
+		"beq",  // I16
+		"bne",  // I17
+		"sltiu", // I18
+		"bgez", // I19
+		"bgtz", // I20
+		"blez", // I21
+		"bltz", // I22
+		"bgezal",//I23
+		"bltzal",//I24
+		
+		
+		"add",	// R0
+		"sub",	// R1
+		"xor",  // R2
+		"jr",	// R3
+		"addu", // R4
+		"subu", // R5
+		"or",	// R6
+		"and",	// R7
+		"slt",	// R8
+		"sll",	// R9
+		"srl",	// R10
+		"nor",  // R11
+		"sra",  // R12
+		"sltu", // R13
+		"sllv", // R14
+		"srlv", // R15
+		"srav", // R16
+		"mult", // R17
+		"multu",// R18
+		"div",  // R19
+		"divu", // R20 
+		"mthi", // R21
+		"mtlo", // R22
+		"mfhi", // R23
+		"mflo", // R24
+		"jalr", // R25
+		"break",// R26
+		"syscall",//R27
+		"eret", // R28
+				
+		"j",	// J0
+		"jal"	// J1
 	};
 
 // Size of array
