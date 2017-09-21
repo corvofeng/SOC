@@ -104,7 +104,7 @@ module ICU(
 		input[2:0] in;
 		input gs;
 		input eo;
-		case({gs:eo:in})
+		case({gs,eo,in})
 			5'b01111:getPR_out = 8'b00000001;
 			5'b01110:getPR_out = 8'b00000010;
 			5'b01101:getPR_out = 8'b00000100;
@@ -120,12 +120,10 @@ module ICU(
 	wire PR_enable_o;
 	wire PR_gs;
 	wire PR_enable_i;
-	wire PR_temp;
+	wire[2:0]PR_temp;
 	
 	assign PR_enable = i_cs || ISR_data_out[7] || ISR_data_out[6] || ISR_data_out[5] || ISR_data_out[4] || ISR_data_out[3] || ISR_data_out[2] || ISR_data_out[1] || ISR_data_out[0],
-		PR_data_out = getPR_out(PR_temp,)
-	
-	
+		PR_data_out = getPR_out(PR_enable_o,PR_gs,PR_temp);
 	
 	PriorityEncoder8_3 PR(
 		.in_data_n(PR_data_in),
