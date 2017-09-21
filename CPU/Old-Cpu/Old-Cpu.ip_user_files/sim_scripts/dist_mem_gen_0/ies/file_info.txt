@@ -1,3 +1,0 @@
-Language File-Name              IP              Library              File-Path                                                             
-VHDL,    dist_mem_gen_v8_0.vhd, dist_mem_gen_0, dist_mem_gen_v8_0_9, ../../../ipstatic/dist_mem_gen_v8_0_9/simulation/dist_mem_gen_v8_0.vhd
-VHDL,    dist_mem_gen_0.vhd,    dist_mem_gen_0, xil_defaultlib,      ../../../ip/dist_mem_gen_0/sim/dist_mem_gen_0.vhd                     
