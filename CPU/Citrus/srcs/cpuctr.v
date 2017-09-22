@@ -150,7 +150,7 @@ module cpuctr(
 				end
 			end
 		end
-		fwdb = 2'00;
+		fwdb = 2'b00;
 				if (ewreg & (ern != 0) & (ern == rt) & ~em2reg ) begin
             fwdb = 2'b01;//exe_alu
         end else begin
@@ -175,7 +175,7 @@ module cpuctr(
 	assign shift   = isll  | isrl   | isra;
 	assign aluimm  = iaddi | iaddiu | iandi | iori | ixori | ilw | ilb | ilbu | ilh |
 	                 ilhu  | ilui   | isw   | ish  | isb;
-	assign sext    = iaddi | iaddiu | ilw   | ilb  | ilh |isw | ish | isb    ibeq   |
+	assign sext    = iaddi | iaddiu | ilw   | ilb  | ilh |isw | ish | isb  | ibeq   |
                      ibne  | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal | islti ; 
 	assign aluc[4] = ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
 	assign aluc[3] = ibeq  | ibne  | isub  | isubu | islt | islti | isltu | isltiu | isll | isrl | isra |
