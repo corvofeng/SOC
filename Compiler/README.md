@@ -1,34 +1,63 @@
+## 对各个文件的说明
+
 ```bash
-# Mini-Compiler
-
-# 一个将C subset转换成MIPS汇编语言的编译器。
-
-# 需要Lex, Yacc和SPIM emulator(测试MIPS代码)。
+.
+├── minic.l        	# minic.l : 根据“Mini C的有关规定.pdf”中的词法规则写成的Lex源程序。   
+├── test.l        	# test.l : 为了单独测试Lex部分，根据minic.l修改的Lex源程序。
+├── test.c      	# test.c : 用于测试的C程序，其中有两个test.l中未定义的符号。
+├── Makefile
+├── README.md
 ```
 
 ```bash
 # 用法
 
-$make 
-# 生成一个名为start的可执行程序。
+$ flex test.l 
+# 生成lex.yy.c。
 
-$./start < example.c 
-# 为example.c生成MIPS代码，生成的代码在mips_code.s中。
+$ cc lex.yy.c -ll
+# 使用cc命令进行编译，如果不是在Mac上，是用参数-lfl。
+
+$ ./a.out < test.c
+# 运行文件
 ```
 
-## 对各个文件的说明
-
 ```bash
-.
-├── cGrammer        # cGrammer : 本项目使用的语法。
-├── check.c     
-├── clexer.l        # clexer.l : Lex源程序，定义了合法的token。
-├── cparser.y       # cparser.y : Yacc源程序。会进行出错处理，生成抽象语法树以及输出最终的MIPS代码。
-├── CtoMIPS.c       # CtoMIPS.c : 接受抽象语法树作为输入，生成MIPS代码并输出到mips_code.s中。
-├── definition.c    # definition.c : 生成抽象语法树需要的函数。
-├── definition.h    # definition.h : 定义了抽象语法树和符号表相关的结构体。 
-├── Makefile
-├── README.md
-├── symbolTable.c   # symbolTable.c : 定义了创建符号表需要的函数。
-└── test.c          # test.c : 测试程序。
+# 测试结果
+void
+id
+(
+int
+id
+[
+num
+]
+,
+int
+id
+,
+int
+id
+)
+{
+id
+[
+id
+]
+=
+id
+Lexical error: invalid '.' at line 4
+id
+;
+id
+=
+Lexical error: invalid '!' at line 8
+id
+;
+id
+=
+hex
+;
+}
+Total count of lexical error: 2
 ```

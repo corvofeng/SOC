@@ -1,9 +1,8 @@
 all:
-	yacc -d -v cparser.y
-	lex clexer.l
-	gcc  -c -g y.tab.c lex.yy.c definition.c symbolTable.c CtoMIPS.c
-	gcc  -o start y.tab.o lex.yy.o definition.o symbolTable.o CtoMIPS.o
+	flex test.l
+	cc lex.yy.c -ll
+	./a.out < test.c
 
 clean:
-	rm -rf *.o
-	rm -rf y.tab.c lex.yy.c y.output y.tab.h
+	rm -rf a.out
+	rm -rf lex.yy.c
