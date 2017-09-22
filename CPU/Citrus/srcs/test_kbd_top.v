@@ -93,7 +93,7 @@ module test_kbd_top(
     .address(address),
     .i_col(col),
     .o_row(line),
-    .ioread_data(tmp),
+    .o_data(tmp),
     .key_flag(key_flag)
   );
 
