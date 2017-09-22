@@ -21,13 +21,13 @@
 
 
 module norgate
-#(parameter WIDTH=8)           //Ö¸¶¨Êı¾İ¿í¶È²ÎÊı£¬È±Ê¡ÖµÊÇ8
+#(parameter WIDTH=8)           //æŒ‡å®šæ•°æ®å®½åº¦å‚æ•°ï¼Œç¼ºçœå€¼æ˜¯8
    (
-    input [(WIDTH-1):0] a,     // ³ö¾ßÎ»ÊıÓÉ²ÎÊıWIDTH¾ö¶¨
+    input [(WIDTH-1):0] a,     // å‡ºå…·ä½æ•°ç”±å‚æ•°WIDTHå†³å®š
     input [(WIDTH-1):0] b,
     output [(WIDTH-1):0] c
     );
 
-    assign c = ~(a | b);       //  2ÊäÈë»ò·ÇÃÅ
+    assign c = ~(a | b);       //  2è¾“å…¥æˆ–éé—¨
 
 endmodule
