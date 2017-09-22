@@ -16,22 +16,19 @@ $./start < example.c
 # 为example.c生成MIPS代码，生成的代码在mips_code.s中。
 ```
 
+## 对各个文件的说明
+
 ```bash
-# 对各个文件的说明
-
-# cGrammer : 本项目使用的语法。
-
-# clexer.l : Lex源程序，定义了合法的token。
-
-# cparser.y : Yacc源程序。会进行出错处理，生成抽象语法树以及输出最终的MIPS代码。
-
-# CtoMIPS.c : 接受抽象语法树作为输入，生成MIPS代码并输出到mips_code.s中。
-
-# symbolTable.c : 定义了创建符号表需要的函数。
-
-# definition.c : 生成抽象语法树需要的函数。
-
-# definition.h : 定义了抽象语法树和符号表相关的结构体。 
-
-# test.c : 测试程序。
+.
+├── cGrammer        # cGrammer : 本项目使用的语法。
+├── check.c     
+├── clexer.l        # clexer.l : Lex源程序，定义了合法的token。
+├── cparser.y       # cparser.y : Yacc源程序。会进行出错处理，生成抽象语法树以及输出最终的MIPS代码。
+├── CtoMIPS.c       # CtoMIPS.c : 接受抽象语法树作为输入，生成MIPS代码并输出到mips_code.s中。
+├── definition.c    # definition.c : 生成抽象语法树需要的函数。
+├── definition.h    # definition.h : 定义了抽象语法树和符号表相关的结构体。 
+├── Makefile
+├── README.md
+├── symbolTable.c   # symbolTable.c : 定义了创建符号表需要的函数。
+└── test.c          # test.c : 测试程序。
 ```
