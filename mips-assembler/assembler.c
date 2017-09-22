@@ -133,8 +133,8 @@ int main (int argc, char *argv[]) {
 		hash_table_t *hash_table = create_hash_table(127);
 
 		int passNumber = 1;
-		temporary_parse(In, passNumber, instructions, inst_len, hash_table, Out);
-		exit(-1);
+//		temporary_parse(In, passNumber, instructions, inst_len, hash_table, Out);
+//		exit(-1);
 		// Parse in passes
 		parse_file(In, passNumber, instructions, inst_len, hash_table, Out);
 

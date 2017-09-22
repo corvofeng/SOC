@@ -935,7 +935,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             inst_count = (uint32_t *)malloc(sizeof(uint32_t));
                             *inst_count = instruction_count;
                             int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
-
+ 
                             if (insert == 0) {
                                 fprintf(Out, "Error in hash table insertion\n");
                                 exit(1);
@@ -989,8 +989,8 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                     int instruction_supported = search(token);
                     char inst_type;
 
-                    printf("This should not appear %d\n", data_reached);
-                    exit(-1);
+                    printf("This should not appear %d\n", instruction_supported);
+                   // exit(-1);
                     // If instruction is supported
                     if (instruction_supported != -1) {
 
@@ -1001,7 +1001,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                         inst_type = instruction_type(token);
 
                         if (inst_type == 'r') {
-
+							printf("type r detected\n", data_reached);
                             // R-Type with $rd, $rs, $rt format
                             if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
                                     || strcmp(token, "and") == 0
@@ -1012,10 +1012,10 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 									|| strcmp(token, "srlv") == 0|| strcmp(token, "srav") == 0) {
 
                                 // Parse the instructio - get rd, rs, rt registers
-                                char *inst_ptr = tok_ptr;
+								char *inst_ptr = tok_ptr;
                                 char *reg = NULL;
 
-                                // Create an array of char* that stores rd, rs, rt respectively
+                                // Create an array of char* that stores rt, rs
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
@@ -1031,8 +1031,6 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     }
                                 }
 
-                                printf("%s\n", token);
-                                exit(1);
                                 // Keeps a reference to which register has been parsed for storage
                                 int count = 0;
                                 while (1) {
@@ -1048,9 +1046,9 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     free(reg);
                                 }
 
-                                // Send reg_store for output
-                                // rd is in position 0, rs is in position 1 and rt is in position 2
-                                rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
+                                // rt in position 0, rs in position 1 and immediate in position 2
+                            
+                                  rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -1770,14 +1768,17 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
     // Set the instruction bits
     char *opcode = "000000";
 
+
     char *rdBin = "00000";
     if (strcmp(rd, "00000") != 0)
         rdBin = register_address(rd);
 
     char *rsBin = "00000";
-    if (strcmp(rs, "00000") != 0)
+    if (strcmp(rs, "00000") != 0 && strcmp(rs, "10000") != 0 )
         rsBin = register_address(rs);
-
+	if (strcmp(rs, "10000") == 0)
+		rsBin = "10000";
+	
     char *rtBin = "00000";
     if (strcmp(rt, "00000") != 0)
         rtBin = register_address(rt);
@@ -1794,6 +1795,8 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
             func = rMap[i].function;
         }
     }
+        if (strcmp(func, "011000") == 0)
+        opcode = "010000";
 
     // Print out the instruction to the file
     fprintf(Out, "%s%s%s%s%s%s\n", opcode, rsBin, rtBin, rdBin, shamtBin, func);
@@ -1802,7 +1805,7 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
 // Write out the I-Type instruction
 void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, FILE *Out) {
 
-    // Set the instruction bits
+    // Set the instruction bit
     char *rsBin = "00000";
     if (strcmp(rs, "00000") != 0)
         rsBin = register_address(rs);
