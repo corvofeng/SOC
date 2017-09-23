@@ -25,7 +25,7 @@ module seg(
     sel_n,
     seg_n,
     clk,  //系统时钟100mhz
-    rst  //复位
+    rst  //复位,低电平有效
     );
     input clk;
     input rst;
