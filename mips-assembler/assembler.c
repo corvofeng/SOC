@@ -31,7 +31,7 @@ char *instructions[] = {
     "lhu",  // I13
     "sb",   // I14
     "sh",   // I15
-    "beq",  // I16
+    "addiu",  // I16
     "bne",  // I17
     "sltiu", // I18
     "bgez", // I19
@@ -71,6 +71,7 @@ char *instructions[] = {
     "break",// R26
     "syscall",//R27
     "eret", // R28
+    "" 
 
     "j",	// J0
     "jal"	// J1
