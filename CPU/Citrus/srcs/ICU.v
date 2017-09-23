@@ -29,19 +29,7 @@ module ICU(
 	i_inta,
 	i_clk,
 	o_intr,
-	o_vector,
-	
-	ISR_data_in,ISR_data_out,
-	IRR_data_in,IRR_data_out,
-	IMR_data_in,IMR_data_out,
-	status_data_in,status_data_out,
-	PR_data_in,PR_data_out,
-	status_we,status_reset,
-	IMR_we,IMR_reset,
-	ISR_we,ISR_reset,
-	IRR_we,IRR_reset,
-	
-	PR_enable_o,PR_gs,PR_enable_i,PR_temp
+	o_vector
     );
 	input[7:0] i_interrupt;
 	input[1:0] i_addr;
@@ -70,11 +58,11 @@ module ICU(
     endfunction
 	
 	//各寄存器输入输出
-	output wire[7:0] ISR_data_in,ISR_data_out;
-	output wire[7:0] IRR_data_in,IRR_data_out;
-	output wire[7:0] IMR_data_in,IMR_data_out;
-	output wire[7:0] status_data_in,status_data_out;
-	output wire[7:0] PR_data_in,PR_data_out;
+	wire[7:0] ISR_data_in,ISR_data_out;
+	wire[7:0] IRR_data_in,IRR_data_out;
+	wire[7:0] IMR_data_in,IMR_data_out;
+	wire[7:0] status_data_in,status_data_out;
+	wire[7:0] PR_data_in,PR_data_out;
 	
 	assign IRR_data_in = i_interrupt,
 		PR_data_in = IMR_data_out | ~IRR_data_out,
@@ -83,14 +71,14 @@ module ICU(
 		status_data_in = i_data;
 		
 	//ICU_ctrl控制逻辑
-	output wire status_we;
-	output wire status_reset;
-	output wire IMR_we;
-	output wire IMR_reset;
-	output wire ISR_we;
-	output wire ISR_reset;
-	output wire IRR_we;
-	output wire IRR_reset;
+	wire status_we;
+	wire status_reset;
+	wire IMR_we;
+	wire IMR_reset;
+	wire ISR_we;
+	wire ISR_reset;
+	wire IRR_we;
+	wire IRR_reset;
 	
 	assign status_we = i_we && i_addr[1] && ~i_addr[0] && i_cs,
 		status_reset = ~i_addr[1] && ~i_addr[0] && i_cs,
@@ -100,7 +88,7 @@ module ICU(
 		ISR_reset = ~i_addr[1] && ~i_addr[0] && i_cs || ~i_addr[1] && i_addr[0] && i_inta && i_cs,
 		IRR_we = ~i_cs && ~ISR_data_out[7]&&~ISR_data_out[6]&&~ISR_data_out[5]&&~ISR_data_out[4]&&~ISR_data_out[3]&&~ISR_data_out[2]&&~ISR_data_out[1]&&~ISR_data_out[0],
 		IRR_reset = ~i_addr[1] && ~i_addr[0] && i_cs || ~i_addr[1] && i_addr[0] && i_inta && i_cs,
-		o_intr = ~i_cs && (ISR_data_out[7]||ISR_data_out[6]||ISR_data_out[5]||ISR_data_out[4]||ISR_data_out[3]||ISR_data_out[2]||ISR_data_out[1]||ISR_data_out[0]),
+		o_intr = ISR_data_out[7]||ISR_data_out[6]||ISR_data_out[5]||ISR_data_out[4]||ISR_data_out[3]||ISR_data_out[2]||ISR_data_out[1]||ISR_data_out[0],
 		o_vector = getVector(ISR_data_out,status_data_out);
 		
 	function[7:0] getPR_out;
@@ -120,10 +108,10 @@ module ICU(
 		endcase
 	endfunction	
 	
-	output wire PR_enable_o;
-	output wire PR_gs;
-	output wire PR_enable_i;
-	output wire[2:0]PR_temp;
+	wire PR_enable_o;
+	wire PR_gs;
+	wire PR_enable_i;
+	wire[2:0]PR_temp;
 	
 	assign PR_enable_i = i_cs || ISR_data_out[7] || ISR_data_out[6] || ISR_data_out[5] || ISR_data_out[4] || ISR_data_out[3] || ISR_data_out[2] || ISR_data_out[1] || ISR_data_out[0],
 		PR_data_out = getPR_out(PR_gs,PR_enable_o,PR_temp);
