@@ -31,8 +31,8 @@ module pipeir(
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
-		    dpc4 <= 32h'00;
-			inst <= 32h'00;
+		    dpc4 <= 32'h0000_0000;
+			inst <= 32'h0000_0000;
 		end else begin
 		    if ( wir !=0 ) begin
 			    dpc4 <= pc4;

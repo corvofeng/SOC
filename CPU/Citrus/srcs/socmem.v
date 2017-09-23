@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2017/09/22 13:38:43
+// Create Date: 2016/07/06 16:08:58
 // Design Name: 
-// Module Name: pipepc
+// Module Name: socmem  memÄ£¿é
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,21 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module pipepc(
-    input reg [31:0] npc,
-	input wpc,
-	input clk,
-	input clrn,
-	output reg [31:0] pc
-    );
-	always @ ( posedge clk ) begin
-	    if ( clrn != 0 ) begin
-		    pc <= 32'h0000_0000;
-		end else begin
-		    if ( wpc !=0 ) begin
-			    pc <= npc;
-			end
-		end
-	end
+module socmem (
+    input mwmem,
+	input reg [31:0] malu,
+	input reg [31:0] mb,
+	output reg [31:0] mmo
+);
 		
+	
 endmodule

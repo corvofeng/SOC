@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2017/09/22 13:38:43
+// Create Date: 2016/07/06 16:08:58
 // Design Name: 
-// Module Name: pipepc
+// Module Name: socwb 写回模块
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,21 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module pipepc(
-    input reg [31:0] npc,
-	input wpc,
-	input clk,
-	input clrn,
-	output reg [31:0] pc
-    );
-	always @ ( posedge clk ) begin
-	    if ( clrn != 0 ) begin
-		    pc <= 32'h0000_0000;
-		end else begin
-		    if ( wpc !=0 ) begin
-			    pc <= npc;
-			end
-		end
-	end
-		
+module socwb (
+    input [31:0] wmo,//wmo
+	input [31:0] walu,//walu
+	input wm2reg,//pc来源
+	output reg [31:0] wdi//wdi
+ 
+);
+    always @ (wm2reg  or  walu  or  wmo) begin
+        case(wm2reg)
+            0:wdi <= walu;
+            1:wdi <= wmo;
+            default:wdi <= 32'h0000_0000;
+        endcase
+	end		
+
 endmodule

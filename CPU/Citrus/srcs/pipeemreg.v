@@ -34,17 +34,17 @@ module pipeemreg(
 	output reg [4:0] mrn,
 	output reg mwerg,
 	output reg mm2reg,
-	output reg mwmem,
-
+	output reg mwmem
     );
+    
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
-		    malu   <= 32h'00;
-	        mb     <= 32h'00;
-	        mrn    <= 5b'00000;
-	        mwerg  <= 0;
-	        mm2reg <= 0;
-	        mwmem  <= 0;
+		    malu   <= 32'h0000_0000;
+	        mb     <= 32'h0000_0000;
+	        mrn    <= 5'h00;
+	        mwerg  <= 1'b0;
+	        mm2reg <= 1'b0;
+	        mwmem  <= 1'b0;
 		end else begin
 		    malu   <= ealu;
 	        mb     <= eb;

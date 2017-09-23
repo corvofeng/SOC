@@ -48,7 +48,7 @@ module cpuctr(
     );
 	wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
 	     imthi, imflo, imtlo, imfc0, imtc0, iand, ior, ixor, inor, islt, isltu,
-         isll, isrl, isra, isllv, isrlv, israv, ijr, ijlr, isyscall, ibreak,
+         isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr, isyscall, ibreak,
 		 ieret, iaddi, iaddiu, iandi, iori, ixori, ilui, ilb, ilh, ilw, ilbu,
 		 ilhu, isb, ish, isw, ibeq, ibne, ibltz, ibgez, iblez, ibgtz, ibltzal,
 		 ibgezal, islti, isltiu, ij, ijal;
@@ -165,7 +165,7 @@ module cpuctr(
 	end
 	assign wreg    = iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | inor  |
 	                 islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
-				     jalr  | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
+				     ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
 				     ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
 					 ijal;
 	assign regrt   = iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |

@@ -32,16 +32,16 @@ module pipemwreg(
 	output reg [31:0] wmo,
 	output reg [4:0] wrn,
 	output reg wwerg,
-	output reg wm2reg,
+	output reg wm2reg
 
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
-		    walu   <= 32h'00;
-	        wmo    <= 32h'00;
-	        wrn    <= 5b'00000;
-	        wwerg  <= 0;
-	        wm2reg <= 0;
+		    walu   <= 32'h0000_0000;
+	        wmo    <= 32'h0000_0000;
+	        wrn    <= 5'b00000;
+	        wwerg  <= 1'b0;
+	        wm2reg <= 1'b0;
 		end else begin
 		    walu   <= malu;
 	        wmo    <= mmo;

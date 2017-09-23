@@ -50,18 +50,18 @@ module pipedereg(
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
-		    epc4    <= 32h'00;
-	        ea      <= 32h'00;
-	        eb      <= 32h'00;
-	        eimm    <= 32h'00;
-	        ern0    <= 5b'00000;
-	        ewerg   <= 0;
-	        em2reg  <= 0;
-	        ewmem   <= 0;
-	        ejal    <= 0;
-            ealuimm <= 0;
-	        eshift  <= 0;
-	        ealuc   <= 4b'0000;
+		    epc4    <= 32'h0000_0000;
+	        ea      <= 32'h0000_0000;
+	        eb      <= 32'h0000_0000;
+	        eimm    <= 32'h0000_0000;
+	        ern0    <= 5'h00;
+	        ewerg   <= 1'b0;
+	        em2reg  <= 1'b0;
+	        ewmem   <= 1'b0;
+	        ejal    <= 1'b0;
+            ealuimm <= 1'b0;
+	        eshift  <= 1'b0;
+	        ealuc   <= 4'h0;
 		end else begin
 		    epc4    <= dpc4;
 	        ea      <= da;
