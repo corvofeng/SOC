@@ -88,7 +88,7 @@ module ICU(
 		ISR_reset = ~i_addr[1] && ~i_addr[0] && i_cs || ~i_addr[1] && i_addr[0] && i_inta && i_cs,
 		IRR_we = ~i_cs && ~ISR_data_out[7]&&~ISR_data_out[6]&&~ISR_data_out[5]&&~ISR_data_out[4]&&~ISR_data_out[3]&&~ISR_data_out[2]&&~ISR_data_out[1]&&~ISR_data_out[0],
 		IRR_reset = ~i_addr[1] && ~i_addr[0] && i_cs || ~i_addr[1] && i_addr[0] && i_inta && i_cs,
-		o_intr = ISR_data_out[7]||ISR_data_out[6]||ISR_data_out[5]||ISR_data_out[4]||ISR_data_out[3]||ISR_data_out[2]||ISR_data_out[1]||ISR_data_out[0],
+		o_intr = ~i_addr[1] && i_addr[0] && (ISR_data_out[7]||ISR_data_out[6]||ISR_data_out[5]||ISR_data_out[4]||ISR_data_out[3]||ISR_data_out[2]||ISR_data_out[1]||ISR_data_out[0]),
 		o_vector = getVector(ISR_data_out,status_data_out);
 		
 	function[7:0] getPR_out;
