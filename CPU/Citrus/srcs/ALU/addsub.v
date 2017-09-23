@@ -21,21 +21,21 @@
 
 
 module addsub
-#(parameter WIDTH=8)            //Ö¸¶¨Êı¾İ¿í¶È²ÎÊı£¬È±Ê¡ÖµÊÇ8
-(
-    input [(WIDTH-1):0] a,      // È±Ê¡Î»ÊıÓÉ²ÎÊıWIDTH¾ö¶¨
+#(parameter WIDTH=8)            //æŒ‡å®šæ•°æ®å®½åº¦å‚æ•°ï¼Œç¼ºçœå€¼æ˜¯8
+    (
+    input [(WIDTH-1):0] a,      // ç¼ºçœä½æ•°ç”±å‚æ•°WIDTHå†³å®š
     input [(WIDTH-1):0] b,
-    input  sub,                // =1Îª¼õ·¨
+    input  sub,                // =1ä¸ºå‡æ³•
     output [(WIDTH-1):0] sum,
-    output cf,                  // ½øÎ»±êÖ¾
-    output of,                  // Òç³ö±êÖ¾
-    output sf,                  // ·ûºÅ±êÖ¾
-    output zf                   // Îª0±êÖ¾
+    output cf,                  // è¿›ä½æ ‡å¿—
+    output of,                  // æº¢å‡ºæ ‡å¿—
+    output sf,                  // ç¬¦å·æ ‡å¿—
+    output zf                   // ä¸º0æ ‡å¿—
     );
     wire [(WIDTH-1):0] subb,subb1;
-    wire cf2;    // ½øÎ»
-    assign subb1 = b ^ {WIDTH{sub}};  // ¶ÔÓÚ¼õ·¨ÊÇÈ¡·´
-    assign subb  =  subb1 + sub;      // ¶ÔÓÚ¼õ·¨ÊÇ¼Ó1
+    wire cf2;    // è¿›ä½
+    assign subb1 = b ^ {WIDTH{sub}};  // å¯¹äºå‡æ³•æ˜¯å–å
+    assign subb  =  subb1 + sub;      // å¯¹äºå‡æ³•æ˜¯åŠ 1
     assign {cf2,sum} = a + subb;
     assign sf = sum[WIDTH-1];
     assign zf = (sum == 0) ? 1 : 0 ;

@@ -21,7 +21,7 @@
 
 
 module mux2to1
-#(parameter WIDTH=8)           //指定数据宽度参数，缺省值是
+#(parameter WIDTH=8)           //鎸囧畾鏁版嵁瀹藉害鍙傛暟锛岀己鐪佸�兼槸
 (
     input [(WIDTH-1):0] a0,
     input [(WIDTH-1):0] a1,

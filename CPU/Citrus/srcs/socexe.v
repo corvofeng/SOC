@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2016/01/29 22:59:30
+// Create Date: 2016/07/06 16:08:58
 // Design Name: 
-// Module Name: notgate
+// Module Name: socexe  exeģ��
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,13 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module notgate
-#(parameter WIDTH=8)           //指定数据宽度参数，缺省值是8
-   (
-    input [(WIDTH-1):0] a,     // 出具位数由参数WIDTH决定
-    output [(WIDTH-1):0] c
-    );
-
-    assign c = ~a;           //  1输入非门
+module socexe (
+    input reg [31:0] epc4,
+	input reg [31:0] ea,
+	input reg [31:0] eb,
+	input reg [31:0] eimm,
+	input reg [4:0] ern0,
+	input reg ealuimm,
+	input reg eshift,
+	input reg [3:0] ealuc,
+	output reg [31:0] ealu,
+	output reg [31:0] eb,
+	output reg [4:0] ern,
+);
+		
 
 endmodule

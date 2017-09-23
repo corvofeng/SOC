@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2016/01/29 22:59:30
+// Create Date: 2016/07/06 16:08:58
 // Design Name: 
-// Module Name: notgate
+// Module Name: socpc  pcģ��
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,13 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module notgate
-#(parameter WIDTH=8)           //指定数据宽度参数，缺省值是8
-   (
-    input [(WIDTH-1):0] a,     // 出具位数由参数WIDTH决定
-    output [(WIDTH-1):0] c
-    );
-
-    assign c = ~a;           //  1输入非门
+module socpc (
+    input reg [31:0] pc,//pc
+	//input reg [31:0]  ,//npc0
+	input reg [31:0] bpc,//npc1
+	input reg [31:0] dpc,//npc2
+	input reg [31:0] jpc,//npc3
+	input reg [1:0] pcsource,//pc��Դ
+	output reg [31:0] pc4,//pc+4
+	output reg [31:0] ins,//ins
+);
+		
 
 endmodule

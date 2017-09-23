@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2016/01/29 22:59:30
+// Create Date: 2017/09/22 13:38:43
 // Design Name: 
-// Module Name: notgate
+// Module Name: pipeir
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,13 +20,25 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module notgate
-#(parameter WIDTH=8)           //指定数据宽度参数，缺省值是8
-   (
-    input [(WIDTH-1):0] a,     // 出具位数由参数WIDTH决定
-    output [(WIDTH-1):0] c
+module pipeir(
+    input reg [31:0] pc4,
+	input reg [31:0] ins,
+	input wir,
+	input clk,
+	input clrn,
+	output reg [31:0] dpc4,
+	output reg [31:0] inst
     );
-
-    assign c = ~a;           //  1输入非门
-
+	always @ ( posedge clk ) begin
+	    if ( clrn != 0 ) begin
+		    dpc4 <= 32h'00;
+			inst <= 32h'00;
+		end else begin
+		    if ( wir !=0 ) begin
+			    dpc4 <= pc4;
+				inst <= ins;
+			end
+		end
+	end
+		
 endmodule
