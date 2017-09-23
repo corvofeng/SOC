@@ -17,15 +17,15 @@ struct {
     const char *name;
     char *address;
 } registerMap[] = {
-    { "zero", "00000" },
-    { "at", "00001" },
-    { "v0", "00010" },
+    { "zero", "00000" },  //常量0
+    { "at", "00001" },	//保留给汇编器
+    { "v0", "00010" },  //$v0-$v1函数调用返回值
     { "v1", "00011" },
-    { "a0", "00100" },
+    { "a0", "00100" },	//$a0-$a3函数调用参数
     { "a1", "00101" },
     { "a2", "00110" },
     { "a3", "00111" },
-    { "t0", "01000" },
+    { "t0", "01000" },	//$t0-$t9暂时寄存器
     { "t1", "01001" },
     { "t2", "01010" },
     { "t3", "01011" },
@@ -33,7 +33,7 @@ struct {
     { "t5", "01101" },
     { "t6", "01110" },
     { "t7", "01111" },
-    { "s0", "10000" },
+    { "s0", "10000" },	//$s0-$s7保存寄存器
     { "s1", "10001" },
     { "s2", "10010" },
     { "s3", "10011" },
@@ -43,10 +43,10 @@ struct {
     { "s7", "10111" },
     { "t8", "11000" },
     { "t9", "11001" },
-    { "gp", "11100" },
-    { "sp", "11101" },
-    { "fp", "11110" },
-    { "ra", "11111" },
+    { "gp", "11100" },	//全局指针
+    { "sp", "11101" },	//堆栈指针
+    { "fp", "11110" },	//帧指针
+    { "ra", "11111" },	//返回地址
     { NULL, 0 }
 };
 
@@ -130,658 +130,6 @@ struct {
     { "jal", "000011" },
     { NULL, 0 }
 };
-
-void temporary_parse(FILE *fptr, int pass, char* instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out)
-{
-
-    char line[MAX_LINE_LENGTH + 1];
-    char *tok_ptr, *ret, *token = NULL;
-    int32_t line_num = 1;
-    int32_t instruction_count = 0x00000000;
-    int data_reached = 0;
-
-    while (1) {
-        if ((ret = fgets(line, MAX_LINE_LENGTH, fptr)) == NULL)
-            break;
-        line[MAX_LINE_LENGTH] = 0;
-
-        tok_ptr = line;
-        if (strlen(line) == MAX_LINE_LENGTH) {
-            fprintf(Out,
-                    "line %d: line is too long. ignoring line ...\n", line_num);
-            line_num++;
-            continue;
-        }
-
-        token = parse_token(tok_ptr, " \n\t$,", &tok_ptr, NULL);
-        int instruction_supported = search(token);
-        char inst_type;
-
-        /* blank line or comment begins here. go to the next line */
-        if (token == NULL || *token == '#') {
-            line_num++;
-            free(token);
-            break;
-        }
-
-        if (instruction_supported != -1) {
-
-            // token contains the instruction
-            // tok_ptr points to the rest of the line
-
-            // Determine instruction type
-            inst_type = instruction_type(token);
-
-            printf("The inst type is %c\n", inst_type);
-            if (inst_type == 'r') {
-
-                // R-Type with $rd, $rs, $rt format
-                if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
-                        || strcmp(token, "and") == 0
-                        || strcmp(token, "or") == 0 || strcmp(token, "slt") == 0
-                        || strcmp(token, "xor") == 0|| strcmp(token, "addu") == 0
-                        || strcmp(token, "subu") == 0|| strcmp(token, "nor") == 0
-                        || strcmp(token, "sltu") == 0|| strcmp(token, "sllv") == 0
-                        || strcmp(token, "srlv") == 0|| strcmp(token, "srav") == 0) {
-
-                    // Parse the instructio - get rd, rs, rt registers
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rd, rs, rt respectively
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // Send reg_store for output
-                    // rd is in position 0, rs is in position 1 and rt is in position 2
-                    rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-
-                // R-Type with $rd, $rs, shamt format
-                else if (strcmp(token, "sll") == 0 || strcmp(token, "srl") == 0
-                         || strcmp(token, "sra") == 0) {
-
-                    // Parse the instructio - get rd, rs, rt registers
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rd, rs and shamt
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // Send reg_store for output
-                    // rd is in position 0, rs is in position 1 and shamt is in position 2
-                    rtype_instruction(token, "00000", reg_store[1], reg_store[0], atoi(reg_store[2]), Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                } else if (strcmp(token, "mult") == 0|| strcmp(token, "multu") == 0
-                           || strcmp(token, "div") == 0 || strcmp(token, "divu") == 0) {
-
-                    // Parse the insturction,  rt - immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rs, rt
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // Send reg_store for output
-                    // rd is in position 0, rs is in position 1 and shamt is in position 2
-                    rtype_instruction(token, reg_store[0], reg_store[1], "00000", 0, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                } else if (strcmp(token, "jalr") == 0) {
-
-                    // Parse the insturction,  rt - immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rs, rt
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // Send reg_store for output
-                    // rd is in position 0, rs is in position 1 and shamt is in position 2
-                    rtype_instruction(token, reg_store[1], "00000", reg_store[0], 0, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                } else if (strcmp(token, "jr") == 0 || strcmp(token, "mthi") == 0
-                           || strcmp(token, "mtlo") == 0) {
-
-                    // Parse the instruction - rs is in tok_ptr
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                    rtype_instruction(token, reg, "00000", "00000", 0, Out);
-                }
-
-                else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
-
-                    // Parse the instruction - rs is in tok_ptr
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                    rtype_instruction(token, "00000", "00000", reg, 0, Out);
-                } else if (strcmp(token, "eret") == 0) {
-
-                    rtype_instruction(token, "10000", "00000", "00000", 0, Out);
-                }
-
-            }
-
-            // I-Type
-            else if (inst_type == 'i') {
-
-                // la is pseudo instruction for lui and ori
-                // Convert to lui and ori and pass those instructions
-                if (strcmp(token, "la") == 0) {
-
-                    // Parse the instruction - get register & immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rd, rs and shamt
-                    char **reg_store;
-                    reg_store = malloc(2 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 2; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // Interpret la instruction.
-                    // The register is at reg_store[0] and the variable is at reg_store[1]
-
-                    // Find address of label in hash table
-                    int *address = hash_find(hash_table, reg_store[1], strlen(reg_store[1])+1);
-
-                    // Convert address to binary in char*
-                    char addressBinary[33];
-                    getBin(*address, addressBinary, 32);
-
-                    // Get upper and lower bits of address
-                    char upperBits[16];
-                    char lowerBits[16];
-
-                    for (int i = 0; i < 32; i++) {
-                        if (i < 16)
-                            lowerBits[i] = addressBinary[i];
-                        else
-                            upperBits[i-16] = addressBinary[i];
-                    }
-
-                    // Call the lui instruction with: lui $reg, upperBits
-                    // Convert upperBits binary to int
-                    int immediate = getDec(upperBits);
-                    itype_instruction("lui", "00000", reg_store[0], immediate, Out);
-                    //   itype_instruction("bgez", "00000", reg_store[0], immediate, Out);
-
-                    // Call the ori instruction with: ori $reg, $reg, lowerBits
-                    // Convert lowerBits binary to int
-                    immediate = getDec(lowerBits);
-                    itype_instruction("ori", reg_store[0], reg_store[0], immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 2; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-
-                // I-Type $rt, i($rs)
-                else if (strcmp(token, "lw") == 0 || strcmp(token, "sw") == 0
-                         || strcmp(token, "lb") == 0 || strcmp(token, "lbu") == 0
-                         || strcmp(token, "lh") == 0 || strcmp(token, "lhu") == 0
-                         || strcmp(token, "sb") == 0 || strcmp(token, "sh") == 0) {
-
-                    // Parse the instructio - rt, immediate and rs
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-                    //
-                    // Create an array of char* that stores rd, rs, rt respectively
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t()", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // rt in position 0, immediate in position 1 and rs in position2
-                    int immediate = atoi(reg_store[1]);
-                    itype_instruction(token, reg_store[2], reg_store[0], immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-
-                // I-Type rt, rs, im
-                else if (strcmp(token, "andi") == 0 || strcmp( token, "ori") == 0
-                         || strcmp(token, "slti") == 0 || strcmp(token, "addi") == 0
-                         || strcmp(token, "xori") == 0 || strcmp(token, "sltiu") == 0 ) {
-
-                    // Parse the instruction - rt, rs, immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rt, rs
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-                    // rt in position 0, rs in position 1 and immediate in position 2
-                    int immediate = atoi(reg_store[2]);
-                    itype_instruction(token, reg_store[1], reg_store[0], immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-
-                // I-Type $rt, immediate
-                else if (strcmp(token, "lui") == 0) {
-
-                    // Parse the insturction,  rt - immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rs, rt
-                    char **reg_store;
-                    reg_store = malloc(2 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 2; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-
-
-                    // rt in position 0, immediate in position 1
-                    int immediate = atoi(reg_store[1]);
-                    itype_instruction(token, "00000", reg_store[0], immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                } else if (strcmp(token, "bgez") == 0) {
-
-                    // Parse the insturction,  rt - immediate
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rs, rt
-                    char **reg_store;
-                    reg_store = malloc(3 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 3; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-                    }
-                    // Find hash address for a register and put in an immediate
-//                                int *address = hash_find(hash_table, reg, strlen(reg)+1);
-//
-//                                int immediate1 = *address + instruction_count;
-
-                    // rt in position 0, immediate in position 1
-                    int immediate = atoi(reg_store[1]);
-                    itype_instruction(token, reg_store[0],"00001", immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 3; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-
-                // I-Type $rs, $rt, label
-                else if (strcmp(token, "beq") == 0||strcmp(token, "bne") == 0) {
-
-                    // Parse the instruction - rs, rt
-                    char *inst_ptr = tok_ptr;
-                    char *reg = NULL;
-
-                    // Create an array of char* that stores rs, rt
-                    char **reg_store;
-                    reg_store = malloc(2 * sizeof(char*));
-                    if (reg_store == NULL) {
-                        fprintf(Out, "Out of memory\n");
-                        exit(1);
-                    }
-
-                    for (int i = 0; i < 2; i++) {
-                        reg_store[i] = malloc(2 * sizeof(char));
-                        if (reg_store[i] == NULL) {
-                            fprintf(Out, "Out of memory\n");
-                            exit(1);
-                        }
-                    }
-
-                    // Keeps a reference to which register has been parsed for storage
-                    int count = 0;
-                    while (1) {
-
-                        reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                        if (reg == NULL || *reg == '#') {
-                            break;
-                        }
-
-                        strcpy(reg_store[count], reg);
-                        count++;
-                        free(reg);
-
-                        if (count == 2)
-                            break;
-                    }
-
-                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                    // Find hash address for a register and put in an immediate
-                    int *address = hash_find(hash_table, reg, strlen(reg)+1);
-
-                    int immediate = *address + instruction_count;
-
-                    // Send instruction to itype function
-                    itype_instruction(token, reg_store[0], reg_store[1], immediate, Out);
-
-                    // Dealloc reg_store
-                    for (int i = 0; i < 2; i++) {
-                        free(reg_store[i]);
-                    }
-                    free(reg_store);
-                }
-            }
-
-            // J-Type
-            else if (inst_type == 'j') {
-
-                // Parse the instruction - get label
-                char *inst_ptr = tok_ptr;
-
-                // If comment, extract the label alone
-                char *comment = strchr(inst_ptr, '#');
-                if (comment != NULL) {
-                    int str_len_count = 0;
-                    for (int i = 0; i < strlen(inst_ptr); i++) {
-                        if (inst_ptr[i] != ' ')
-                            str_len_count++;
-                        else
-                            break;
-                    }
-
-                    char new_label[str_len_count+1];
-                    for (int i = 0; i < str_len_count; i++)
-                        new_label[i] = inst_ptr[i];
-                    new_label[str_len_count] = '\0';
-
-                    strcpy(inst_ptr, new_label);
-                }
-
-                else {
-                    printf("NO COMMENT\n");
-                    inst_ptr[strlen(inst_ptr)-1] = '\0';
-                }
-
-                // Find hash address for a label and put in an immediate
-                int *address = hash_find(hash_table, inst_ptr, strlen(inst_ptr)+1);
-
-                // Send to jtype function
-                jtype_instruction(token, *address, Out);
-            }
-
-        } else {
-
-            printf("Current instruction is not supported\n");
-        }
-
-    }
-}
 
 void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out)
 {
@@ -991,7 +339,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                     int instruction_supported = search(token);
                     char inst_type;
 
-                    printf("This should not appear %d\n", instruction_supported);
+                    printf("This should not appear %d\n", instruction_count);
                     // exit(-1);
                     // If instruction is supported
                     if (instruction_supported != -1) {
@@ -1005,6 +353,53 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                         if (inst_type == 'r') {
                             printf("type r detected\n", data_reached);
                             // R-Type with $rd, $rs, $rt format
+                            if (strcmp(token, "MOV") == 0) {
+
+                                // Parse the instructio - get rd, rs, rt registers
+                                char *inst_ptr = tok_ptr;
+                                char *reg = NULL;
+
+                                // Create an array of char* that stores rt, rs
+                                char **reg_store;
+                                reg_store = malloc(3 * sizeof(char*));
+                                if (reg_store == NULL) {
+                                    fprintf(Out, "Out of memory\n");
+                                    exit(1);
+                                }
+
+                                for (int i = 0; i < 3; i++) {
+                                    reg_store[i] = malloc(2 * sizeof(char));
+                                    if (reg_store[i] == NULL) {
+                                        fprintf(Out, "Out of memory\n");
+                                        exit(1);
+                                    }
+                                }
+
+                                // Keeps a reference to which register has been parsed for storage
+                                int count = 0;
+                                while (1) {
+
+                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+
+                                    if (reg == NULL || *reg == '#') {
+                                        break;
+                                    }
+
+                                    strcpy(reg_store[count], reg);
+                                    count++;
+                                    free(reg);
+                                }
+
+                                // rt in position 0, rs in position 1 and immediate in position 2
+
+                                rtype_instruction("or", reg_store[1], "00000", reg_store[0], 0, Out);
+
+                                // Dealloc reg_store
+                                for (int i = 0; i < 3; i++) {
+                                    free(reg_store[i]);
+                                }
+                                free(reg_store);
+                            }
                             if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
                                     || strcmp(token, "and") == 0
                                     || strcmp(token, "or") == 0 || strcmp(token, "slt") == 0
@@ -1354,6 +749,53 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 free(reg_store);
                             }
 
+                            else if (strcmp(token, "li") == 0) {
+
+                                // Parse the instruction - rt, rs, immediate
+                                char *inst_ptr = tok_ptr;
+                                char *reg = NULL;
+
+                                // Create an array of char* that stores rt, rs
+                                char **reg_store;
+                                reg_store = malloc(3 * sizeof(char*));
+                                if (reg_store == NULL) {
+                                    fprintf(Out, "Out of memory\n");
+                                    exit(1);
+                                }
+
+                                for (int i = 0; i < 3; i++) {
+                                    reg_store[i] = malloc(2 * sizeof(char));
+                                    if (reg_store[i] == NULL) {
+                                        fprintf(Out, "Out of memory\n");
+                                        exit(1);
+                                    }
+                                }
+
+                                // Keeps a reference to which register has been parsed for storage
+                                int count = 0;
+                                while (1) {
+
+                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+
+                                    if (reg == NULL || *reg == '#') {
+                                        break;
+                                    }
+
+                                    strcpy(reg_store[count], reg);
+                                    count++;
+                                    free(reg);
+                                }
+
+                                // rt in position 0, rs in position 1 and immediate in position 2
+                                int immediate = atoi(reg_store[1]);
+                                itype_instruction("ori", "00000", reg_store[0], immediate, Out);
+
+                                // Dealloc reg_store
+                                for (int i = 0; i < 3; i++) {
+                                    free(reg_store[i]);
+                                }
+                                free(reg_store);
+                            }
                             // I-Type rt, rs, im
                             else if (strcmp(token, "andi") == 0 || strcmp( token, "ori") == 0
                                      || strcmp(token, "slti") == 0 || strcmp(token, "addi") == 0
@@ -1722,7 +1164,8 @@ char instruction_type(char *instruction)
             || strcmp(instruction, "div") == 0 || strcmp(instruction, "divu") == 0
             || strcmp(instruction, "mthi") == 0 || strcmp(instruction, "mtlo") == 0
             || strcmp(instruction, "mfhi") == 0 || strcmp(instruction, "mflo") == 0
-            || strcmp(instruction, "jalr") == 0 || strcmp(instruction, "eret") == 0) {
+            || strcmp(instruction, "jalr") == 0 || strcmp(instruction, "eret") == 0
+            || strcmp(instruction, "MOV") == 0) {
 
         return 'r';
     }
@@ -1736,7 +1179,8 @@ char instruction_type(char *instruction)
              || strcmp(instruction, "lbu") == 0 || strcmp(instruction, "lh") == 0
              || strcmp(instruction, "lhu") == 0 || strcmp(instruction, "sb") == 0
              || strcmp(instruction, "sh") == 0 || strcmp(instruction, "sltiu") == 0
-             || strcmp(instruction, "bne") == 0|| strcmp(instruction, "bgez") == 0) {
+             || strcmp(instruction, "bne") == 0|| strcmp(instruction, "bgez") == 0
+             || strcmp(instruction, "li") == 0) {
 
         return 'i';
     }

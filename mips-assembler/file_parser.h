@@ -11,7 +11,7 @@
 #define FILE_PARSER_H_
 
 #define MAX_LINE_LENGTH 256
-void temporary_parse(FILE *fptr, int pass, char* instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out); 
+void temporary_parse(FILE *fptr, int pass, char* instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out);
 void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out);
 int binarySearch(char *instructions[], int low, int high, char *string);
 char instruction_type(char *instruction);
