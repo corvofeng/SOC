@@ -1,28 +1,28 @@
  `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/9/21 16:11:21
-// Design Name: 
+// Design Name:
 // Module Name: ctc16
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 module ctc16(
-	reset,clk,cs,iow,ior,i_pulse0,i_pulse1,address,i_write_data,
-	o_read_data,cout0,cout1
-	);
+           reset,clk,cs,iow,ior,i_pulse0,i_pulse1,address,i_write_data,
+           o_read_data,cout0,cout1
+       );
 
 input reset,clk,iow,ior;
 input i_pulse0,i_pulse1;  //两个cnt的外部脉冲信号
@@ -43,18 +43,18 @@ reg[15:0] initcnt1,initcnt2;  //两个cnt的初始值寄存器
 reg[15:0] rubbish;
 
 always @(negedge clk) begin
-	if (reset==1) begin
-		// reset
-		cout0=1;
-		cout1=1;
-		initcnt1=16'h0000;
-		initcnt2=16'h0000;
-		cnt11
-		
-	end
-	else if () begin
-		
-	end
-end
+    if (reset==1) begin
+        // reset
+        cout0=1;
+        cout1=1;
+        initcnt1=16'h0000;
+        initcnt2=16'h0000;
+        cnt11
 
-endmodule
+        end
+        else if () begin
+
+        end
+    end
+
+    endmodule

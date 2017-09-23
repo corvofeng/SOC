@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2016/12/03 17:13:25
-// Design Name: 
+// Design Name:
 // Module Name: timepiece_sim
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -39,25 +39,25 @@ wire COUT0;
 wire [31:0] COUT2;
 
 timepiece uut(
-//input wdata,CS,CLK,Reset,pulse0,address,IOW,IOR
-//output rdata,COUT0
-    .CLK(CLK),
-    .CS(CS),
-    .wdata(wdata),
-    .Reset(Reset),
-    .pulse0(pulse0),
-    .address(address),
-    .IOW(IOW),
-    .IOR(IOR),
-    .rdata(rdata),
-    .COUT0(COUT0),
-    .timing(timing),
-    .counting(counting),
-    .COUT2(COUT2)
-);
+              //input wdata,CS,CLK,Reset,pulse0,address,IOW,IOR
+              //output rdata,COUT0
+              .CLK(CLK),
+              .CS(CS),
+              .wdata(wdata),
+              .Reset(Reset),
+              .pulse0(pulse0),
+              .address(address),
+              .IOW(IOW),
+              .IOR(IOR),
+              .rdata(rdata),
+              .COUT0(COUT0),
+              .timing(timing),
+              .counting(counting),
+              .COUT2(COUT2)
+          );
 
 initial
-    begin
+begin
     #100 CS=1;
     //非循环定时，2个clock输出一个时钟低电平
     #10 address[31:0]=8'hFFFF_FC24;//写初值寄存器
@@ -70,7 +70,7 @@ initial
     #10 IOW=0;
     #10 timing=1;
     //循环定时，2个clock输出一个时钟低电平,输出5个
-    #30 timing=0; 
+    #30 timing=0;
     #10 address=8'hFFFF_FC24;//写初值寄存器
     #10 wdata=8'h0000_0003;
     #10 IOW=1;
@@ -111,11 +111,11 @@ initial
     #190 counting=0;
     #10 IOR=1;
     #10 IOR=0;
-    end
+end
 
 always #5 CLK = ~CLK;
 
 always #10 pulse0=~pulse0;
-    
+
 
 endmodule

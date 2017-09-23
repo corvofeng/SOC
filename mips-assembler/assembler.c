@@ -14,15 +14,15 @@ int search(char *instruction);
 
 // Array that holds the supported instructions
 char *instructions[] = {
-    "la",	// I0
+    "la",    // I0
     "li",
-    "lui",	// I1
-    "lw",	// I2
-    "sw",	// I3
-    "ori",	// I4
-    "andi",	// I5
-    "addi",	// I6
-    "beq",	// I7
+    "lui",  // I1
+    "lw",   // I2
+    "sw",   // I3
+    "ori",  // I4
+    "andi", // I5
+    "addi", // I6
+    "beq",  // I7
     "slti", // I8
     "xori", // I9
     "lb",   // I10
@@ -42,17 +42,17 @@ char *instructions[] = {
     "bltzal",//I24
 
     "MOV",
-    "add",	// R0
-    "sub",	// R1
+    "add",  // R0
+    "sub",  // R1
     "xor",  // R2
-    "jr",	// R3
+    "jr",   // R3
     "addu", // R4
     "subu", // R5
-    "or",	// R6
-    "and",	// R7
-    "slt",	// R8
-    "sll",	// R9
-    "srl",	// R10
+    "or",   // R6
+    "and",  // R7
+    "slt",  // R8
+    "sll",  // R9
+    "srl",  // R10
     "nor",  // R11
     "sra",  // R12
     "sltu", // R13
@@ -73,8 +73,8 @@ char *instructions[] = {
     "eret", // R28
     "" 
 
-    "j",	// J0
-    "jal"	// J1
+    "j",    // J0
+    "jal"   // J1
 };
 
 // Size of array
@@ -107,7 +107,7 @@ int main (int argc, char *argv[])
 {
 
     // Make sure correct number of arguments input
-    if (argc != 1) {
+    if (0) {
         printf("Incorrect number of arguments");
     }
 
@@ -116,16 +116,25 @@ int main (int argc, char *argv[])
         // Open I/O files
         // Check that files opened properly
         FILE *In;
-        //In = fopen(argv[1], "r");
-        In = fopen("input.asm", "r");
+        if(argc >= 2) {
+            In = fopen(argv[1], "r");
+            printf("Read from %d", argv[1]);
+        } else {
+            In = fopen("input.asm", "r");
+        }
+
         if (In == NULL) {
             printf("Input file could not be opened.");
             exit(1);
         }
 
         FILE *Out;
-        //Out = fopen(argv[2], "w");
-        Out = fopen("out.txt", "w");
+        if(argc >= 3) {
+            Out = fopen(argv[2], "w");
+            printf("Write to %d", argv[2]);
+        } else {
+            Out = fopen("out.txt", "w");
+        }
         if (Out == NULL) {
             printf("Output file could not opened.");
             exit(1);

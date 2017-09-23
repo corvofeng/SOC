@@ -17,15 +17,15 @@ struct {
     const char *name;
     char *address;
 } registerMap[] = {
-    { "zero", "00000" },  //³£Á¿0
-    { "at", "00001" },	//±£Áô¸ø»ã±àÆ÷
-    { "v0", "00010" },  //$v0-$v1º¯Êıµ÷ÓÃ·µ»ØÖµ
+    { "zero", "00000" },  //ï¿½ï¿½ï¿½ï¿½0
+    { "at", "00001" },  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    { "v0", "00010" },  //$v0-$v1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Öµ
     { "v1", "00011" },
-    { "a0", "00100" },	//$a0-$a3º¯Êıµ÷ÓÃ²ÎÊı
+    { "a0", "00100" },  //$a0-$a3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
     { "a1", "00101" },
     { "a2", "00110" },
     { "a3", "00111" },
-    { "t0", "01000" },	//$t0-$t9ÔİÊ±¼Ä´æÆ÷
+    { "t0", "01000" },  //$t0-$t9ï¿½ï¿½Ê±ï¿½Ä´ï¿½ï¿½ï¿½
     { "t1", "01001" },
     { "t2", "01010" },
     { "t3", "01011" },
@@ -33,7 +33,7 @@ struct {
     { "t5", "01101" },
     { "t6", "01110" },
     { "t7", "01111" },
-    { "s0", "10000" },	//$s0-$s7×Ó³ÌĞò¼Ä´æÆ÷
+    { "s0", "10000" },  //$s0-$s7ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
     { "s1", "10001" },
     { "s2", "10010" },
     { "s3", "10011" },
@@ -43,12 +43,12 @@ struct {
     { "s7", "10111" },
     { "t8", "11000" },
     { "t9", "11001" },
-    { "k0", "11010" },  //$k0-$k1ÖĞ¶Ï/Òì³£´¦Àí±£Áô
-    { "k1", "11011" },
-    { "gp", "11100" },	//È«¾ÖÖ¸Õë
-    { "sp", "11101" },	//¶ÑÕ»Ö¸Õë
-    { "fp", "11110" },	//Ö¡Ö¸Õë
-    { "ra", "11111" },	//·µ»ØµØÖ·
+    { "k0", "11010" },  // k0, k1ä¸ºä¸­æ–­/å¼‚å¸¸å¤„ç†ä¿ç•™
+    { "k1", "11011" },  
+    { "gp", "11100" },  //È«ï¿½ï¿½Ö¸ï¿½ï¿½
+    { "sp", "11101" },  //ï¿½ï¿½Õ»Ö¸ï¿½ï¿½
+    { "fp", "11110" },  //Ö¡Ö¸ï¿½ï¿½
+    { "ra", "11111" },  //ï¿½ï¿½ï¿½Øµï¿½Ö·
     { NULL, 0 }
 };
 
@@ -82,10 +82,13 @@ struct {
     { "mflo", "010010"},
     { "mthi", "010001"},
     { "mtlo", "010011"},
+    { "mtf0", "000000"},
     { "jalr", "001001"},
     { "break", "001101"},
     { "syscall", "001100"},
     { "eret", "011000"},
+    { "mfc0", "000000"},        // TODO:  æ§åˆ¶å™¨ä¸­å°šæœªå®ç°
+    { "mtc0", "000000"},        // TODO: åŒä¸Š 
 
     { NULL, 0 }
 };
@@ -1174,15 +1177,14 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 }
 
 // Determine Instruction Type
-// TODO: RĞÍ£¬ IĞÍ£¬ JĞÍÖ¸ÁîÅĞ¶Ï£¬ ÔÚ´ËÌí¼Ó
 char instruction_type(char *instruction)
 {
 
     if (strcmp(instruction, "add") == 0 || strcmp(instruction, "sub") == 0
-            || strcmp(instruction, "and") == 0 || strcmp(instruction, "or")
-            == 0 || strcmp(instruction, "sll") == 0 || strcmp(instruction,
-                    "slt") == 0 || strcmp(instruction, "srl") == 0 || strcmp(
-                instruction, "jr") == 0 || strcmp(instruction, "xor") == 0
+            || strcmp(instruction, "and") == 0 
+            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0 
+            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0 
+            || strcmp(instruction, "jr") == 0 || strcmp(instruction, "xor") == 0
             || strcmp(instruction, "addu") == 0 || strcmp(instruction, "subu") == 0
             || strcmp(instruction, "nor") == 0 || strcmp(instruction, "sltu") == 0
             || strcmp(instruction, "sra") == 0 || strcmp(instruction, "sllv") == 0
@@ -1198,10 +1200,10 @@ char instruction_type(char *instruction)
     }
 
     else if (strcmp(instruction, "lw") == 0 || strcmp(instruction, "sw") == 0
-             || strcmp(instruction, "andi") == 0 || strcmp(instruction, "ori")
-             == 0 || strcmp(instruction, "lui") == 0 || strcmp(instruction,
-                     "beq") == 0 || strcmp(instruction, "slti") == 0 || strcmp(
-                 instruction, "addi") == 0 || strcmp(instruction, "la") == 0
+             || strcmp(instruction, "andi") == 0 
+             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0 
+             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0 
+             || strcmp(instruction, "addi") == 0 || strcmp(instruction, "la") == 0
              || strcmp(instruction, "xori") == 0 || strcmp(instruction, "lb") == 0
              || strcmp(instruction, "lbu") == 0 || strcmp(instruction, "lh") == 0
              || strcmp(instruction, "lhu") == 0 || strcmp(instruction, "sb") == 0

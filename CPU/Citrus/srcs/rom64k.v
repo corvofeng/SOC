@@ -17,11 +17,11 @@
  * 双击genRom, 选择RST&initialization页面, 添加coe文件, 注意路径中不要带中文
  */
 module rom64k(addr, data);
-    input [15:0] addr;
-    output [31:0] data;
+input [15:0] addr;
+output [31:0] data;
 
-    dist_mem_gen_rom gemRom(
-        .a(addr),
-        .spo(data)
-    );
+dist_mem_gen_rom gemRom(
+                     .a(addr),
+                     .spo(data)
+                 );
 endmodule

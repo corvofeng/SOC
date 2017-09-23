@@ -9,10 +9,10 @@
  *      Author: corvo
  *=============================================================================
  */
- 
+
 module input1(
-    one
-    );
-    output[31:0] one;
-    assign one = 32'h1;
+           one
+       );
+output[31:0] one;
+assign one = 32'h1;
 endmodule

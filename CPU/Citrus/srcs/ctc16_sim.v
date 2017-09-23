@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017年9月22日 19:20:39
 // Design Name: 定时/计数器仿真测试
-// Module Name: 
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Module Name:
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
-// 
+//
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 module ctc16_sim();
@@ -33,20 +33,20 @@ wire [15:0] rdata;
 wire cout1;
 
 ctc16 ctc(
-		.CLK(clk),
-		.CS(cs),
-		.Reset(reset),
-		.wdata(wdata),
-		.pulse1(pulse1),
-		.address(address),
-		.IOW(iow),
-		.IOR(ior),
-		.rdata(rdata),
-		.COUT1(cout1)
-	);
+          .CLK(clk),
+          .CS(cs),
+          .Reset(reset),
+          .wdata(wdata),
+          .pulse1(pulse1),
+          .address(address),
+          .IOW(iow),
+          .IOR(ior),
+          .rdata(rdata),
+          .COUT1(cout1)
+      );
 
 initial
-	begin
+begin
     //循环定时，2个clock输出一个时钟低电平
     #100 cs=1;
     // #10 address=16'hff26;//写初值寄存器
@@ -82,7 +82,7 @@ initial
     // #10 ior=0;
 
 
-	end
+end
 
 
 

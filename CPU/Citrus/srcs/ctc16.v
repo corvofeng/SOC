@@ -217,43 +217,43 @@ begin
 
         if(state[0])//cnt0计数，从0开始计数
         begin
-        if(pulse0)begin
-            if({state[1],state[0]}==2'b01)
-            begin
-                state[15]=1;//计数开始
+            if(pulse0)begin
+                if({state[1],state[0]}==2'b01)
                 begin
+                    state[15]=1;//计数开始
+                    begin
+                        if(count0==init)//计数值等于初值
+                        begin
+                            state[15]=0;//计数结束
+                            state[3:2]=2'b10;//设置状态寄存器，计数到
+                        end
+                        else begin
+                            count0=count0+1;//计数
+                            //                  count2=count2+1;//测试
+                        end
+                    end
+                end
+                else if({state[1],state[0]}==2'b11)//循环计数
+                begin
+                    state[15]=1;//计数开始
                     if(count0==init)//计数值等于初值
                     begin
-                        state[15]=0;//计数结束
                         state[3:2]=2'b10;//设置状态寄存器，计数到
+                        count0=1;//循环，重置计数值寄存器
+                        //             count2=count2+1;//测试
+                    end
+                    else if(count0==1)
+                    begin
+                        state[3:2]=2'b00;//清除状态寄存器
+                        count0=count0+1;
+                        //             count2=count2+1;//测试
                     end
                     else begin
                         count0=count0+1;//计数
-                        //                  count2=count2+1;//测试
+                        //              count2=count2+1;//测试
                     end
                 end
             end
-            else if({state[1],state[0]}==2'b11)//循环计数
-            begin
-                state[15]=1;//计数开始
-                if(count0==init)//计数值等于初值
-                begin
-                    state[3:2]=2'b10;//设置状态寄存器，计数到
-                    count0=1;//循环，重置计数值寄存器
-                    //             count2=count2+1;//测试
-                end
-                else if(count0==1)
-                begin
-                    state[3:2]=2'b00;//清除状态寄存器
-                    count0=count0+1;
-                    //             count2=count2+1;//测试
-                end
-                else begin
-                    count0=count0+1;//计数
-                    //              count2=count2+1;//测试
-                end
-            end
-        end
         end else state[15]=0;//没有处在计数的状态state[15]为0
 
 

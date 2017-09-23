@@ -9,32 +9,32 @@
  *      Author: corvo
  *=============================================================================
  */
- 
+
 module my_shift(
-    Result,
-    Overflow,
-    A, 
-    B, 
-    SLctr,
-    ALGctr
-    );
-    output[31:0] Result;
-    output Overflow;
+           Result,
+           Overflow,
+           A,
+           B,
+           SLctr,
+           ALGctr
+       );
+output[31:0] Result;
+output Overflow;
 
-    reg[31:0] Result;
+reg[31:0] Result;
 
-    input[31:0] A, B;
-    input SLctr, ALGctr;
+input[31:0] A, B;
+input SLctr, ALGctr;
 
-    always @* begin
-        if (!SLctr) begin
-            if (ALGctr) begin
-                Result <= B >>> A;
-            end else
-                Result <= B >> A;
+always @* begin
+    if (!SLctr) begin
+        if (ALGctr) begin
+            Result <= B >>> A;
         end else
-            Result <= B << A;
-    end
-    
+            Result <= B >> A;
+    end else
+        Result <= B << A;
+end
+
 
 endmodule
