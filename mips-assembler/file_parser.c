@@ -17,8 +17,6 @@ struct {
     const char *name;
     char *address;
 } registerMap[] = {
-<<<<<<< Updated upstream
-=======
     { "zero", "00000" }, //常量0
     { "at", "00001" },	//保留给汇编器
     { "v0", "00010" },  //$v0-$v1函数调用返回值
@@ -28,7 +26,6 @@ struct {
     { "a2", "00110" },
     { "a3", "00111" },
     { "t0", "01000" },	//$t0-$t9暂时寄存器
->>>>>>> Stashed changes
     { "t1", "01001" },
     { "t2", "01010" },
     { "t3", "01011" },
@@ -36,10 +33,7 @@ struct {
     { "t5", "01101" },
     { "t6", "01110" },
     { "t7", "01111" },
-<<<<<<< Updated upstream
-=======
     { "s0", "10000" },	//$s0-$s7子程序寄存器
->>>>>>> Stashed changes
     { "s1", "10001" },
     { "s2", "10010" },
     { "s3", "10011" },
@@ -49,15 +43,12 @@ struct {
     { "s7", "10111" },
     { "t8", "11000" },
     { "t9", "11001" },
-<<<<<<< Updated upstream 
-=======
     { "k0", "11010" },  //$k0-$k1中断/异常处理保留
     { "k1", "11011" },
     { "gp", "11100" },	//全局指针
     { "sp", "11101" },	//堆栈指针
     { "fp", "11110" },	//帧指针
     { "ra", "11111" },	//返回地址
->>>>>>> Stashed changes
     { NULL, 0 }
 };
 
@@ -609,8 +600,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     free(reg_store[i]);
                                 }
                                 free(reg_store);
-                            } else if (strcmp(token, "jr") == 0|| strcmp(token, "mthi") == 0
-                                       || strcmp(token, "mtlo") == 0) {
+                            } else if (strcmp(token, "jr") == 0) {
 
                                 // Parse the instruction - rs is in tok_ptr
                                 char *inst_ptr = tok_ptr;
@@ -618,14 +608,58 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
                                 rtype_instruction(token, reg, "00000", "00000", 0, Out);
-                            } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
+                            } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0
+							|| strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
 
-                                // Parse the instruction - rs is in tok_ptr
+                                // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
                                 char *reg = NULL;
-                                reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
-                                rtype_instruction(token, "00000", "00000", reg, 0, Out);
+                                // Create an array of char* that stores rs, rt
+                                char **reg_store;
+                                reg_store = malloc(3 * sizeof(char*));
+                                if (reg_store == NULL) {
+                                    fprintf(Out, "Out of memory\n");
+                                    exit(1);
+                                }
+
+                                for (int i = 0; i < 3; i++) {
+                                    reg_store[i] = malloc(2 * sizeof(char));
+                                    if (reg_store[i] == NULL) {
+                                        fprintf(Out, "Out of memory\n");
+                                        exit(1);
+                                    }
+                                }
+                                // Keeps a reference to which register has been parsed for storage
+                                int count = 0;
+                                while (1) {
+
+                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+
+                                    if (reg == NULL || *reg == '#') {
+                                        break;
+                                    }
+
+                                    strcpy(reg_store[count], reg);
+                                    count++;
+                                    free(reg);
+                                }
+								if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0){
+                                // Send reg_store for output
+                                // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                rtype_instruction(token, "00000", "00000", reg_store[0], 0, Out);
+								}
+								
+								if (strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0){
+                                // Send reg_store for output
+                                // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                rtype_instruction(token, reg_store[0], "00000", "00000", 0, Out);
+								}								
+                                // Dealloc reg_store
+                                for (int i = 0; i < 3; i++) {
+                                    free(reg_store[i]);
+                                }
+                                free(reg_store);
                             } else if (strcmp(token, "eret") == 0) {
 
                                 rtype_instruction(token, "10000", "00000", "00000", 0, Out);
@@ -1186,10 +1220,8 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 }
 
 // Determine Instruction Type
-<<<<<<< Updated upstream
-=======
+
 // TODO: R鍨嬶紝 I鍨嬶紝 J鍨嬫寚浠ゅ垽鏂紝 鍦ㄦ娣诲姞
->>>>>>> Stashed changes
 char instruction_type(char *instruction)
 {
 
