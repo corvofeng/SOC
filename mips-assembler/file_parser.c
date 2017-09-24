@@ -87,8 +87,8 @@ struct {
     { "break", "001101"},
     { "syscall", "001100"},
     { "eret", "011000"},
-    { "mfc0", "000000"},        
-    { "mtc0", "000000"},        
+    { "mfc0", "000000"},
+    { "mtc0", "000000"},
 
     { NULL, 0 }
 };
@@ -451,9 +451,17 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 }
 
                                 // rt in position 0, rs in position 1 and immediate in position 2
-
-                                rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
-
+                                if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
+                                        || strcmp(token, "and") == 0|| strcmp(token, "or") == 0
+                                        || strcmp(token, "slt") == 0|| strcmp(token, "xor") == 0
+                                        || strcmp(token, "addu") == 0|| strcmp(token, "subu") == 0
+                                        || strcmp(token, "nor") == 0|| strcmp(token, "sltu") == 0) {
+                                    rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
+                                }
+                                if (strcmp(token, "sllv") == 0|| strcmp(token, "srlv") == 0
+                                        || strcmp(token, "srav") == 0) {
+                                    rtype_instruction(token, reg_store[2], reg_store[1], reg_store[0], 0, Out);
+                                }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
                                     free(reg_store[i]);
@@ -609,7 +617,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                                 rtype_instruction(token, reg, "00000", "00000", 0, Out);
                             } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0
-							|| strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
+                                       || strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
 
                                 // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
@@ -644,17 +652,17 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     count++;
                                     free(reg);
                                 }
-								if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0){
-                                // Send reg_store for output
-                                // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                rtype_instruction(token, "00000", "00000", reg_store[0], 0, Out);
-								}
-								
-								if (strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0){
-                                // Send reg_store for output
-                                // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                rtype_instruction(token, reg_store[0], "00000", "00000", 0, Out);
-								}								
+                                if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
+                                    // Send reg_store for output
+                                    // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                    rtype_instruction(token, "00000", "00000", reg_store[0], 0, Out);
+                                }
+
+                                if (strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
+                                    // Send reg_store for output
+                                    // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                    rtype_instruction(token, reg_store[0], "00000", "00000", 0, Out);
+                                }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
                                     free(reg_store[i]);
@@ -1226,9 +1234,9 @@ char instruction_type(char *instruction)
 {
 
     if (strcmp(instruction, "add") == 0 || strcmp(instruction, "sub") == 0
-            || strcmp(instruction, "and") == 0 
-            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0 
-            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0 
+            || strcmp(instruction, "and") == 0
+            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0
+            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0
             || strcmp(instruction, "jr") == 0 || strcmp(instruction, "xor") == 0
             || strcmp(instruction, "addu") == 0 || strcmp(instruction, "subu") == 0
             || strcmp(instruction, "nor") == 0 || strcmp(instruction, "sltu") == 0
@@ -1245,9 +1253,9 @@ char instruction_type(char *instruction)
     }
 
     else if (strcmp(instruction, "lw") == 0 || strcmp(instruction, "sw") == 0
-             || strcmp(instruction, "andi") == 0 
-             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0 
-             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0 
+             || strcmp(instruction, "andi") == 0
+             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0
+             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0
              || strcmp(instruction, "addi") == 0 || strcmp(instruction, "la") == 0
              || strcmp(instruction, "xori") == 0 || strcmp(instruction, "lb") == 0
              || strcmp(instruction, "lbu") == 0 || strcmp(instruction, "lh") == 0
@@ -1318,7 +1326,7 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
             func = rMap[i].function;
         }
     }
-    if (strcmp(func, "011000") == 0)
+    if (strcmp(func, "011000") == 0&&strcmp(rs, "10000") == 0)
         opcode = "010000";
 
     // Print out the instruction to the file
