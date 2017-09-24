@@ -17,15 +17,15 @@ struct {
     const char *name;
     char *address;
 } registerMap[] = {
-    { "zero", "00000" },  //����0
-    { "at", "00001" },  //����������
-    { "v0", "00010" },  //$v0-$v1�������÷���ֵ
+    { "zero", "00000" }, //常量0
+    { "at", "00001" },	//保留给汇编器
+    { "v0", "00010" },  //$v0-$v1函数调用返回值
     { "v1", "00011" },
-    { "a0", "00100" },  //$a0-$a3�������ò���
+    { "a0", "00100" },	//$a0-$a3函数调用参数
     { "a1", "00101" },
     { "a2", "00110" },
     { "a3", "00111" },
-    { "t0", "01000" },  //$t0-$t9��ʱ�Ĵ���
+    { "t0", "01000" },	//$t0-$t9暂时寄存器
     { "t1", "01001" },
     { "t2", "01010" },
     { "t3", "01011" },
@@ -33,7 +33,7 @@ struct {
     { "t5", "01101" },
     { "t6", "01110" },
     { "t7", "01111" },
-    { "s0", "10000" },  //$s0-$s7����Ĵ���
+    { "s0", "10000" },	//$s0-$s7子程序寄存器
     { "s1", "10001" },
     { "s2", "10010" },
     { "s3", "10011" },
@@ -43,12 +43,12 @@ struct {
     { "s7", "10111" },
     { "t8", "11000" },
     { "t9", "11001" },
-    { "k0", "11010" },  // k0, k1为中断/异常处理保留
-    { "k1", "11011" },  
-    { "gp", "11100" },  //ȫ��ָ��
-    { "sp", "11101" },  //��ջָ��
-    { "fp", "11110" },  //ָ֡��
-    { "ra", "11111" },  //���ص�ַ
+    { "k0", "11010" },  //$k0-$k1中断/异常处理保留
+    { "k1", "11011" },
+    { "gp", "11100" },	//全局指针
+    { "sp", "11101" },	//堆栈指针
+    { "fp", "11110" },	//帧指针
+    { "ra", "11111" },	//返回地址
     { NULL, 0 }
 };
 
@@ -87,8 +87,8 @@ struct {
     { "break", "001101"},
     { "syscall", "001100"},
     { "eret", "011000"},
-    { "mfc0", "000000"},        // TODO:  控制器中尚未实现
-    { "mtc0", "000000"},        // TODO: 同上 
+    { "mfc0", "000000"},
+    { "mtc0", "000000"},
 
     { NULL, 0 }
 };
@@ -451,9 +451,17 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 }
 
                                 // rt in position 0, rs in position 1 and immediate in position 2
-
-                                rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
-
+                                if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
+                                        || strcmp(token, "and") == 0|| strcmp(token, "or") == 0
+                                        || strcmp(token, "slt") == 0|| strcmp(token, "xor") == 0
+                                        || strcmp(token, "addu") == 0|| strcmp(token, "subu") == 0
+                                        || strcmp(token, "nor") == 0|| strcmp(token, "sltu") == 0) {
+                                    rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
+                                }
+                                if (strcmp(token, "sllv") == 0|| strcmp(token, "srlv") == 0
+                                        || strcmp(token, "srav") == 0) {
+                                    rtype_instruction(token, reg_store[2], reg_store[1], reg_store[0], 0, Out);
+                                }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
                                     free(reg_store[i]);
@@ -600,8 +608,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     free(reg_store[i]);
                                 }
                                 free(reg_store);
-                            } else if (strcmp(token, "jr") == 0|| strcmp(token, "mthi") == 0
-                                       || strcmp(token, "mtlo") == 0) {
+                            } else if (strcmp(token, "jr") == 0) {
 
                                 // Parse the instruction - rs is in tok_ptr
                                 char *inst_ptr = tok_ptr;
@@ -609,14 +616,58 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
                                 rtype_instruction(token, reg, "00000", "00000", 0, Out);
-                            } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
+                            } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0
+                                       || strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
 
-                                // Parse the instruction - rs is in tok_ptr
+                                // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
                                 char *reg = NULL;
-                                reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
-                                rtype_instruction(token, "00000", "00000", reg, 0, Out);
+                                // Create an array of char* that stores rs, rt
+                                char **reg_store;
+                                reg_store = malloc(3 * sizeof(char*));
+                                if (reg_store == NULL) {
+                                    fprintf(Out, "Out of memory\n");
+                                    exit(1);
+                                }
+
+                                for (int i = 0; i < 3; i++) {
+                                    reg_store[i] = malloc(2 * sizeof(char));
+                                    if (reg_store[i] == NULL) {
+                                        fprintf(Out, "Out of memory\n");
+                                        exit(1);
+                                    }
+                                }
+                                // Keeps a reference to which register has been parsed for storage
+                                int count = 0;
+                                while (1) {
+
+                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+
+                                    if (reg == NULL || *reg == '#') {
+                                        break;
+                                    }
+
+                                    strcpy(reg_store[count], reg);
+                                    count++;
+                                    free(reg);
+                                }
+                                if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
+                                    // Send reg_store for output
+                                    // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                    rtype_instruction(token, "00000", "00000", reg_store[0], 0, Out);
+                                }
+
+                                if (strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
+                                    // Send reg_store for output
+                                    // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                    rtype_instruction(token, reg_store[0], "00000", "00000", 0, Out);
+                                }
+                                // Dealloc reg_store
+                                for (int i = 0; i < 3; i++) {
+                                    free(reg_store[i]);
+                                }
+                                free(reg_store);
                             } else if (strcmp(token, "eret") == 0) {
 
                                 rtype_instruction(token, "10000", "00000", "00000", 0, Out);
@@ -1177,13 +1228,15 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 }
 
 // Determine Instruction Type
+
+// TODO: R鍨嬶紝 I鍨嬶紝 J鍨嬫寚浠ゅ垽鏂紝 鍦ㄦ娣诲姞
 char instruction_type(char *instruction)
 {
 
     if (strcmp(instruction, "add") == 0 || strcmp(instruction, "sub") == 0
-            || strcmp(instruction, "and") == 0 
-            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0 
-            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0 
+            || strcmp(instruction, "and") == 0
+            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0
+            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0
             || strcmp(instruction, "jr") == 0 || strcmp(instruction, "xor") == 0
             || strcmp(instruction, "addu") == 0 || strcmp(instruction, "subu") == 0
             || strcmp(instruction, "nor") == 0 || strcmp(instruction, "sltu") == 0
@@ -1200,9 +1253,9 @@ char instruction_type(char *instruction)
     }
 
     else if (strcmp(instruction, "lw") == 0 || strcmp(instruction, "sw") == 0
-             || strcmp(instruction, "andi") == 0 
-             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0 
-             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0 
+             || strcmp(instruction, "andi") == 0
+             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0
+             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0
              || strcmp(instruction, "addi") == 0 || strcmp(instruction, "la") == 0
              || strcmp(instruction, "xori") == 0 || strcmp(instruction, "lb") == 0
              || strcmp(instruction, "lbu") == 0 || strcmp(instruction, "lh") == 0
@@ -1273,7 +1326,7 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
             func = rMap[i].function;
         }
     }
-    if (strcmp(func, "011000") == 0)
+    if (strcmp(func, "011000") == 0&&strcmp(rs, "10000") == 0)
         opcode = "010000";
 
     // Print out the instruction to the file
