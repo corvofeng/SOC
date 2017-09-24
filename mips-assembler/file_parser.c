@@ -146,14 +146,8 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
     int32_t line_num = 1;
     int32_t instruction_count = 0x00000000;
     int data_reached = 0;
-    //FILE *fptr;
 
-    /*fptr = fopen(src_file, "r");
-    if (fptr == NULL) {
-        fprintf(Out, "unable to open file %s. aborting ...\n", src_file);
-        exit(-1);
-    }*/
-
+    int parseN = 0;
     while (1) {
         if ((ret = fgets(line, MAX_LINE_LENGTH, fptr)) == NULL)
             break;
@@ -166,6 +160,9 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
             line_num++;
             continue;
         }
+        //if(parseN++ > 3)
+        //    exit(-1);
+
 
         /* parse the tokens within a line */
         while (1) {
@@ -180,7 +177,6 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
             }
 
             printf("token: %s\n", token);
-
             /*
              * If token is "la", increment by 8, otherwise if it exists in instructions[],
              * increment by 4.
