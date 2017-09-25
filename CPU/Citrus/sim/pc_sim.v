@@ -23,4 +23,28 @@
 module pc_sim(
 
     );
+//    reg clk,clrn;
+//    wire [31:0]ins,bpc,dpc,jpc,pc4,npc;
+//    reg []
+//    reg [1:0]pcsource;
+    
+//    socpc ipc(
+//      .pc(pc),
+//      .bpc(bpc),
+//      .dpc(dpc),
+//      .jpc(jpc),
+//      .pcsource(pcsource),
+//      .pc4(pc4),
+//      .ins(ins),
+//      .npc(npc)
+//        );
+//    initial begin
+//          #1 clrn=1;
+//             clk=0;
+//             pcsource= 2'b00;
+//          #5 clrn = 0;
+//         #500 clrn = 1;           
+//           end
+//           always #5 clk=~clk;
+                            
 endmodule

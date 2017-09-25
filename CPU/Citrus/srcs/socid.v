@@ -38,6 +38,7 @@ module socid (
 	input ewreg,
 	input wwreg,
 	input clk,
+	input clrn,
 
   	output reg [31:0] da,//dpc/da
 	output reg [31:0] db,
@@ -51,11 +52,17 @@ module socid (
 	output shift,
 	output [3:0] aluc,
 	output [31:0] jpc,
-	output [31:0] bpc
-
+	output [31:0] bpc,
+	output nostall,
+	output [4:0] rs,
+    output [4:0] rt,
+    output [4:0] rd,
+    output [4:0] shamt,
+    output [5:0] func,
+    output [5:0]  op
 );
-    wire [4:0] rs,rt,rd,shamt;
-	wire [5:0] func,op;
+//    output [4:0] rs,rt,rd,shamt;
+//	output [5:0] func,op;
 	wire [15:0] imme;
 	wire [25:0] addr;
 	wire  [31:0] qa,qb;
@@ -162,7 +169,6 @@ module socid (
         .m2reg(m2reg),
         .wmem(wmem),
         .pcsource(pcsource),
-        .wpcir(wpcir),
         .fwda(fwda),
         .fwdb(fwdb),
         .regrt(regrt),
@@ -170,7 +176,9 @@ module socid (
         .shift(shift),
         .jal(jal),
         .aluimm(aluimm),
-        .aluc(aluc)
+        .aluc(aluc),
+        .nostall(nostall),
+        .clrn(clrn)
     );
 	
     reg32 regfil(

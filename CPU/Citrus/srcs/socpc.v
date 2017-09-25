@@ -32,7 +32,8 @@ module socpc (
 	output reg [31:0] npc//ins
 	
 );
-	assign pc4 = pc + 3'b100;
+	    assign pc4 = pc + 31'h4;
+
 	
 	always @ ( pcsource or pc4 or bpc or dpc or jpc ) begin//db
         case(pcsource)
@@ -40,7 +41,7 @@ module socpc (
             2'b01:npc <= bpc;
 			2'b10:npc <= dpc;
             2'b11:npc <= jpc;
-            default:npc <= 32'h0000_0000;
+            default:npc <= 32'h0000_0004;
         endcase
 	end		
 	

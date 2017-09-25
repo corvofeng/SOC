@@ -32,11 +32,12 @@ module cpuctr(
     input mwreg,
     input mm2reg,
     input [4:0] mrn,
+    input clrn,
     output wreg,
     output m2reg,
     output wmem,
     output [1:0] pcsource,
-    output wpcir,
+    output nostall,
     output reg [1:0] fwda,
     output reg [1:0] fwdb,
     output regrt,
@@ -44,12 +45,13 @@ module cpuctr(
     output shift,
     output jal,
     output aluimm,
-    output [4:0] aluc
+    output [3:0] aluc
     );
+    wire clr=~clrn;
 	wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
-	     imthi, imflo, imtlo, imfc0, imtc0, iand, ior, ixor, inor, islt, isltu,
-         isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr, isyscall, ibreak,
-		 ieret, iaddi, iaddiu, iandi, iori, ixori, ilui, ilb, ilh, ilw, ilbu,
+	     imthi, imflo, imtlo, iand, ior, ixor, inor, islt, isltu,
+         isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr, 
+          iaddi, iaddiu, iandi, iori, ixori, ilui, ilb, ilh, ilw, ilbu,
 		 ilhu, isb, ish, isw, ibeq, ibne, ibltz, ibgez, iblez, ibgtz, ibltzal,
 		 ibgezal, islti, isltiu, ij, ijal;
 	and(r_type, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0]); //op==000000?
@@ -131,13 +133,13 @@ module cpuctr(
 //=============================================================================
 	wire irs   = iadd  | iaddu  | isub  | isubu | imfhi | imflo | iand   | ior   | ixor  |
 	             inor  | islt   | isltu | isll  | isrl  | isra  | isllv  | isrlv | israv |
-			     jalr  | ijr ;
+			     ijalr  | ijr ;
     wire irt   = iaddi | iaddiu | iandi | iori  | ixori | ilui  | ilb    | ilh   | ilw   |
 			     ilbu  | ilhu   | isw   | isb   | ish   | islti | isltiu | ij | ijal | ibeq |
 			     ibne  | ibgez  | ibgtz | iblez | ibltz | ibgezal | ibltzal;
-    assign nostall = ~(ewreg & em2reg & ( ern != 0 ) & (irs & ( ern == rs )|
-	                                                    irt & ( ern == rt )));
-	always @ (ewreg or mwreg or ern or mrn or em2reg or mm2reg or rs or rt) begin
+    assign nostall = ~((ewreg & em2reg & ( ern != 0 ) & (irs & ( ern == rs )| irt & ( ern == rt )))&clr);
+	always @ (ewreg or mwreg or ern or mrn or em2reg or mm2reg or rs or rt or clr) begin
+
 	    fwda = 2'b00; //default
 		if (ewreg & (ern != 0) & (ern == rs) & ~em2reg ) begin
             fwda = 2'b01;//exe_alu
@@ -163,30 +165,37 @@ module cpuctr(
 			end
 		end
 	end
-	assign wreg    = iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | inor  |
+	always @ (clr) begin
+	  if(clr==0) begin
+          fwda = 2'b00;
+          fwda = 2'b00;
+          end
+    end
+	assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | inor  |
 	                 islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
 				     ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
 				     ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
-					 ijal;
-	assign regrt   = iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
-                     ilh   | ilhu   | ilui   | islti | isltiu;
-	assign jal     = ijal  | ijalr;
-	assign m2reg   = ilb   | ilbu   | ilh | ilhu;
-	assign shift   = isll  | isrl   | isra;
-	assign aluimm  = iaddi | iaddiu | iandi | iori | ixori | ilw | ilb | ilbu | ilh |
-	                 ilhu  | ilui   | isw   | ish  | isb;
-	assign sext    = iaddi | iaddiu | ilw   | ilb  | ilh |isw | ish | isb  | ibeq   |
-                     ibne  | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal | islti ; 
+					 ijal )&clr;
+	assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
+                     ilh   | ilhu   | ilui   | islti | isltiu)&clr;
+	assign jal     = (ijal  | ijalr)&clr;
+	assign m2reg   = (ilb   | ilbu   | ilh | ilhu)&clr;
+	assign shift   = (isll  | isrl   | isra)&clr;
+	assign aluimm  = (iaddi | iaddiu | iandi | iori | ixori | ilw | ilb | ilbu | ilh |
+	                 ilhu  | ilui   | isw   | ish  | isb)&clr;
+	assign sext    = (iaddi | iaddiu | ilw   | ilb  | ilh |isw | ish | isb  | ibeq   |
+                     ibne  | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal | islti)&clr ; 
 	
-	assign aluc[3] = ibeq  | ibne  | isub  | isubu | islt | islti | isltu | isltiu | isll | isrl | isra |
-	                 isllv | isrlv | israv | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
-	assign aluc[2] = inor  | ixor  | ixori | isll | isrl | isra | isllv | isrlv | israv;
-    assign aluc[1] = ixor  | ixori | iand | iandi | ior | iori | islt | islti | isltu | isltiu |
-                     isra  | israv;
-    assign aluc[0] = iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isrl | isrlv |
-                     ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal;
+	assign aluc[3] = (ibeq  | ibne  | isub  | isubu | islt | islti | isltu | isltiu | isll | isrl | isra |
+	                 isllv | isrlv | israv | ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal)&clr;
+	assign aluc[2] = (inor  | ixor  | ixori | isll | isrl | isra | isllv | isrlv | israv)&clr;
+    assign aluc[1] = (ixor  | ixori | iand | iandi | ior | iori | islt | islti | isltu | isltiu |
+                     isra  | israv)&clr;
+    assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isrl | isrlv |
+                     ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal)&clr;
     
-	assign wmem    = (isw | isb | ish ) & nostall;
-    assign pcsource[1] = ij | ijr | ijal | ijalr;
-	assign pcsource[0] = ibeq & rerteqe | ibne & rerteqe | ij | ijal | ijalr;
+	assign wmem    = ((isw | isb | ish ) & nostall)&clr;
+    assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
+	assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
+
 endmodule
