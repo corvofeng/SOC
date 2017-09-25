@@ -112,7 +112,7 @@ void unit_test(FILE* out, FILE* check) {
         parseHex(outLine, outHex);
         if(strncmp(outHex, checkLine, 8) != 0) {
             printf("In line %d, out: %s check : %s\n", line, outHex, checkLine);
-            return;
+//            return;
         }
     }
 
@@ -122,8 +122,8 @@ void unit_test(FILE* out, FILE* check) {
 
 
 int main() {
-    FILE *out_txt = fopen("out.txt", "r");
-    FILE *check_txt = fopen("check.txt", "r");
+    FILE *out_txt = fopen("out_lzk.txt", "r");
+    FILE *check_txt = fopen("check_lzk.txt", "r");
 
     unit_test(out_txt, check_txt);
 

@@ -120,7 +120,7 @@ int main (int argc, char *argv[])
             In = fopen(argv[1], "r");
             printf("Read from %d", argv[1]);
         } else {
-            In = fopen("input.asm", "r");
+            In = fopen("test_lzk.asm", "r");
         }
 
         if (In == NULL) {
@@ -133,7 +133,7 @@ int main (int argc, char *argv[])
             Out = fopen(argv[2], "w");
             printf("Write to %d", argv[2]);
         } else {
-            Out = fopen("out.txt", "w");
+            Out = fopen("out_lzk.txt", "w");
         }
         if (Out == NULL) {
             printf("Output file could not opened.");
