@@ -24,11 +24,10 @@
 module cpu_sim(
 
     );
-    reg clk,clrn,no;
-    wire [31:0]pc,inst;
-    cpu cpu(
-//      .clk(clk),
-//      .clrn(clrn)
+    reg clk,clrn;
+     cpu cpu(
+      .clk(clk),
+      .clrn(clrn)
 //      .pc(pc),
 //      .inst(inst),
 ////      .wpcir(no)

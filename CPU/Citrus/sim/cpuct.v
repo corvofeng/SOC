@@ -24,12 +24,17 @@ module cpuct(
 
     );
     reg clrn;
+    reg [6:0] op,func;
     cpuctr ctr(
-       .clrn(clrn)
+       .clrn(clrn),
+       .func(func),
+       .op(op)
 
         );
     initial begin
            clrn=0;
+           op=6'b00_0000;
+           func=6'b00_0000;
            #1 clrn=1;
           #50 clrn=0;
           end

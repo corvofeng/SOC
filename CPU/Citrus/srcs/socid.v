@@ -26,8 +26,6 @@ module socid (
 	input [31:0] inst,//Ö¸Áî
 	input [31:0] wdi,//reginput
 	input [4:0] wrn,//Ä¿µÄ¼Ä´æÆ÷
-	input [1:0] fwda,
-    input [1:0] fwdb,
 	input [31:0] ealu,
 	input [31:0] malu,
 	input [31:0] mmo,
@@ -39,12 +37,14 @@ module socid (
 	input wwreg,
 	input clk,
 	input clrn,
-
+	
+	output [1:0] fwda,
+    output [1:0] fwdb,
   	output reg [31:0] da,//dpc/da
 	output reg [31:0] db,
 	output reg [31:0] dimm,
 	output reg [4:0] drn,
-	output werg,
+	output wreg,
 	output m2reg,
 	output wmem,
 	output jal,
@@ -59,7 +59,8 @@ module socid (
     output [4:0] rd,
     output [4:0] shamt,
     output [5:0] func,
-    output [5:0]  op
+    output [5:0]  op,
+    output [1:0] pcsource
 );
 //    output [4:0] rs,rt,rd,shamt;
 //	output [5:0] func,op;
@@ -189,7 +190,8 @@ module socid (
         .we(wwreg),
         .clk(clkn),
         .qa(qa),
-        .qb(qb)
+        .qb(qb),
+        .clrn(clrn)
        );
 	
 endmodule
