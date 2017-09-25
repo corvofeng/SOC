@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2017/09/22 13:38:43
+// Create Date: 2017/09/25 10:43:31
 // Design Name: 
-// Module Name: pipeir
+// Module Name: cpu_sim
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -17,28 +17,26 @@
 // Revision 0.01 - File Created
 // Additional Comments:
 // 
+
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module pipeir(
-    input [31:0] pc4,
-	input [31:0] ins,
-	input wir,
-	input clk,
-	input clrn,
-	output reg [31:0] dpc4,
-	output reg [31:0] inst
+module cpu_sim(
+
     );
-	always @ ( posedge clk ) begin
-	    if ( clrn != 0 ) begin
-		    dpc4 <= 32'h0000_0000;
-			inst <= 32'h0000_0000;
-		end else begin
-		    if ( wir !=0 ) begin
-			    dpc4 <= pc4;
-				inst <= ins;
-			end
-		end
-	end
-		
+    reg clk,clrn;
+    wire [31:0]pc,inst;
+    cpu cpu(
+      .clk(clk),
+      .clrn(clrn),
+      .pc(pc),
+      .inst(inst)
+        );
+    initial begin
+          #1 clrn=1;
+             clk=0;
+          #5 clrn = 0;
+         #500 clrn = 1;           
+           end
+           always #5 clk=~clk;
 endmodule
