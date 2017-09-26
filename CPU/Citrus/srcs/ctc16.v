@@ -74,12 +74,6 @@ begin
         end
         if(IOW)//CPU写数据
         begin
-            /*if(address[7:0]==8'h20) state=wdata;//CPU写方式寄存器
-                else if(address[7:0]==8'h24) 
-                begin
-                 init=wdata;//CPU写初值寄存器
-                init_tmp=init;//init_tmp用来备份初值寄存器的值
-                end*/
             case(address[3:0])
                 4'h0:state=wdata;
                 4'h4:begin
@@ -97,14 +91,6 @@ begin
 
         if(IOR)//CPU读数据
         begin
-            //     if(address[7:0]==8'h20)
-            //         begin
-            //         rda=state;//CPU读状态寄存器
-            //         state[3:2]=2'b00;//状态寄存器读取后清零
-            //         state[15]=0;
-            // //         COU2=count2;
-            //         end
-            //     else if(address[7:0]==8'h24) rda=init;//CPU读初值寄存器
             case(address[3:0])
                 4'h0:begin
                     rda=state;//CPU读状态寄存器

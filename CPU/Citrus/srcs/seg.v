@@ -37,7 +37,7 @@ reg clk_50=0;
 reg[25:0] div_counter = 0;
 reg[2:0] scanner;
 
-always@(posedge clk or negedge rst)  //分频50hz
+always@(posedge clk or negedge rst)  //分频400hz
 begin
     if(!rst) begin
         div_counter = 0;

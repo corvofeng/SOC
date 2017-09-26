@@ -6,9 +6,15 @@ CC       = gcc.exe
 WINDRES  = windres.exe
 OBJ      = assembler.o file_parser.o
 LINKOBJ  = assembler.o file_parser.o
+<<<<<<< HEAD
 LIBS     = -L"F:/OMG/Dev-Cpp/MinGW64/lib" -L"F:/OMG/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
 INCS     = -I"F:/OMG/Dev-Cpp/MinGW64/include" -I"F:/OMG/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"F:/OMG/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"F:/OMG/Dev-Cpp/MinGW64/include" -I"F:/OMG/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"F:/OMG/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"F:/OMG/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+=======
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -g3
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+>>>>>>> 31e1b21d3cf9c38f6606fb87dc1a4102e31924fd
 BIN      = mips-assembler.exe
 CXXFLAGS = $(CXXINCS) -std=c99
 CFLAGS   = $(INCS) -std=c99
