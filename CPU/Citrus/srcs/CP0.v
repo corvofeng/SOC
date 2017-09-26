@@ -43,8 +43,8 @@ reg[31:0] cause_reg;
 reg[31:0] epc_reg;
 
 assign o_status_data = status_reg;
-  o_cause_data = cause_reg;
-  o_epc_data = epc_reg;
+assign o_cause_data = cause_reg;
+assign o_epc_data = epc_reg;
 
 always @(posedge i_clk) begin
     if(i_reset==1) begin
@@ -56,7 +56,7 @@ always @(posedge i_clk) begin
           5'b01100:status_reg <= i_data;
           5'b01101:cause_reg <= i_data;
           5'b01110:epc_reg <= i_data;
-          default 
+          default ;
         endcase
     end
 end
