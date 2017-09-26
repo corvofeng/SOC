@@ -71,7 +71,7 @@ char *instructions[] = {
     "break",// R26
     "syscall",//R27
     "eret", // R28
-    "" 
+    ""
 
     "j",    // J0
     "jal"   // J1
@@ -128,14 +128,25 @@ int main (int argc, char *argv[])
             exit(1);
         }
 
-        FILE *Out;
+//        FILE *Out1;
+//        if(argc >= 3) {
+//            Out1 = fopen(argv[2], "w");
+//            printf("Write to %d", argv[2]);
+//        } else {
+//            Out1 = fopen("out1.txt", "w");
+//        }
+//        if (Out1 == NULL) {
+//            printf("Output file could not opened.");
+//            exit(1);
+//        }
+        FILE *Out2;
         if(argc >= 3) {
-            Out = fopen(argv[2], "w");
+            Out2 = fopen(argv[2], "w");
             printf("Write to %d", argv[2]);
         } else {
-            Out = fopen("out.txt", "w");
+            Out2 = fopen("text.txt", "w");
         }
-        if (Out == NULL) {
+        if (Out2 == NULL) {
             printf("Output file could not opened.");
             exit(1);
         }
@@ -148,16 +159,17 @@ int main (int argc, char *argv[])
 
         int passNumber = 1;
         // Parse in passes
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out);
+        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2);
 
         // Rewind input file & start pass 2
         rewind(In);
         passNumber = 2;
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out);
+        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2);
 
         // Close files
         fclose(In);
-        fclose(Out);
+
+        fclose(Out2);
 
         return 0;
     }

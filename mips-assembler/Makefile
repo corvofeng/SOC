@@ -3,7 +3,7 @@ CPP      = g++ -D__DEBUG__
 CC       = gcc -D__DEBUG__
 OBJ      = assembler.o file_parser.o
 LINKOBJ  = assembler.o file_parser.o
-BIN      = mips-assembler
+BIN      = mips-assembler.exe
 CXXFLAGS = $(CXXINCS) -g3 -std=c99
 CFLAGS   = $(INCS) -g3 -std=c99
 RM       = rm -f

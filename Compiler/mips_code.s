@@ -1,5 +1,3 @@
-.data
-global: .word 0
 .text
 fun:
 	 li $t0, 8
@@ -165,3 +163,5 @@ main:
 	 add $sp, $sp, $t0
 	 move $t2, $sp
 	 jr $ra
+.data
+global: .word 0

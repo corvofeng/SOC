@@ -298,7 +298,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 exit(1);
                             }
 
-                            printf("end singe var\n");
+                            printf("end singe var\n",insert);
                         }
                     }
 
@@ -962,70 +962,37 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                                 // Parse the instruction - rs, rt
                                 char *inst_ptr = tok_ptr;
-                                char *reg = NULL;
+                                char *reg1 = NULL;
+                                char *reg2 = NULL;
 
                                 // Create an array of char* that stores rs
-                                char **reg_store;
-                                reg_store = malloc(2 * sizeof(char*));
-                                if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
-                                    exit(1);
-                                }
 
-                                for (int i = 0; i < 2; i++) {
-                                    reg_store[i] = malloc(2 * sizeof(char));
-                                    if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
-                                        exit(1);
-                                    }
-                                }
-
-                                // Keeps a reference to which register has been parsed for storage
-                                int count = 0;
-                                while (1) {
-
-                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                                    if (reg == NULL || *reg == '#') {
-                                        break;
-                                    }
-
-                                    strcpy(reg_store[count], reg);
-                                    count++;
-                                    free(reg);
-
-                                    if (count == 2)
-                                        break;
-                                }
-
-                                reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+                                reg1 = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+                                reg2 = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
                                 // Find hash address for a register and put in an immediate
-                                int *address = hash_find(hash_table, reg, strlen(reg)+1);
+                                int *address = hash_find(hash_table, reg2, strlen(reg2)+1);
 
-                                int immediate = *address + instruction_count;
+                                int immediate = instruction_count;
+
                                 if (strcmp(token, "bgez") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg_store[0], "00001", immediate, Out);
+                                    itype_instruction(token, reg1, "00001", immediate, Out);
                                 }
                                 if (strcmp(token, "bgtz") == 0|| strcmp(token, "blez") == 0
                                         || strcmp(token, "bltz") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg_store[0], "00000", immediate, Out);
+                                    itype_instruction(token, reg1, "00000", immediate, Out);
                                 }
                                 if (strcmp(token, "bgezal") == 0 ) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg_store[0], "10001", immediate, Out);
+                                    itype_instruction(token, reg1, "10001", immediate, Out);
                                 }
                                 if (strcmp(token, "bltzal") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg_store[0], "10000", immediate, Out);
+                                    itype_instruction(token, reg1, "10000", immediate, Out);
                                 }
-                                // Dealloc reg_store
-                                for (int i = 0; i < 2; i++) {
-                                    free(reg_store[i]);
-                                }
-                                free(reg_store);
+
                             }
 
                             // I-Type $rs, $rt, label
@@ -1133,6 +1100,14 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                 // If .data part reached
                 else {
+                    FILE *Out1;
+
+                    Out1 = fopen("data.txt", "w");
+
+                    if (Out1 == NULL) {
+                        printf("Output file could not opened.");
+                        exit(1);
+                    }
 
                     char *var_tok = NULL;
                     char *var_tok_ptr = tok_ptr;
@@ -1156,7 +1131,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                             // Value var_value is repeated freq times. Send to binary rep function
                             for (int i = 0; i < freq; i++) {
-                                word_rep(var_value, Out);
+                                word_rep(var_value, Out1);
                             }
                         }
 
@@ -1164,10 +1139,10 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                         else {
 
                             // Extract variable value
-                            sscanf(var_tok_ptr, "%*s, %d", &var_value);
+                            sscanf(var_tok_ptr, "%*s %d", &var_value);
 
                             // Variable is in var_value. Send to binary rep function
-                            word_rep(var_value, Out);
+                            word_rep(var_value, Out1);
                         }
                     }
 
@@ -1185,7 +1160,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             // Place string in var_tok
                             var_tok = parse_token(var_tok_ptr, "\"", &var_tok_ptr, NULL);
 
-                            ascii_rep(var_tok, Out);
+                            ascii_rep(var_tok, Out1);
                         }
                     }
                 }
@@ -1400,7 +1375,7 @@ void word_rep(int binary_rep, FILE *Out)
     for (int k = 31; k >= 0; k--) {
         fprintf(Out, "%c", (binary_rep & (1 << k)) ? '1' : '0');
     }
-
+    printf("ggg\n");
     fprintf(Out, "\n");
 }
 
