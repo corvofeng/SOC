@@ -53,10 +53,10 @@ always @(posedge i_clk) begin
         epc_reg = 8'b00000000;
     end else if(i_we==1)begin
         case(i_sel)
-          5'b01100:status_reg <= i_data;
-          5'b01101:cause_reg <= i_data;
-          5'b01110:epc_reg <= i_data;
-          default ;
+            5'b01100:status_reg <= i_data;
+            5'b01101:cause_reg <= i_data;
+            5'b01110:epc_reg <= i_data;
+            default ;
         endcase
     end
 end

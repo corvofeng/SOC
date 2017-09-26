@@ -20,8 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module init32(
-	prst,rst,clk,reset
-	);
+           prst,rst,clk,reset
+       );
 input prst;//按钮复位
 input rst;//看门狗输出的复位
 input clk;
@@ -34,37 +34,37 @@ reg cnt1=3'b100;
 
 always@(posedge clk && prst)
 begin
-	if(cnt0==3'b000)
-	begin
-		reset0=1;
-		cnt0=3'b100;
-	end
-	else 
-	begin
-		cnt0=cnt0-1;
-		reset0=0;		
-	end
+    if(cnt0==3'b000)
+    begin
+        reset0=1;
+        cnt0=3'b100;
+    end
+    else
+    begin
+        cnt0=cnt0-1;
+        reset0=0;
+    end
 end
 
 always@(posedge clk && rst)
 begin
-	if(cnt1==3'b000)
-	begin
-		reset1=1;
-		cnt1=3'b100;
-	end
-	else 
-	begin
-		cnt1=cnt1-1;
-		reset1=0;		
-	end	
+    if(cnt1==3'b000)
+    begin
+        reset1=1;
+        cnt1=3'b100;
+    end
+    else
+    begin
+        cnt1=cnt1-1;
+        reset1=0;
+    end
 end
 
 always@(negedge clk)
 begin
-	if(reset0||reset1)
-		reset=1;
-	else
-		reset=0;
+    if(reset0||reset1)
+        reset=1;
+    else
+        reset=0;
 end
 endmodule

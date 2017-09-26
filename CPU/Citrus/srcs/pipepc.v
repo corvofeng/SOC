@@ -1,40 +1,40 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/09/22 13:38:43
-// Design Name: 
+// Design Name:
 // Module Name: pipepc
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module pipepc(
-    input [31:0] npc,
-	input wpc,
-	input clk,
-	input clrn,
-	output reg [31:0] pc
-    );
-	always @ ( posedge clk ) begin
-	    if ( clrn != 0 ) begin
-		    pc <= 32'h0000_0000;
-		end else begin
-		    if ( wpc !=0 ) begin
-			    pc <= npc;
-			end
-		end
-	end
-		
+           input [31:0] npc,
+           input wpc,
+           input clk,
+           input clrn,
+           output reg [31:0] pc
+       );
+always @ ( posedge clk ) begin
+    if ( clrn != 0 ) begin
+        pc <= 32'h0000_0000;
+    end else begin
+        if ( wpc !=0 ) begin
+            pc <= npc;
+        end
+    end
+end
+
 endmodule
