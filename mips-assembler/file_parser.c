@@ -138,7 +138,7 @@ struct {
     { NULL, 0 }
 };
 
-void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out)
+void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData)
 {
 
     char line[MAX_LINE_LENGTH + 1];
@@ -194,6 +194,8 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
             else if (strcmp(token, ".data") == 0) {
                 instruction_count = 0x00002000;
                 data_reached = 1;
+                free(token);
+                continue;
             }
 
             printf("PC Count: %d\n", instruction_count);
@@ -288,13 +290,14 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             inst_count = (uint32_t *)malloc(sizeof(uint32_t));
                             *inst_count = instruction_count;
                             int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
+                            printf("The token is %s, The instCnt is %d\n", token, instruction_count);
 
                             if (insert == 0) {
                                 fprintf(Out, "Error in hash table insertion\n");
                                 exit(1);
                             }
 
-                            printf("end singe var\n",insert);
+                            printf("End singe var\n",insert);
                         }
                     }
 
@@ -1096,17 +1099,23 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                 // If .data part reached
                 else {
-                    FILE *Out1;
 
-                    Out1 = fopen("data.txt", "w");
-
-                    if (Out1 == NULL) {
-                        printf("Output file could not opened.");
-                        exit(1);
-                    }
 
                     char *var_tok = NULL;
                     char *var_tok_ptr = tok_ptr;
+                    printf("The token is %s\n", token);
+                    printf("Teh tok ptr is %s\n", tok_ptr);
+
+                    /**
+                     * for example:
+                     *  In buf : .word 7
+                     *      token is  buf
+                     *      tok_ptr is .word 7
+                     * 
+                     * In  buf buf1: .word 2:3
+                     *      token is buf1
+                     *      tok_ptr is .word 2:3
+                     */
 
                     // If variable is .word
                     if (strstr(tok_ptr, ".word")) {
@@ -1127,7 +1136,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                             // Value var_value is repeated freq times. Send to binary rep function
                             for (int i = 0; i < freq; i++) {
-                                word_rep(var_value, Out1);
+                                word_rep(var_value, outData);
                             }
                         }
 
@@ -1138,7 +1147,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             sscanf(var_tok_ptr, "%*s %d", &var_value);
 
                             // Variable is in var_value. Send to binary rep function
-                            word_rep(var_value, Out1);
+                            word_rep(var_value, outData);
                         }
                     }
 
@@ -1156,7 +1165,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             // Place string in var_tok
                             var_tok = parse_token(var_tok_ptr, "\"", &var_tok_ptr, NULL);
 
-                            ascii_rep(var_tok, Out1);
+                            ascii_rep(var_tok, outData);
                         }
                     }
                 }
@@ -1199,8 +1208,6 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 }
 
 // Determine Instruction Type
-
-// TODO: R鍨嬶紝 I鍨嬶紝 J鍨嬫寚浠ゅ垽鏂紝 鍦ㄦ娣诲姞
 char instruction_type(char *instruction)
 {
 
@@ -1371,7 +1378,6 @@ void word_rep(int binary_rep, FILE *Out)
     for (int k = 31; k >= 0; k--) {
         fprintf(Out, "%c", (binary_rep & (1 << k)) ? '1' : '0');
     }
-    printf("ggg\n");
     fprintf(Out, "\n");
 }
 
