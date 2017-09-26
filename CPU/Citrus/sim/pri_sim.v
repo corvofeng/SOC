@@ -1,52 +1,52 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company:
 // Engineer: IceTesla
-// 
+//
 // Create Date: 2017/09/19 19:45:43
-// Design Name: 
+// Design Name:
 // Module Name: pri_sim
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module pri_sim();
-	reg [7:0]in_data;
-	reg in_enable;
+reg [7:0]in_data;
+reg in_enable;
 
-	wire [2:0] out_data;
-	wire out_gs;
-	wire out_enable;
-	
-	PriorityEncoder8_3 uut(
-		.i_data_n(in_data),
-		.i_enable_n(in_enable),
-		.o_data_n(out_data),
-		.o_gs_n(out_gs),
-		.o_enable_n(out_enable)
-	);
-	
-	initial begin
-		#10 in_enable = 1;
-		#10	in_data = 8'b11111111;
-		#10 in_enable = 0;
-		#10	in_data = 8'b11111110;
-		#10	in_data = 8'b11111100;
-		#10	in_data = 8'b11111000;
-		#10	in_data = 8'b11110000;
-		#10	in_data = 8'b11100000;
-		#10	in_data = 8'b11000000;
-		#10	in_data = 8'b10000000;
-		#10	in_data = 8'b00000000;
-    end
+wire [2:0] out_data;
+wire out_gs;
+wire out_enable;
+
+PriorityEncoder8_3 uut(
+                       .i_data_n(in_data),
+                       .i_enable_n(in_enable),
+                       .o_data_n(out_data),
+                       .o_gs_n(out_gs),
+                       .o_enable_n(out_enable)
+                   );
+
+initial begin
+    #10 in_enable = 1;
+    #10	in_data = 8'b11111111;
+    #10 in_enable = 0;
+    #10	in_data = 8'b11111110;
+    #10	in_data = 8'b11111100;
+    #10	in_data = 8'b11111000;
+    #10	in_data = 8'b11110000;
+    #10	in_data = 8'b11100000;
+    #10	in_data = 8'b11000000;
+    #10	in_data = 8'b10000000;
+    #10	in_data = 8'b00000000;
+end
 endmodule
