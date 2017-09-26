@@ -33,7 +33,9 @@ module socpc (
 	
 );
 	    assign pc4 = pc + 31'h4;
-
+        wire[31:0] tpc;
+        assign tpc[29:0]=pc[31:2],
+               tpc[31:30]=2'b00;
 	
 	always @ ( pcsource or pc4 or bpc or dpc or jpc ) begin//db
         case(pcsource)
@@ -46,7 +48,7 @@ module socpc (
 	end		
 	
 	rom64k instmem(
-	    .addr(pc), 
+	    .addr(tpc), 
 	    .data(ins)
 	    );
 
