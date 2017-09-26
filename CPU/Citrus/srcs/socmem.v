@@ -34,7 +34,7 @@ module socmem (
         .addr(malu),
         .data_in(mb), 
         .clk(clkn), 
-        .we(mwmen), 
+        .we(mwmem), 
         .data_out(mmo)
         );
 	

@@ -45,13 +45,14 @@ module cpuctr(
     output shift,
     output jal,
     output aluimm,
+    output ilui,
     output [3:0] aluc
     );
     wire clr=~clrn;
 	wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
 	     imthi, imflo, imtlo, iand, ior, ixor, inor, islt, isltu,
          isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr, 
-          iaddi, iaddiu, iandi, iori, ixori, ilui, ilb, ilh, ilw, ilbu,
+          iaddi, iaddiu, iandi, iori, ixori, ilb, ilh, ilw, ilbu,
 		 ilhu, isb, ish, isw, ibeq, ibne, ibltz, ibgez, iblez, ibgtz, ibltzal,
 		 ibgezal, islti, isltiu, ij, ijal;
 	and(r_type, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0]); //op==000000?
