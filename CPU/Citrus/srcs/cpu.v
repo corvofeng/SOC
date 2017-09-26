@@ -38,8 +38,8 @@
     output [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
     output [3:0] aluc,ealuc;
     output [4:0] wrn,mrn,ern,drn,ern0;
-    output [1:0] pcsource;
-    output wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
+    output [1:0] fwda,fwdb,pcsource;
+    output wpcir,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
     output [4:0]rs,rt,rd,shamt;
     output [5:0]op,func;
     assign dpc = da;   
