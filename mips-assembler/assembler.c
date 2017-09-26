@@ -120,11 +120,20 @@ int main (int argc, char *argv[])
             In = fopen(argv[1], "r");
             printf("Read from %d", argv[1]);
         } else {
-            In = fopen("test_lzk.asm", "r");
+            In = fopen("input.asm", "r");
         }
 
         if (In == NULL) {
             printf("Input file could not be opened.");
+            exit(1);
+        }
+
+        FILE *outData;
+        
+        outData = fopen("data.txt", "w");
+        
+        if (outData == NULL) {
+            printf("Output file could not opened.");
             exit(1);
         }
 
@@ -144,11 +153,7 @@ int main (int argc, char *argv[])
             Out2 = fopen(argv[2], "w");
             printf("Write to %d", argv[2]);
         } else {
-<<<<<<< HEAD
             Out2 = fopen("text.txt", "w");
-=======
-            Out = fopen("out_lzk.txt", "w");
->>>>>>> 31e1b21d3cf9c38f6606fb87dc1a4102e31924fd
         }
         if (Out2 == NULL) {
             printf("Output file could not opened.");
@@ -163,17 +168,18 @@ int main (int argc, char *argv[])
 
         int passNumber = 1;
         // Parse in passes
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2);
+        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2, outData);
 
         // Rewind input file & start pass 2
         rewind(In);
         passNumber = 2;
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2);
+        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2, outData);
 
         // Close files
         fclose(In);
 
         fclose(Out2);
+        fclose(outData);
 
         return 0;
     }
