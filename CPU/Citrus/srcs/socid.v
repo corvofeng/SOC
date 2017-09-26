@@ -68,29 +68,49 @@ module socid (
 	wire [15:0] imme;
 	wire [25:0] addr;
 	wire  [31:0] qa,qb;
-	wire [31:0] bpc,baimme;
-	reg [31:0] simme,eximme;
-	wire sext,regrt;
+	wire [31:0] bpc,bpc0;
+	wire sext,regrt,ilui;
 	reg  rsrtequ;
 	wire clkn=~clk;
 	
+    assign op[5:0]    = inst[31:26],
+           rs[4:0]    = inst[25:21],
+           rt[4:0]    = inst[20:16],
+           rd[4:0]    = inst[15:11],
+           shamt[4:0] = inst[10:6],
+           func[5:0]  = inst[5:0],
+           imme[15:0] = inst[15:0],
+           addr[25:0] = inst[25:0];
+    	
 	assign jpc[31:28] = dpc4[31:28],//jpc
 	       jpc[27:2] = addr[25:0],
 		   jpc[1:0] = 2'b00;
 		   
-	always @ ( imme ) begin//sex
-	    if (imme[15] != 0)begin
-            simme[31:16] <= 16'hffff;
-            simme[15:0]  <= imme[15:0];
+
+   	always @ ( sext or shift or shamt or imme) begin//shift
+   	    if (shift != 0)begin
+            dimm[15:5] <= 11'h000;
+            dimm[4:0]  <= shamt[4:0];
         end else begin
-            simme[31:16] <= 16'h0000;
-            simme[15:0] <= imme[15:0];
+            dimm[15:0] <= imme[15:0];
         end
-    end       
-     
-	assign baimme[31:2] = simme[29:0],
-	       baimme[1:0]  = 2'b00;
-	assign bpc = simme + dpc4;
+       
+        if (sext != 0 & imme[15]==1 )begin//dimm
+            dimm[31:16] <= 16'hffff;
+        end else begin
+            dimm[31:16] <= 16'h0000;
+        end
+        
+        if(ilui==1)begin
+            dimm[31:16] <= dimm[15:0];
+            dimm[15:0] <= 16'h0000;
+        end
+
+    end 
+      
+	assign bpc0[31:2] = dimm[29:0],
+	       bpc0[1:0]  = 2'b00;
+	assign bpc = dimm + dpc4;
 	
     always @ ( fwda or qa or mmo or malu or ealu ) begin//da
         case(fwda)
@@ -112,20 +132,7 @@ module socid (
         endcase
 	end		
 
-	always @ ( sext or simme or shift or shamt or imme) begin//shift
-	    if (sext != 0)begin//dimm
-            eximme[31:0]  <= simme[31:0];
-        end else begin
-            eximme[31:16] <= 16'h0000;
-            eximme[15:0]  <= imme[15:0];
-        end
-        if (shift != 0)begin
-            dimm[31:5] <= 27'h000_0000;
-            dimm[4:0]  <= shamt[4:0];
-        end else begin
-            dimm[31:0] <= eximme[31:0];
-        end
-    end 
+
     	
 
 
@@ -145,16 +152,7 @@ module socid (
         end
     end
 
-	
-	assign op[5:0]    = inst[31:26],
-	       rs[4:0]    = inst[25:21],
-		   rt[4:0]    = inst[20:16],
-		   rd[4:0]    = inst[15:11],
-		   shamt[4:0] = inst[10:6],
-		   func[5:0]  = inst[5:0],
-		   imme[15:0] = inst[15:0],
-		   addr[25:0] = inst[25:0];
-	
+
 	cpuctr cpuctr0(
         .op(op),
         .rs(rs),
@@ -180,7 +178,8 @@ module socid (
         .aluimm(aluimm),
         .aluc(aluc),
         .nostall(nostall),
-        .clrn(clrn)
+        .clrn(clrn),
+        .ilui(ilui)
     );
 	
     reg32 regfil(

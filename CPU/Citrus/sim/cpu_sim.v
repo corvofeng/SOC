@@ -61,7 +61,7 @@ module cpu_sim(
            #1 clrn=1;
           #50 clrn=0;
 
-         #500 clrn = 1;           
+//         #500 clrn = 1;           
            end
            always #5 clk=~clk;
 endmodule

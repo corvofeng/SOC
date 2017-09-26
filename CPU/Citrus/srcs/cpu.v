@@ -150,7 +150,8 @@
           .eshift(eshift),
           .ealuc(ealuc),
           .ealu(ealu),
-          .ern(ern)
+          .ern(ern),
+          .ejal(jal)
           );
     pipeemreg p7(
           .ealu(ealu),
