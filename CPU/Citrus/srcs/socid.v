@@ -37,6 +37,7 @@ module socid (
 	input wwreg,
 	input clk,
 	input clrn,
+	input mwreg,
 	
 	output [1:0] fwda,
     output [1:0] fwdb,

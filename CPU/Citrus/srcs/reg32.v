@@ -27,12 +27,49 @@ module reg32(
     input [31:0] i,
     input we,
     input clk,
+    input clrn,
     output reg [31:0] qa,
     output reg [31:0] qb
    );
    reg[31:0] register[31:0];
-   
+     
     always @(posedge clk) begin       // 本进程写目标寄存器
+        if( clrn==1 ) begin
+          qa <= 32'd0;
+          qb <= 32'd0;
+           register[0] <= 32'd0;
+          register[1] <= 32'd0;
+          register[2] <= 32'd0;
+          register[3] <= 32'd0;
+           register[4] <= 32'd0;
+           register[5] <= 32'd0;
+           register[6] <=  32'd0;
+           register[7] <= 32'd0;
+           register[8] <=  32'd0;
+           register[9] <= 32'd0;
+           register[10] <=  32'd0;
+           register[11] <=  32'd0;
+           register[12] <=  32'd0;
+           register[13] <=  32'd0;
+           register[14] <=  32'd0;
+           register[15] <=  32'd0;
+           register[16] <= 32'd0;
+           register[17] <= 32'd0;
+           register[18] <= 32'd0;
+           register[19] <= 32'd0;
+           register[20] <= 32'd0;
+           register[21] <= 32'd0;
+           register[22] <= 32'd0;
+           register[23] <= 32'd0;
+           register[24] <= 32'd0;
+           register[25] <= 32'd0;
+           register[26] <= 32'd0;
+           register[27] <= 32'd0;
+           register[28] <= 32'd0;
+           register[29] <= 32'd0;
+           register[30] <= 32'd0;
+           register[31] <= 32'd0;
+          end
         if( we == 1 ) begin  // 注意寄存器0恒等于0
             case( wn[4:0] )
                 5'd0:register[0] <= 32'd0;
@@ -67,85 +104,82 @@ module reg32(
                 5'd29:register[29] <= i;
                 5'd30:register[30] <= i;
                 5'd31:register[31] <= i;
-                default:register[0] <= 32'd0;
-              endcase
+                endcase
           end
       end
       
-      always @(posedge ra ) begin       // 本进程写目标寄存器
+      always @( ra ) begin       // 本进程写目标寄存器
           case( ra [4:0] )
-              5'd0:qa[0] <= register[0];
-              5'd1:qa[1] <= register[1];
-              5'd2:qa[2] <= register[2];
-              5'd3:qa[3] <= register[3];
-              5'd4:qa[4] <= register[4];
-              5'd5:qa[5] <= register[5];
-              5'd6:qa[6] <= register[6];
-              5'd7:qa[7] <= register[7];
-              5'd8:qa[8] <= register[8];
-              5'd9:qa[9] <= register[9];
-              5'd10:qa[10] <= register[10];
-              5'd11:qa[11] <= register[11];
-              5'd12:qa[12] <= register[12];
-              5'd13:qa[13] <= register[13];
-              5'd14:qa[14] <= register[14];
-              5'd15:qa[15] <= register[15];
-              5'd16:qa[16] <= register[16];
-              5'd17:qa[17] <= register[17];
-              5'd18:qa[18] <= register[18];
-              5'd19:qa[19] <= register[19];
-              5'd20:qa[20] <= register[20];
-              5'd21:qa[21] <= register[21];
-              5'd22:qa[22] <= register[22];
-              5'd23:qa[23] <= register[23];
-              5'd24:qa[24] <= register[24];
-              5'd25:qa[25] <= register[25];
-              5'd26:qa[26] <= register[26];
-              5'd27:qa[27] <= register[27];
-              5'd28:qa[28] <= register[28];
-              5'd29:qa[29] <= register[29];
-              5'd30:qa[30] <= register[30];
-              5'd31:qa[31] <= register[31];
-              default:qa[0] <= 32'd0;
-          endcase
+              5'd0:qa <= register[0];
+              5'd1:qa <= register[1];
+              5'd2:qa <= register[2];
+              5'd3:qa <= register[3];
+              5'd4:qa <= register[4];
+              5'd5:qa <= register[5];
+              5'd6:qa <= register[6];
+              5'd7:qa <= register[7];
+              5'd8:qa <= register[8];
+              5'd9:qa <= register[9];
+              5'd10:qa <= register[10];
+              5'd11:qa <= register[11];
+              5'd12:qa <= register[12];
+              5'd13:qa <= register[13];
+              5'd14:qa <= register[14];
+              5'd15:qa <= register[15];
+              5'd16:qa <= register[16];
+              5'd17:qa <= register[17];
+              5'd18:qa <= register[18];
+              5'd19:qa <= register[19];
+              5'd20:qa <= register[20];
+              5'd21:qa <= register[21];
+              5'd22:qa <= register[22];
+              5'd23:qa <= register[23];
+              5'd24:qa <= register[24];
+              5'd25:qa <= register[25];
+              5'd26:qa <= register[26];
+              5'd27:qa <= register[27];
+              5'd28:qa <= register[28];
+              5'd29:qa <= register[29];
+              5'd30:qa <= register[30];              
+              5'd31:qa <= register[31];    
+              endcase
      end
 
-     always @(posedge rb ) begin       // 本进程写目标寄存器
+     always @( rb ) begin       // 本进程写目标寄存器
           case( rb [4:0] )
-              5'd0:qb[0] <= register[0];
-              5'd1:qb[1] <= register[1];
-              5'd2:qb[2] <= register[2];
-              5'd3:qb[3] <= register[3];
-              5'd4:qb[4] <= register[4];
-              5'd5:qb[5] <= register[5];
-              5'd6:qb[6] <= register[6];
-              5'd7:qb[7] <= register[7];
-              5'd8:qb[8] <= register[8];
-              5'd9:qb[9] <= register[9];
-              5'd10:qb[10] <= register[10];
-              5'd11:qb[11] <= register[11];
-              5'd12:qb[12] <= register[12];
-              5'd13:qb[13] <= register[13];
-              5'd14:qb[14] <= register[14];
-              5'd15:qb[15] <= register[15];
-              5'd16:qb[16] <= register[16];
-              5'd17:qb[17] <= register[17];
-              5'd18:qb[18] <= register[18];
-              5'd19:qb[19] <= register[19];
-              5'd20:qb[20] <= register[20];
-              5'd21:qb[21] <= register[21];
-              5'd22:qb[22] <= register[22];
-              5'd23:qb[23] <= register[23];
-              5'd24:qb[24] <= register[24];
-              5'd25:qb[25] <= register[25];
-              5'd26:qb[26] <= register[26];
-              5'd27:qb[27] <= register[27];
-              5'd28:qb[28] <= register[28];
-              5'd29:qb[29] <= register[29];
-              5'd30:qb[30] <= register[30];
-              5'd31:qb[31] <= register[31];
-              default:qb[0] <= 32'd0;
-          endcase
+              5'd0:qb <= register[0];
+          5'd1:qb <= register[1];
+          5'd2:qb <= register[2];
+          5'd3:qb <= register[3];
+          5'd4:qb <= register[4];
+          5'd5:qb <= register[5];
+          5'd6:qb <= register[6];
+          5'd7:qb <= register[7];
+          5'd8:qb <= register[8];
+          5'd9:qb <= register[9];
+          5'd10:qb <= register[10];
+          5'd11:qb <= register[11];
+          5'd12:qb <= register[12];
+          5'd13:qb <= register[13];
+          5'd14:qb <= register[14];
+          5'd15:qb <= register[15];
+          5'd16:qb <= register[16];
+          5'd17:qb <= register[17];
+          5'd18:qb <= register[18];
+          5'd19:qb <= register[19];
+          5'd20:qb <= register[20];
+          5'd21:qb <= register[21];
+          5'd22:qb <= register[22];
+          5'd23:qb <= register[23];
+          5'd24:qb <= register[24];
+          5'd25:qb <= register[25];
+          5'd26:qb <= register[26];
+          5'd27:qb <= register[27];
+          5'd28:qb <= register[28];
+          5'd29:qb <= register[29];
+          5'd30:qb <= register[30];              
+          5'd31:qb <= register[31];  
+            endcase
      end   
      
 endmodule

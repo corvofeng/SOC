@@ -30,19 +30,22 @@
       aluc,ealuc,
       wrn,mrn,ern,drn,ern0,
       pcsource,
-      wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg
+      wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
+      rs,rt,rd,shamt,op,func
     );
   
     input clk,clrn;
-    input [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
-    input [5:0] aluc,ealuc;
-    input [4:0] wrn,mrn,ern,drn,ern0;
-    input [1:0] pcsource;
-    input wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
- 
+    output [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
+    output [3:0] aluc,ealuc;
+    output [4:0] wrn,mrn,ern,drn,ern0;
+    output [1:0] pcsource;
+    output wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
+    output [4:0]rs,rt,rd,shamt;
+    output [5:0]op,func;
+    assign dpc = da;   
      pipepc p1(
         .npc(npc),
-        .wpc(wpeir),
+        .wpc(wpcir),
         .clk(clk),
         .clrn(clrn),
         .pc(pc)
@@ -66,6 +69,7 @@
          .dpc4(dpc4),
          .inst(inst)
          );
+
      socid p4(
          .dpc4(dpc4),//pc
          .inst(inst),//ЦёБо
@@ -87,7 +91,7 @@
          .db(db),
          .dimm(dimm),
          .drn(drn),
-         .werg(wreg),
+         .wreg(wreg),
          .m2reg(m2reg),
          .wmem(wmem),
          .jal(jal),
@@ -95,7 +99,17 @@
          .shift(shift),
          .aluc(aluc),
          .jpc(jpc),
-         .bpc(bpc)
+         .bpc(bpc),
+         .nostall(wpcir),
+         .clrn(clrn),
+         .rs(rs),
+         .rt(rt),
+         .rd(rd),
+         .shamt(shamt),
+             .func(func),
+             .op(op),
+             .pcsource(pcsource),
+             .mwreg(mwreg)
          );
  
       pipedereg p5(
