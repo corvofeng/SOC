@@ -146,7 +146,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
     int32_t line_num = 1;
     int32_t instruction_count = 0x00000000;
     int data_reached = 0;
-
+    int intnum = 0;
     int parseN = 0;
     while (1) {
         if ((ret = fgets(line, MAX_LINE_LENGTH, fptr)) == NULL)
@@ -192,7 +192,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
             // If token is ".data", reset instruction to .data starting address
             else if (strcmp(token, ".data") == 0) {
-                instruction_count = 0x00002000;
+                instruction_count = 0x0000ffff;
                 data_reached = 1;
                 free(token);
                 continue;
@@ -345,7 +345,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                     int instruction_supported = search(token);
                     char inst_type;
 
-                    printf("This should not appear %d\n", instruction_count);
+                    //  printf("This should not appear %d\n", instruction_count);
                     // exit(-1);
                     // If instruction is supported
                     if (instruction_supported != -1) {
@@ -972,7 +972,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                 // Find hash address for a register and put in an immediate
                                 int *address = hash_find(hash_table, reg2, strlen(reg2)+1);
 
-                                int immediate = instruction_count;
+                                int immediate = *address + instruction_count;
 
                                 if (strcmp(token, "bgez") == 0) {
                                     // Send instruction to itype function
@@ -1095,23 +1095,82 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                     if (strcmp(token, "nop") == 0) {
                         fprintf(Out, "00000000000000000000000000000000\n");
                     }
+                    if (strcmp(token, "int0:") == 0) {
+                        size_t token_len = strlen(token);
+                        token[token_len - 1] = '\0';
+                        intnum++;
+                        char immediate[17];
+                        int *address = hash_find(hash_table, token, strlen(token)+1);
+                        char *opcode = "0000000000000000";
+                        int immediateStr = *address;
+
+                        getBin(immediateStr, immediate, 16);
+                        fprintf(outData, "%s%s\n", opcode, immediate);
+
+                    }
+                    if (strcmp(token, "int1:") == 0) {
+                        size_t token_len = strlen(token);
+                        token[token_len - 1] = '\0';
+                        intnum++;
+                        char immediate[17];
+                        int *address = hash_find(hash_table, token, strlen(token)+1);
+                        char *opcode = "0000000000000001";
+                        int immediateStr = *address;
+
+                        getBin(immediateStr, immediate, 16);
+                        fprintf(outData, "%s%s\n", opcode, immediate);
+
+                    }
+                    if (strcmp(token, "int2:") == 0) {
+                        size_t token_len = strlen(token);
+                        token[token_len - 1] = '\0';
+                        intnum++;
+                        char immediate[17];
+                        int *address = hash_find(hash_table, token, strlen(token)+1);
+                        char *opcode = "0000000000000010";
+                        int immediateStr = *address;
+
+                        getBin(immediateStr, immediate, 16);
+                        fprintf(outData, "%s%s\n", opcode, immediate);
+
+                    }
+                    if (strcmp(token, "int3:") == 0) {
+                        size_t token_len = strlen(token);
+                        token[token_len - 1] = '\0';
+                        intnum++;
+                        char immediate[17];
+                        int *address = hash_find(hash_table, token, strlen(token)+1);
+                        char *opcode = "0000000000000011";
+                        int immediateStr = *address;
+
+                        getBin(immediateStr, immediate, 16);
+                        fprintf(outData, "%s%s\n", opcode, immediate);
+                        //printf("intnum: %s\n",intnum);
+
+                    }
                 }
 
                 // If .data part reached
                 else {
 
+                    instruction_count = intnum * 0x10000 + instruction_count;
+
+                    for (instruction_count; instruction_count< 0x04000000; instruction_count=instruction_count+0x10000) {
+                        //printf("intnum: %s\n",intnum);
+                        fprintf(outData, "00000000000000000000000000000000\n");
+                    }
+
 
                     char *var_tok = NULL;
                     char *var_tok_ptr = tok_ptr;
-                    printf("The token is %s\n", token);
-                    printf("Teh tok ptr is %s\n", tok_ptr);
+
 
                     /**
                      * for example:
                      *  In buf : .word 7
                      *      token is  buf
                      *      tok_ptr is .word 7
-                     * 
+                     *
                      * In  buf buf1: .word 2:3
                      *      token is buf1
                      *      tok_ptr is .word 2:3
@@ -1370,6 +1429,7 @@ void jtype_instruction(char *instruction, int immediate, FILE *Out)
     // Print out instruction to file
     fprintf(Out, "%s%s\n", opcode, immediateStr);
 }
+
 
 // Write out the variable in binary
 void word_rep(int binary_rep, FILE *Out)
