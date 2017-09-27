@@ -202,9 +202,9 @@ CP0 reg_CP0(
     i_cause(i_cause),
     i_selpc_epc(i_selpc_epc),
     i_pc(i_pc),
-    i_dpc(i_dpc),
-    i_epc(i_epc),
-    i_mpc(i_mpc),
+    i_pcd(i_pcd),
+    i_pce(i_pce),
+    i_pcm(i_pcm),
 
     i_wsta(i_wsta),
     i_wcau(i_wcau),

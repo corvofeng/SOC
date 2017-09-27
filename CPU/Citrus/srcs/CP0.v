@@ -28,9 +28,9 @@ module CP0(
         i_cause,
         i_selpc_epc_epc,
         i_pc,
-        i_dpc,
-        i_epc,
-        i_mpc,
+        i_pcd,
+        i_pce,
+        i_pcm,
 
         i_wsta,
         i_wcau,
@@ -50,9 +50,9 @@ input wire i_exc;
 input wire [31:0] i_cause;
 input wire [1:0] i_selpc_epc;
 input wire [31:0] i_pc;
-input wire [31:0] i_dpc;
-input wire [31:0] i_epc;
-input wire [31:0] i_mpc;
+input wire [31:0] i_pcd;
+input wire [31:0] i_pce;
+input wire [31:0] i_pcm;
 
 input wire i_wsta;
 input wire i_wcau;
@@ -122,6 +122,7 @@ always @ ( exc or o_status_data ) begin
     case(exc)
         0:sta_sel_data = {4'h0,o_status_data[31:4]};
         1:sta_sel_data = {o_status_data[27:0],4'h0};
+    endcase
 end
 
 endmodule
