@@ -50,7 +50,10 @@ module cpuctr(
 
            input intr,
            output inta,
-           input [7:0] vector
+           input [7:0] vector,
+           
+           output unimpl
+           
        );
 wire clr=~clrn;
 wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
@@ -202,5 +205,12 @@ assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isr
 assign wmem    = ((isw | isb | ish ) & nostall)&clr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
+
+and(unimpl,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
+           ~imthi, ~imflo, ~imtlo, ~iand, ~ior, ~ixor, ~inor, ~islt, ~isltu,
+           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr, 
+           ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
+           ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
+           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
 
 endmodule
