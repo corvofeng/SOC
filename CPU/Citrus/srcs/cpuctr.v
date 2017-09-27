@@ -98,7 +98,7 @@ assign sepc[0] = exc_int &  isbr | exc_sys |
                  
 wire ExcCode0 = overflow;//|syscall;
 wire ExcCode1 = unimpl_inst | overflow;
-assign cause = {28'h0, ExcCode1, ExcCode1, 2'b00};
+assign cause = { vector,20'h0, ExcCode1, ExcCode1, 2'b00};
 assign mtc0 = imtc0;
 assign wsta = exc | mtc0 & rd_is_status | ieret;
 assign wcau = exc | mtc0 & rd_is_cause;
