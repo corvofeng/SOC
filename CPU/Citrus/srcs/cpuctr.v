@@ -50,7 +50,12 @@ module cpuctr(
 
            input intr,
            output inta,
-           input [7:0] vector
+           input [7:0] vector,
+           
+           output unimpl,
+           output mfc0,
+           output mtc0
+           
        );
 wire clr=~clrn;
 wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
@@ -77,8 +82,8 @@ and(imthi,  r_type,~func[5], func[4],~func[3],~func[2],~func[1], func[0]);//func
 and(imflo,  r_type,~func[5], func[4],~func[3],~func[2], func[1],~func[0]);//func=010010
 and(imtlo,  r_type,~func[5], func[4],~func[3],~func[2], func[1], func[0]);//func=010011
 
-//mfc0 op=010000
-//mtc0 op=010000
+and(mfc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0], rs[2]); //mfc0 op=010000 rs=00100
+and(mtc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0],~rs[2]); //mtc0 op=010000 rs=00000
 
 and(iand,   r_type, func[5],~func[4],~func[3], func[2],~func[1],~func[0]);//func=100100
 and(ior,    r_type, func[5],~func[4],~func[3], func[2],~func[1], func[0]);//func=100101
@@ -202,5 +207,12 @@ assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isr
 assign wmem    = ((isw | isb | ish ) & nostall)&clr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
+
+and(unimpl,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
+           ~imthi, ~imflo, ~imtlo, ~iand, ~ior, ~ixor, ~inor, ~islt, ~isltu,
+           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr, 
+           ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
+           ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
+           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
 
 endmodule
