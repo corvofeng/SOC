@@ -48,13 +48,29 @@ module cpuctr(
            output ilui,
            output [3:0] aluc,
 
+
            input intr,
+           input ecancel,
+           input earith,
+           input eisbr,
+           input misbr,
+           input ov,
+           input [31:0]sta,
+           output exc,
+           output wsta,
+           output wcau,
+           output wepc,
+           output unimpl,
+           output mtc0,
+           output isbr,
+           output arith,
+           output cancel,
            output inta,
            input [7:0] vector,
-           
-           output unimpl,
-           output mfc0,
-           output mtc0
+           output [1:0] mfc0,
+           output [1:0] selpc,
+           output [1:0] sepc,
+           output [31:0] cause
            
        );
 wire clr=~clrn;
@@ -63,7 +79,57 @@ wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
      isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr,
      iaddi, iaddiu, iandi, iori, ixori, ilb, ilh, ilw, ilbu,
      ilhu, isb, ish, isw, ibeq, ibne, ibltz, ibgez, iblez, ibgtz, ibltzal,
-     ibgezal, islti, isltiu, ij, ijal;
+     ibgezal, islti, isltiu, ij, ijal, 
+     c0_type, imfc0, imtc0, unimpl_inst,cancel;
+                   
+assign isbr = ibeq | ibne | ij | ijal | ijalr | ibltz | ibgez | iblez | ibgtz | ibltzal | ibgezal;
+assign arith = iadd | isub | iaddi;
+wire overflow = ov & earith;
+assign inta = exc_int;
+wire exc_int = sta[0] & intr;
+//wire exc_sys = sta[1] & isyscall;
+wire exc_uni = sta[2] & unimpl_inst;
+wire exc_ovr = sta[3] & overflow;
+assign exc = int_int | exc_uni | exc_ovr; //| exc_sys
+assign cancel = exc;
+assign sepc[1] = exc_uni & eisbr | exc_ovr;
+assign sepc[0] = exc_int &  isbr | exc_sys |
+                 exc_uni &~eisbr | exc_ovr & misbr;
+                 
+wire ExcCode0 = overflow;//|syscall;
+wire ExcCode1 = unimpl_inst | overflow;
+assign cause = {28'h0, ExcCode1, ExcCode1, 2'b00};
+assign mtc0 = imtc0;
+assign wsta = exc | mtc0 & rd_is_status | ieret;
+assign wcau = exc | mtc0 & rd_is_cause;
+assign wepc = exc | mtc0 & rd_is_epc;
+wire rd_is_status = (rd == 5'd12);
+wire rd_is_cause  = (rd == 5'd13);
+wire rd_is_epc    = (rd == 5'd14);
+
+assign mfc0[0] = imfc0 & rd_is_status | imfc0 & rd_is_epc;
+assign mfc0[1] = imfc0 & rd_is_cause  | imfc0 & rd_is_epc;
+
+assign selpc[0] = ieret;
+assign selpc[1] = exc;
+
+and(unimpl_inst,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
+           ~imthi, ~imflo, ~imtlo, ~iand, ~ior, ~ixor, ~inor, ~islt, ~isltu,
+           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr, 
+           ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
+           ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
+           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
+and(c0_type,  ~op[5], op[4],~op[3],~op[2],~op[1],~op[0]);
+and(imfc0, c0_type, rs[2]); //mfc0 op=010000 rs=00100
+and(imtc0, c0_type,~rs[2]); //mtc0 op=010000 rs=00000
+and(ieret, c0_type,~func[5], func[4], func[3],~func[2],~func[1],~func[0] );//eretfunc=011000
+//syscall
+//break
+
+
+
+     
+     
 and(r_type, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0]); //op==000000?
 and(bgeltz, ~op[5],~op[4],~op[3],~op[2],~op[1], op[0]); //bge or lt z=000001
 
@@ -82,8 +148,7 @@ and(imthi,  r_type,~func[5], func[4],~func[3],~func[2],~func[1], func[0]);//func
 and(imflo,  r_type,~func[5], func[4],~func[3],~func[2], func[1],~func[0]);//func=010010
 and(imtlo,  r_type,~func[5], func[4],~func[3],~func[2], func[1], func[0]);//func=010011
 
-and(mfc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0], rs[2]); //mfc0 op=010000 rs=00100
-and(mtc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0],~rs[2]); //mtc0 op=010000 rs=00000
+
 
 and(iand,   r_type, func[5],~func[4],~func[3], func[2],~func[1],~func[0]);//func=100100
 and(ior,    r_type, func[5],~func[4],~func[3], func[2],~func[1], func[0]);//func=100101
@@ -102,10 +167,6 @@ and(israv,  r_type,~func[5],~func[4],~func[3], func[2], func[1], func[0]);//func
 
 and(ijr,    r_type,~func[5],~func[4], func[3],~func[2],~func[1],~func[0]);//func=001000
 and(ijalr,  r_type,~func[5],~func[4], func[3],~func[2],~func[1], func[0]);//func=001001
-
-//syscall
-//break
-//eret
 
 and(iaddi,  ~op[5],~op[4], op[3],~op[2],~op[1],~op[0]);//op=001000
 and(iaddiu, ~op[5],~op[4], op[3],~op[2],~op[1], op[0]);//op=001001
@@ -208,11 +269,6 @@ assign wmem    = ((isw | isb | ish ) & nostall)&clr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
 
-and(unimpl,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
-           ~imthi, ~imflo, ~imtlo, ~iand, ~ior, ~ixor, ~inor, ~islt, ~isltu,
-           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr, 
-           ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
-           ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
-           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
+
 
 endmodule
