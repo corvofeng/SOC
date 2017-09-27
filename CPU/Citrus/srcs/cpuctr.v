@@ -52,7 +52,9 @@ module cpuctr(
            output inta,
            input [7:0] vector,
            
-           output unimpl
+           output unimpl,
+           output mfc0,
+           output mtc0
            
        );
 wire clr=~clrn;
@@ -80,8 +82,8 @@ and(imthi,  r_type,~func[5], func[4],~func[3],~func[2],~func[1], func[0]);//func
 and(imflo,  r_type,~func[5], func[4],~func[3],~func[2], func[1],~func[0]);//func=010010
 and(imtlo,  r_type,~func[5], func[4],~func[3],~func[2], func[1], func[0]);//func=010011
 
-//mfc0 op=010000
-//mtc0 op=010000
+and(mfc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0], rs[2]); //mfc0 op=010000 rs=00100
+and(mtc0, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0],~rs[2]); //mtc0 op=010000 rs=00000
 
 and(iand,   r_type, func[5],~func[4],~func[3], func[2],~func[1],~func[0]);//func=100100
 and(ior,    r_type, func[5],~func[4],~func[3], func[2],~func[1], func[0]);//func=100101
