@@ -26,7 +26,7 @@ module CP0(
         i_exc,
         i_sta,
         i_cause,
-        i_selpc,
+        i_selpc_epc_epc,
         i_pc,
         i_dpc,
         i_epc,
@@ -47,9 +47,8 @@ input wire i_clk;
 input wire i_reset;
 
 input wire i_exc;
-input wire [31:0] i_sta;
 input wire [31:0] i_cause;
-input wire [1:0] i_selpc;
+input wire [1:0] i_selpc_epc;
 input wire [31:0] i_pc;
 input wire [31:0] i_dpc;
 input wire [31:0] i_epc;
@@ -109,8 +108,8 @@ always @ ( i_mtc0 or i_data or sta_sel_data or i_cause or epc_sel_data ) begin
     end
 end
 
-always @ ( i_selpc or pc or dpc or epc or mpc ) begin
-    case(i_selpc)
+always @ ( i_selpc_epc or pc or dpc or epc or mpc ) begin
+    case(i_selpc_epc)
         2'b00:epc_sel_data = pc;
         2'b01:epc_sel_data = dpc;
         2'b10:epc_sel_data = epc;
@@ -119,8 +118,10 @@ always @ ( i_selpc or pc or dpc or epc or mpc ) begin
     endcase
 end
 
-always @ ( exc  ) begin
-
+always @ ( exc or o_status_data ) begin
+    case(exc)
+        0:sta_sel_data = {4'h0,o_status_data[31:4]};
+        1:sta_sel_data = {o_status_data[27:0],4'h0};
 end
 
 endmodule

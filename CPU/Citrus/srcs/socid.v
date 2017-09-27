@@ -5,7 +5,7 @@
 //
 // Create Date: 2016/07/06 16:08:58
 // Design Name:
-// Module Name: socid  idÄ£¿é
+// Module Name: socid  idÄ£ï¿½ï¿½
 // Project Name:
 // Target Devices:
 // Tool Versions:
@@ -23,9 +23,9 @@
 module socid (
 
            input [31:0] dpc4,//pc
-           input [31:0] inst,//Ö¸Áî
+           input [31:0] inst,//Ö¸ï¿½ï¿½
            input [31:0] wdi,//reginput
-           input [4:0] wrn,//Ä¿µÄ¼Ä´æÆ÷
+           input [4:0] wrn,//Ä¿ï¿½Ä¼Ä´ï¿½ï¿½ï¿½
            input [31:0] ealu,
            input [31:0] malu,
            input [31:0] mmo,
@@ -194,4 +194,27 @@ reg32 regfil(
           .clrn(clrn)
       );
 
+CP0 reg_CP0(
+    i_clk(i_clk),
+    i_reset(i_reset),
+
+    i_exc(i_exc),
+    i_cause(i_cause),
+    i_selpc_epc(i_selpc_epc),
+    i_pc(i_pc),
+    i_dpc(i_dpc),
+    i_epc(i_epc),
+    i_mpc(i_mpc),
+
+    i_wsta(i_wsta),
+    i_wcau(i_wcau),
+    i_wepc(i_wepc),
+
+    i_mtc0(i_mtc0),
+    i_data(i_data),
+
+    o_status_data(o_status_data),
+    o_epc_data(o_epc_data),
+    o_cause_data(o_cause_data)
+    );
 endmodule
