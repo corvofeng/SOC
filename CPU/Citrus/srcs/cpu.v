@@ -35,7 +35,7 @@ module cpu(
        );
 
 input clk,clrn;
-output [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
+output [31:0] next_pc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
 output [3:0] aluc,ealuc;
 output [4:0] wrn,mrn,ern,drn,ern0;
 output [1:0] fwda,fwdb,pcsource;
@@ -44,7 +44,7 @@ output [4:0]rs,rt,rd,shamt;
 output [5:0]op,func;
 assign dpc = da;
 pipepc p1(
-           .npc(npc),
+           .npc(next_pc),
            .wpc(wpcir),
            .clk(clk),
            .clrn(clrn),
@@ -55,10 +55,15 @@ socpc p2(
           .bpc(bpc),//npc1
           .dpc(dpc),//npc2
           .jpc(jpc),//npc3
-          .pcsource(pcsource),//pc�?
+          .pcsource(pcsource),//pc��?
           .pc4(pc4),//pc+4
           .ins(ins),//is
-          .npc(npc)//nextpc
+          //.npc(npc),//nextpc
+
+          //删除原有的npc，然后添加新的线，并将输给pipepc的npc信号改成next_pc
+          .selpc(selpc),
+          .epc(epc),
+          .next_pc(next_pc)
       );
 pipeir p3(
            .pc4(pc4),
@@ -72,9 +77,9 @@ pipeir p3(
 
 socid p4(
           .dpc4(dpc4),//pc
-          .inst(inst),//ָ��
+          .inst(inst),//ָ��
           .wdi(wdi),//reginput
-          .wrn(wrn),//Ŀ�ļĴ���
+          .wrn(wrn),//Ŀ�ļĴ���
           .fwda(fwda),
           .fwdb(fwdb),
           .ealu(ealu),
@@ -193,7 +198,7 @@ pipemwreg p9(
 socwb p10(
           .wmo(wmo),//wmo
           .walu(walu),//walu
-          .wm2reg(wm2reg),//pc��Դ
+          .wm2reg(wm2reg),//pc��Դ
           .wdi(wdi)//wdi
       );
 
