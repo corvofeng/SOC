@@ -1,30 +1,25 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/09/24 10:27:23
-// Design Name: 
+// Design Name:
 // Module Name: cpu
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
-
-//module cpu(
-//    clk,
-//    clrn
-//    );
-  module cpu(
+module cpu(
       clk,clrn,
       npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo,
       aluc,ealuc,
@@ -33,7 +28,7 @@
       wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
       rs,rt,rd,shamt,op,func
     );
-  
+
     input clk,clrn;
     output [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
     output [3:0] aluc,ealuc;
@@ -42,7 +37,12 @@
     output wpcir,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
     output [4:0]rs,rt,rd,shamt;
     output [5:0]op,func;
-    assign dpc = da;   
+    assign dpc = da;
+
+    output [31:0] pcd,pce,pcm;
+    output [1:0] mfc0;
+    output [31:0] sta,epc,cau;
+    output [1:0] selpc;
      pipepc p1(
         .npc(npc),
         .wpc(wpcir),
@@ -107,12 +107,22 @@
          .rt(rt),
          .rd(rd),
          .shamt(shamt),
-             .func(func),
-             .op(op),
-             .pcsource(pcsource),
-             .mwreg(mwreg)
+         .func(func),
+         .op(op),
+         .pcsource(pcsource),
+         .mwreg(mwreg),
+
+         .pc(pc),
+         .pcd(pcd),
+         .pce(pce),
+         .pcm(pcm),
+         .sta(sta),
+         .epc(epc),
+         .cau(cau),
+         .selpc(selpc),
+         .mfc0(mfc0)
          );
- 
+
       pipedereg p5(
           .dpc4(dpc4),
           .da(da),
@@ -200,7 +210,11 @@
           .walu(walu),//walu
           .wm2reg(wm2reg),//pc来源
           .wdi(wdi),//wdi
-          .wi(wi)
+          .wi(wi),
+          .mfc0(mfc0),
+          .sta(sta),
+          .cau(epc),
+          .epc(cau)
        );
 
 endmodule
