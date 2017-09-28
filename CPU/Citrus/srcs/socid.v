@@ -61,7 +61,7 @@ module socid (
            output [4:0] shamt,
            output [5:0] func,
            output [5:0]  op,
-           output [1:0] pcsource
+           output [1:0] pcsource,
 
            input [31:0] pc,
            input [31:0] pcd,
