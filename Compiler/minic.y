@@ -130,10 +130,6 @@ fun_decl
                                 {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
                                     $$->child[1] = $4; $4->parent = $$;
                                     $$->ntno = 6; $$->procno = 2; $$->txt = $2.text;
-                                    ALL[funcount] = (struct allFunc *)malloc(sizeof(struct allFunc));
-                                    strcpy(ALL[funcount]->name, $2.text);
-                                    ALL[funcount]->t = $$;
-                                    funcount++;
                                 }
     ;
 
@@ -477,7 +473,7 @@ int main()
 	funcount = 0;
 	init();
 	yyparse();
-	if(Totalerrors>0)
+	if (Totalerrors > 0)
 		printf("Total symantic errors: %d\n", Totalerrors);
 	else{
 		printf("Generating MIPS code...\n");

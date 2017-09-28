@@ -41,13 +41,14 @@ assign tpc[29:0]=pc[31:2],
        tpc[31:30]=2'b00;
 
 reg [31:0] npc;
+reg [31:0] next_pc;
 
 always @ ( pcsource or pc4 or bpc or dpc or jpc ) begin//db
     case(pcsource)
-        2'b00:npc = pc4;
-        2'b01:npc = bpc;
-        2'b10:npc = dpc;
-        2'b11:npc = jpc;
+        2'b00:npc <= pc4;
+        2'b01:npc <= bpc;
+        2'b10:npc <= dpc;
+        2'b11:npc <= jpc;
         default:npc <= 32'h0000_0004;
     endcase
 end

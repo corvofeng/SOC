@@ -49,7 +49,6 @@ module cpuctr(
            output ilui,
            output [3:0] aluc,
 
-
            input intr,
            input ecancel,
            input earith,
@@ -61,7 +60,7 @@ module cpuctr(
            output wsta,
            output wcau,
            output wepc,
-           output unimpl,
+           output unimpl_inst,
            output mtc0,
            output isbr,
            output arith,
@@ -119,7 +118,7 @@ and(unimpl_inst,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
            ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr,
            ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
            ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
-           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
+           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clrn,~ilui);
 and(c0_type,  ~op[5], op[4],~op[3],~op[2],~op[1],~op[0]);
 and(imfc0, c0_type, rs[2]); //mfc0 op=010000 rs=00100
 and(imtc0, c0_type,~rs[2]); //mtc0 op=010000 rs=00000

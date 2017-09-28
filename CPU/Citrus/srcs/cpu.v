@@ -26,7 +26,11 @@ module cpu(
       wrn,mrn,ern,drn,ern0,
       pcsource,
       wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
-      rs,rt,rd,shamt,op,func
+      rs,rt,rd,shamt,op,func,
+
+      pcd,pce,pcm,mfc0,sta,epc,cau,selpc,ov,
+
+      intr,inta,vector
     );
 
     input clk,clrn;
@@ -43,11 +47,18 @@ module cpu(
     output [1:0] mfc0;
     output [31:0] sta,epc,cau;
     output [1:0] selpc;
+
+    output ov;
+    input intr;
+    output inta;
+    input[7:0] vector;
+
      pipepc p1(
         .npc(npc),
         .wpc(wpcir),
         .clk(clk),
-        .clrn(clrn)
+        .clrn(clrn),
+        .pc(pc)
         );
     socpc p2(
         .pc(pc),//pc
@@ -57,7 +68,9 @@ module cpu(
         .pcsource(pcsource),//pc婧?
         .pc4(pc4),//pc+4
         .ins(ins),//is
-        .npc(npc)//nextpc
+        .selpc(selpc),
+        .next_pc(npc),//nextpc
+        .epc(epc)
         );
      pipeir p3(
          .pc4(pc4),
@@ -120,7 +133,11 @@ module cpu(
          .epc(epc),
          .cau(cau),
          .selpc(selpc),
-         .mfc0(mfc0)
+         .mfc0(mfc0),
+         .ov(ov),
+         .intr(intr),
+         .inta(inta),
+         .vector(vector)
          );
 
       pipedereg p5(
@@ -164,7 +181,8 @@ module cpu(
           .ealuc(ealuc),
           .ealu(ealu),
           .ern(ern),
-          .ejal(jal)
+          .ejal(jal),
+          .ov(ov)
           );
     pipeemreg p7(
           .ealu(ealu),

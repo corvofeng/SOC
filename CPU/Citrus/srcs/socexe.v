@@ -5,7 +5,7 @@
 //
 // Create Date: 2016/07/06 16:08:58
 // Design Name:
-// Module Name: socexe  exeÄ£¿é
+// Module Name: socexe  exeÄ£ï¿½ï¿½
 // Project Name:
 // Target Devices:
 // Tool Versions:
@@ -31,7 +31,9 @@ module socexe (
            input ejal,
            input [3:0] ealuc,
            output reg [31:0] ealu,
-           output reg [4:0] ern
+           output reg [4:0] ern,
+
+           output ov
        );
 wire epc8 = epc4 + 3'b100;//pc+4
 reg [31:0] ia,ib;

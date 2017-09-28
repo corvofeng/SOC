@@ -63,6 +63,7 @@ module socid (
            output [5:0]  op,
            output [1:0] pcsource,
 
+           input ov,
            input [31:0] pc,
            input [31:0] pcd,
            input [31:0] pce,
@@ -71,7 +72,13 @@ module socid (
            output [31:0] epc,
            output [31:0] cau,
            output [1:0] selpc,
-           output [1:0] mfc0
+           output [1:0] mfc0,
+
+           input intr,
+           output inta,
+           input [7:0] vector
+
+
        );
 //    output [4:0] rs,rt,rd,shamt;
 //	output [5:0] func,op;
@@ -174,6 +181,7 @@ cpuctr cpuctr0(
            .op(op),
            .rs(rs),
            .rt(rt),
+           .rd(rd),
            .func(func),
            .rerteqe(rsrtequ),
            .ewreg(ewreg),
@@ -198,25 +206,25 @@ cpuctr cpuctr0(
            .clrn(clrn),
            .ilui(ilui),
 
-           .intr(),
+           .intr(intr),
            .ecancel(),
            .earith(),
            .eisbr(),
            .misbr(),
-           .ov(),
+           .ov(ov),
            .sta(sta),
-           .vector(),
+           .vector(vector),
 
            .exc(exc),
            .wsta(wsta),
            .wcau(wcau),
            .wepc(wepc),
-           .unimpl(),
+           .unimpl_inst(),
            .mtc0(mtc0),
            .isbr(),
            .arith(),
            .cancel(),
-           .inta(),
+           .inta(inta),
            .mfc0(mfc0),
            .selpc(selpc),
            .sepc(sepc),
@@ -236,26 +244,26 @@ reg32 regfil(
       );
 
 CP0 reg_CP0(
-    i_clk(clkn),
-    i_reset(clrn),
+    .i_clk(clkn),
+    .i_reset(clrn),
 
-    i_exc(exc),
-    i_cause(cause),
-    i_selpc_epc(sepc),
-    i_pc(pc),
-    i_pcd(pcd),
-    i_pce(pce),
-    i_pcm(pcm),
+    .i_exc(exc),
+    .i_cause(cause),
+    .i_selpc_epc(sepc),
+    .i_pc(pc),
+    .i_pcd(pcd),
+    .i_pce(pce),
+    .i_pcm(pcm),
 
-    i_wsta(wsta),
-    i_wcau(wcau),
-    i_wepc(wepc),
+    .i_wsta(wsta),
+    .i_wcau(wcau),
+    .i_wepc(wepc),
 
-    i_mtc0(mtc0),
-    i_data(qb),
+    .i_mtc0(mtc0),
+    .i_data(qb),
 
-    o_status_data(sta),
-    o_epc_data(epc),
-    o_cause_data(cau)
+    .o_status_data(sta),
+    .o_epc_data(epc),
+    .o_cause_data(cau)
     );
 endmodule
