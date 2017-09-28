@@ -71,7 +71,7 @@ module cpuctr(
            output [1:0] selpc,
            output [1:0] sepc,
            output [31:0] cause
-           
+
        );
 wire clr=~clrn;
 wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
@@ -79,9 +79,9 @@ wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
      isll, isrl, isra, isllv, isrlv, israv, ijr, ijalr,
      iaddi, iaddiu, iandi, iori, ixori, ilb, ilh, ilw, ilbu,
      ilhu, isb, ish, isw, ibeq, ibne, ibltz, ibgez, iblez, ibgtz, ibltzal,
-     ibgezal, islti, isltiu, ij, ijal, 
+     ibgezal, islti, isltiu, ij, ijal,
      c0_type, imfc0, imtc0, unimpl_inst,cancel;
-                   
+
 assign isbr = ibeq | ibne | ij | ijal | ijalr | ibltz | ibgez | iblez | ibgtz | ibltzal | ibgezal;
 assign arith = iadd | isub | iaddi;
 wire overflow = ov & earith;
@@ -90,15 +90,15 @@ wire exc_int = sta[0] & intr;
 //wire exc_sys = sta[1] & isyscall;
 wire exc_uni = sta[2] & unimpl_inst;
 wire exc_ovr = sta[3] & overflow;
-assign exc = int_int | exc_uni | exc_ovr; //| exc_sys
+assign exc = exc_int | exc_uni | exc_ovr; //| exc_sys
 assign cancel = exc;
 assign sepc[1] = exc_uni & eisbr | exc_ovr;
-assign sepc[0] = exc_int &  isbr | exc_sys |
-                 exc_uni &~eisbr | exc_ovr & misbr;
-                 
+assign sepc[0] = exc_int &  isbr //| exc_sys
+        |exc_uni &~eisbr | exc_ovr & misbr;
+
 wire ExcCode0 = overflow;//|syscall;
 wire ExcCode1 = unimpl_inst | overflow;
-assign cause = { vector,20'h0, ExcCode1, ExcCode1, 2'b00};
+assign cause = { vector,20'h0, ExcCode1, ExcCode0, 2'b00};
 assign mtc0 = imtc0;
 assign wsta = exc | mtc0 & rd_is_status | ieret;
 assign wcau = exc | mtc0 & rd_is_cause;
@@ -115,7 +115,7 @@ assign selpc[1] = exc;
 
 and(unimpl_inst,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
            ~imthi, ~imflo, ~imtlo, ~iand, ~ior, ~ixor, ~inor, ~islt, ~isltu,
-           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr, 
+           ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr,
            ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
            ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
            ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clk);
@@ -128,8 +128,8 @@ and(ieret, c0_type,~func[5], func[4], func[3],~func[2],~func[1],~func[0] );//ere
 
 
 
-     
-     
+
+
 and(r_type, ~op[5],~op[4],~op[3],~op[2],~op[1],~op[0]); //op==000000?
 and(bgeltz, ~op[5],~op[4],~op[3],~op[2],~op[1], op[0]); //bge or lt z=000001
 
