@@ -63,6 +63,7 @@ module socid (
            output [5:0]  op,
            output [1:0] pcsource,
 
+           input ov,
            input [31:0] pc,
            input [31:0] pcd,
            input [31:0] pce,
@@ -71,7 +72,13 @@ module socid (
            output [31:0] epc,
            output [31:0] cau,
            output [1:0] selpc,
-           output [1:0] mfc0
+           output [1:0] mfc0,
+
+           input intr,
+           output inta,
+           input [7:0] vector
+
+
        );
 //    output [4:0] rs,rt,rd,shamt;
 //	output [5:0] func,op;
@@ -174,6 +181,7 @@ cpuctr cpuctr0(
            .op(op),
            .rs(rs),
            .rt(rt),
+           .rd(rd),
            .func(func),
            .rerteqe(rsrtequ),
            .ewreg(ewreg),
@@ -198,14 +206,14 @@ cpuctr cpuctr0(
            .clrn(clrn),
            .ilui(ilui),
 
-           .intr(),
+           .intr(intr),
            .ecancel(),
            .earith(),
            .eisbr(),
            .misbr(),
-           .ov(),
+           .ov(ov),
            .sta(sta),
-           .vector(),
+           .vector(vector),
 
            .exc(exc),
            .wsta(wsta),
@@ -216,7 +224,7 @@ cpuctr cpuctr0(
            .isbr(),
            .arith(),
            .cancel(),
-           .inta(),
+           .inta(inta),
            .mfc0(mfc0),
            .selpc(selpc),
            .sepc(sepc),

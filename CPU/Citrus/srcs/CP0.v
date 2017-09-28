@@ -57,7 +57,7 @@ input wire i_wsta;
 input wire i_wcau;
 input wire i_wepc;
 
-input wire [5:0] i_mtc0;
+input wire i_mtc0;
 input wire [31:0] i_data;
 
 output wire [31:0] o_status_data;

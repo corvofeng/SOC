@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/09/22 13:38:43
-// Design Name: 
+// Design Name:
 // Module Name: pipedereg
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -47,7 +47,7 @@ module pipedereg(
 	output reg ejal,
 	output reg ealuimm,
 	output reg eshift,
-	output reg pce,
+	output reg [31:0]pce,
 	output reg [3:0] ealuc
     );
 	always @ ( posedge clk ) begin
@@ -81,5 +81,5 @@ module pipedereg(
 	        ealuc   <= aluc;
 		end
 	end
-		
+
 endmodule
