@@ -24,6 +24,7 @@ module cpuctr(
            input [5:0] op,
            input [4:0] rs,
            input [4:0] rt,
+           input [4:0] rd,
            input [5:0]func,
            input rerteqe,
            input ewreg,
