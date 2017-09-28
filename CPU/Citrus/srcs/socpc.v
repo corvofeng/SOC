@@ -41,6 +41,7 @@ assign tpc[29:0]=pc[31:2],
        tpc[31:30]=2'b00;
 
 reg [31:0] npc;
+reg [31:0] next_pc;
 
 always @ ( pcsource or pc4 or bpc or dpc or jpc ) begin//db
     case(pcsource)

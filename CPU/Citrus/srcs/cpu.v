@@ -26,7 +26,9 @@ module cpu(
       wrn,mrn,ern,drn,ern0,
       pcsource,
       wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
-      rs,rt,rd,shamt,op,func
+      rs,rt,rd,shamt,op,func,
+
+      pcd,pce,pcm,mfc0,sta,epc,cau,selpc
     );
 
     input clk,clrn;
@@ -57,7 +59,7 @@ module cpu(
         .pcsource(pcsource),//pc婧?
         .pc4(pc4),//pc+4
         .ins(ins),//is
-        .npc(npc)//nextpc
+        .next_pc(npc)//nextpc
         );
      pipeir p3(
          .pc4(pc4),

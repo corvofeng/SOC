@@ -236,26 +236,26 @@ reg32 regfil(
       );
 
 CP0 reg_CP0(
-    i_clk(clkn),
-    i_reset(clrn),
+    .i_clk(clkn),
+    .i_reset(clrn),
 
-    i_exc(exc),
-    i_cause(cause),
-    i_selpc_epc(sepc),
-    i_pc(pc),
-    i_pcd(pcd),
-    i_pce(pce),
-    i_pcm(pcm),
+    .i_exc(exc),
+    .i_cause(cause),
+    .i_selpc_epc(sepc),
+    .i_pc(pc),
+    .i_pcd(pcd),
+    .i_pce(pce),
+    .i_pcm(pcm),
 
-    i_wsta(wsta),
-    i_wcau(wcau),
-    i_wepc(wepc),
+    .i_wsta(wsta),
+    .i_wcau(wcau),
+    .i_wepc(wepc),
 
-    i_mtc0(mtc0),
-    i_data(qb),
+    .i_mtc0(mtc0),
+    .i_data(qb),
 
-    o_status_data(sta),
-    o_epc_data(epc),
-    o_cause_data(cau)
+    .o_status_data(sta),
+    .o_epc_data(epc),
+    .o_cause_data(cau)
     );
 endmodule

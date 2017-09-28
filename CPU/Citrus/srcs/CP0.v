@@ -24,9 +24,8 @@ module CP0(
         i_reset,
 
         i_exc,
-        i_sta,
         i_cause,
-        i_selpc_epc_epc,
+        i_selpc_epc,
         i_pc,
         i_pcd,
         i_pce,
@@ -73,12 +72,12 @@ assign o_status_data = status_reg;
 assign o_cause_data = cause_reg;
 assign o_epc_data = epc_reg;
 
-wire[31:0] sta_reg_in;
-wire[31:0] cau_reg_in;
-wire[31:0] epc_reg_in;
+reg[31:0] sta_reg_in;
+reg[31:0] cau_reg_in;
+reg[31:0] epc_reg_in;
 
-wire[31:0] sta_sel_data;
-wire[31:0] epc_sel_data;
+reg[31:0] sta_sel_data;
+reg[31:0] epc_sel_data;
 
 
 always @(posedge i_clk) begin
@@ -91,7 +90,7 @@ always @(posedge i_clk) begin
             3'b100:status_reg <= sta_reg_in;
             3'b010:cause_reg <= cau_reg_in;
             3'b001:epc_reg <= epc_reg_in;
-            default break;
+            default;
         endcase
     end
 end
@@ -103,23 +102,23 @@ always @ ( i_mtc0 or i_data or sta_sel_data or i_cause or epc_sel_data ) begin
         epc_reg_in = i_data;
     end else begin
         sta_reg_in = sta_sel_data;
-        cau_reg_in = cau_sel_data;
+        cau_reg_in = i_cause;
         epc_reg_in = epc_sel_data;
     end
 end
 
-always @ ( i_selpc_epc or pc or dpc or epc or mpc ) begin
+always @ ( i_selpc_epc or i_pc or i_pcd or i_pce or i_pcm ) begin
     case(i_selpc_epc)
-        2'b00:epc_sel_data = pc;
-        2'b01:epc_sel_data = dpc;
-        2'b10:epc_sel_data = epc;
-        2'b11:epc_sel_data = mpc;
-        default break;
+        2'b00:epc_sel_data = i_pc;
+        2'b01:epc_sel_data = i_pcd;
+        2'b10:epc_sel_data = i_pce;
+        2'b11:epc_sel_data = i_pcm;
+        default;
     endcase
 end
 
-always @ ( exc or o_status_data ) begin
-    case(exc)
+always @ ( i_exc or o_status_data ) begin
+    case(i_exc)
         0:sta_sel_data = {4'h0,o_status_data[31:4]};
         1:sta_sel_data = {o_status_data[27:0],4'h0};
     endcase

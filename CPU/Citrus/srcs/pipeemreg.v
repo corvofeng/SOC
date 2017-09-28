@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/09/22 13:38:43
-// Design Name: 
+// Design Name:
 // Module Name: pipeemreg
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -25,7 +25,6 @@ module pipeemreg(
 	input [31:0] eb,
 	input [31:0] pce,
 	input [4:0] ern,
-	input [31:0] ealu,
 	input ewreg,
 	input em2reg,
 	input ewmem,
@@ -39,7 +38,7 @@ module pipeemreg(
 	output reg mm2reg,
 	output reg mwmem
     );
-    
+
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
 		    malu   <= 32'h0000_0000;
@@ -59,5 +58,5 @@ module pipeemreg(
 	        mwmem  <= ewmem;
 		end
 	end
-		
+
 endmodule
