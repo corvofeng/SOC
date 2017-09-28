@@ -25,9 +25,11 @@ module cpu_sim(
 
        );
 reg clk,clrn;
+reg [7:0] vector;
 cpu cpu(
         .clk(clk),
-        .clrn(clrn)
+        .clrn(clrn),
+        .vector(vector)
         //      .pc(pc),
         //      .inst(inst),
         ////      .wpcir(no)
@@ -57,6 +59,7 @@ cpu cpu(
 initial begin
     clrn=0;
     clk=0;
+    vector = 8'b01010101;
     //              no=1;
     #1 clrn=1;
     #50 clrn=0;

@@ -69,7 +69,8 @@ module cpu(
         .pc4(pc4),//pc+4
         .ins(ins),//is
         .selpc(selpc),
-        .next_pc(npc)//nextpc
+        .next_pc(npc),//nextpc
+        .epc(epc)
         );
      pipeir p3(
          .pc4(pc4),

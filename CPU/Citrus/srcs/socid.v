@@ -219,7 +219,7 @@ cpuctr cpuctr0(
            .wsta(wsta),
            .wcau(wcau),
            .wepc(wepc),
-           .unimpl(),
+           .unimpl_inst(),
            .mtc0(mtc0),
            .isbr(),
            .arith(),
