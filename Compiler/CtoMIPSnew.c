@@ -14,6 +14,7 @@ void GenerateMIPS() {
     fprintf(fp, ".text\n");
     labelno = 1;
     for (int i = 0; i < funcount; i++) {
+        ALL[i]->st = makeST();
         deal_with_node(fp, ALL[i]->t, i);
     }
     fclose(fp);
@@ -50,21 +51,23 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             fprintf(fp, "\tsw $s1, 4($sp)\n");  // 保存寄存器s1
             fprintf(fp, "\tsw $s0, 0($sp)\n");  // 保存寄存器s0
             
-            deal_with_node(fp, t->child[0], funcno); // type_spec检查
+            deal_with_node(fp, t->child[0], funcno); // type_spec部分，记录返回类型
             deal_with_node(fp, t->child[1], funcno); // param部分，参数填表
             deal_with_node(fp, t->child[2], funcno); // compound_stmt部分
             
-            // 恢复寄存器
-            fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-            fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-            fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-            fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-            fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-            fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-            fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-            fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-            fprintf(fp, "\taddi $sp, $sp, 32\n");
-            fprintf(fp, "\tjr $ra\n");
+            if (ALL[funcno]->type == 0) {
+                // 恢复寄存器
+                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
+                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
+                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
+                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
+                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
+                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
+                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
+                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
+                fprintf(fp, "\taddi $sp, $sp, 32\n");
+                fprintf(fp, "\tjr $ra\n");
+            }
         } else if (t->procno == 2) {
             printf("Error! A function should never include fun_decl!\n")
         }
@@ -75,25 +78,86 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     } else if (t->ntno == 9) { // param
         
     } else if (t->ntno == 10) { // stmt_list
-        
+        if (t->multiplicity > 1) {
+            deal_with_node(fp, t->child[0], funcno);
+            deal_with_node(fp, t->child[1], funcno);
+        } else if (t->multiplicity == 1) {
+            deal_with_node(fp, t->child[0], funcno);
+        }
     } else if (t->ntno == 11) { // stmt
-        
+        deal_with_node(fp, t->child[0], funcno);
     } else if (t->ntno == 12) { // expr_stmt
+        deal_with_node(fp, t->child[0], funcno);
         
     } else if (t->ntno == 13) { // while_stmt
         
     } else if (t->ntno == 14) { // block_stmt
-        
+        deal_with_node(fp, t->child[0], funcno);
     } else if (t->ntno == 15) { // compound_stmt
         
     } else if (t->ntno == 16) { // local_decls
-        
+        if (t->multiplicity > 1) {
+            deal_with_node(fp, t->child[0], funcno);
+            deal_with_node(fp, t->child[1], funcno);
+        } else if (t->multiplicity == 1) {
+            deal_with_node(fp, t->child[0], funcno);
+        }
     } else if (t->ntno == 17) { // local_decl
         
     } else if (t->ntno == 18) { // if_stmt
-        
+        if (procno == 1) {
+            int label1 = getLabel();
+            deal_with_node(fp, t->child[0], funcno);
+            fprintf(fp, "\tbeq $t0, $zero, L%d\n", label1);
+            deal_with_node(fp, t->child[1], funcno);
+            fprintf(fp, "L%d:\n", label1);
+        } else if (procno == 2) {
+            int label1 = getLabel();
+            int label2 = getLabel();
+            deal_with_node(fp, t->child[0], funcno);
+            fprintf(fp, "\tbeq $t0, $zero, L%d\n", label1);
+            deal_with_node(fp, t->child[1], funcno);
+            fprintf(fp, "\tj L%d\n", label2);
+            fprintf(fp, "L%d:\n", label1);
+            deal_with_node(fp, t->child[2], funcno);
+            fprintf(fp, "L%d:\n", label2);
+        }
     } else if (t->ntno == 19) { // return_stmt
-        
+        if (procno == 1) {
+            if (ALL[funcno]->type == 0) {
+                // 恢复寄存器
+                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
+                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
+                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
+                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
+                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
+                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
+                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
+                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
+                fprintf(fp, "\taddi $sp, $sp, 32\n");
+                fprintf(fp, "\tjr $ra\n");
+            } else {
+                printf("Error! Return type mismatch!\n");
+            }
+        } else if (procno == 2) {
+            if (ALL[funcno]->type == 1) {
+                deal_with_node(fp, t->child[0], funcno);
+                fprintf(fp, "\taddi $v0, $t0, 0\n");
+                // 恢复寄存器
+                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
+                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
+                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
+                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
+                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
+                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
+                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
+                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
+                fprintf(fp, "\taddi $sp, $sp, 32\n");
+                fprintf(fp, "\tjr $ra\n");
+            } else {
+                printf("Error! Return type mismatch!\n");
+            }
+        }
     } else if (t->ntno == 20) { // expr
         if (t->contain_expr) { // 如果t的产生式还含有expr
             if (t->procno == 1) { // ||
@@ -102,16 +166,16 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
-                int labelno2 = getLabel();
+                int label1 = getLabel();
+                int label2 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 0\n");
-                fprintf(fp, "\tbgtz $t1, L%d\n", labelno1);
-                fprintf(fp, "\tbltz $t1, L%d\n", labelno1);
-                fprintf(fp, "\tbgtz $t2, L%d\n", labelno1);
-                fprintf(fp, "\tbltz $t2, L%d\n", labelno1);
-                fprintf(fp, "\tj L%d\n", labelno2);
-                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", labelno1);
-                fprintf(fp, "L%d:\n", labelno2);
+                fprintf(fp, "\tbgtz $t1, L%d\n", label1);
+                fprintf(fp, "\tbltz $t1, L%d\n", label1);
+                fprintf(fp, "\tbgtz $t2, L%d\n", label1);
+                fprintf(fp, "\tbltz $t2, L%d\n", label1);
+                fprintf(fp, "\tj L%d\n", label2);
+                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", label1);
+                fprintf(fp, "L%d:\n", label2);
             
             } else if (t->procno == 2) { // ==
                 
@@ -119,13 +183,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
-                int labelno2 = getLabel();
+                int label1 = getLabel();
+                int label2 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 0\n");
-                fprintf(fp, "\tbeq $t1, $t2, L%d\n", labelno1);
-                fprintf(fp, "\tj L%d\n", labelno2);
-                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", labelno1);
-                fprintf(fp, "L%d:\n", labelno2);
+                fprintf(fp, "\tbeq $t1, $t2, L%d\n", label1);
+                fprintf(fp, "\tj L%d\n", label2);
+                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", label1);
+                fprintf(fp, "L%d:\n", label2);
             
             } else if (t->procno == 3) { // !=
                 
@@ -133,13 +197,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
-                int labelno2 = getLabel();
+                int label1 = getLabel();
+                int label2 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 0\n");
-                fprintf(fp, "\tbne $t1, $t2, L%d\n", labelno1);
-                fprintf(fp, "\tj L%d\n", labelno2);
-                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", labelno1);
-                fprintf(fp, "L%d:\n", labelno2);
+                fprintf(fp, "\tbne $t1, $t2, L%d\n", label1);
+                fprintf(fp, "\tj L%d\n", label2);
+                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", label1);
+                fprintf(fp, "L%d:\n", label2);
             
             } else if (t->procno == 4) { // <=
                 
@@ -147,11 +211,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
+                int label1 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 1\n");
-                fprintf(fp, "\tbeq $t1, $t2, L%d\n", labelno1);
+                fprintf(fp, "\tbeq $t1, $t2, L%d\n", label1);
                 fprintf(fp, "\tslt $t0, $t1, $t2\n");
-                fprintf(fp, "L%d:\n", labelno1);
+                fprintf(fp, "L%d:\n", label1);
 
             } else if (t->procno == 5) { // <
                 
@@ -166,11 +230,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
+                int label1 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 1\n");
-                fprintf(fp, "\tbeq $t1, $t2, L%d\n", labelno1);
+                fprintf(fp, "\tbeq $t1, $t2, L%d\n", label1);
                 fprintf(fp, "\tslt $t0, $t2, $t1\n");
-                fprintf(fp, "L%d:\n", labelno1);
+                fprintf(fp, "L%d:\n", label1);
             
             } else if (t->procno == 7) { // >
                 
@@ -185,14 +249,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $t2, $t0, $zero\n");
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $t1, $t0, $zero\n");
-                int labelno1 = getLabel();
-                int labelno2 = getLabel();
+                int label1 = getLabel();
+                int label2 = getLabel();
                 fprintf(fp, "\taddi $t0, $zero, 1\n");
-                fprintf(fp, "\tbeq $t1, $zero, L%d\n", labelno1);
-                fprintf(fp, "\tbeq $t2, $zero, L%d\n", labelno1);
-                fprintf(fp, "\tj L%d\n", labelno2);
-                fprintf(fp, "L%d:\n\taddi $t0, $zero, 0\n", labelno1);
-                fprintf(fp, "L%d:\n", labelno2);
+                fprintf(fp, "\tbeq $t1, $zero, L%d\n", label1);
+                fprintf(fp, "\tbeq $t2, $zero, L%d\n", label1);
+                fprintf(fp, "\tj L%d\n", label2);
+                fprintf(fp, "L%d:\n\taddi $t0, $zero, 0\n", label1);
+                fprintf(fp, "L%d:\n", label2);
             
             } else if (t->procno == 9) { // +
                 
@@ -235,13 +299,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else if (t->procno == 14) { // !
             
                 deal_with_node(fp, t->child[0], funcno);
-                int labelno1 = getLabel();
-                int labelno2 = getLabel();
-                fprintf(fp, "\tbeq $t0, $zero, L%d\n", labelno1);
+                int label1 = getLabel();
+                int label2 = getLabel();
+                fprintf(fp, "\tbeq $t0, $zero, L%d\n", label1);
                 fprintf(fp, "\taddi $t0, $zero, 0\n");
-                fprintf(fp, "\tj L%d\n", labelno2);
-                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", labelno1);
-                fprintf(fp, "L%d:\n", labelno2);
+                fprintf(fp, "\tj L%d\n", label2);
+                fprintf(fp, "L%d:\n\taddi $t0, $zero, 1\n", label1);
+                fprintf(fp, "L%d:\n", label2);
             
             } else if (t->procno == 15) { // -(unary)
             
@@ -341,6 +405,8 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tlw $t7, 16($sp)\n"); // 恢复参数部分指针地址
                 fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
                 fprintf(fp, "\taddi $sp, $sp, 24\n");
+                
+                fprintf(fp, "\taddi $t0, $v0, 0\n");
             } else if (t->procno == 22) { // 函数调用，无参数
                 // 保存寄存器
                 fprintf(fp, "\taddi $sp, $sp, -8\n");
@@ -354,6 +420,8 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tlw $t7, 0($sp)\n"); // 恢复参数部分指针地址
                 fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
                 fprintf(fp, "\taddi $sp, $sp, 8\n");
+                
+                fprintf(fp, "\taddi $t0, $v0, 0\n");
             } else if (t->procno == 23) { // int_literal
                 
             }
