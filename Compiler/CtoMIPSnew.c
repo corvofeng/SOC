@@ -9,8 +9,8 @@ int getLabel();
 void GenerateMIPS() {
     FILE *fp;
     fp = fopen("mips_code.s", "w");
-    fprrintf(fp, ".data\n");
-    //fprrintf(fp, "global: .word %d\n", sym->tableSize);
+    fprintf(fp, ".data\n");
+    //fprintf(fp, "global: .word %d\n", sym->tableSize);
     fprintf(fp, ".text\n");
     labelno = 1;
     for (int i = 0; i < funcount; i++) {
@@ -22,14 +22,23 @@ void GenerateMIPS() {
 
 void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     if (t->ntno == 1) { // program
+        
         printf("Error! A function should never include program!\n");
+    
     } else if (t->ntno == 2) { // decl_list
+        
         printf("Error! A function should never include decl_list!\n")
+    
     } else if (t->ntno == 3) { // decl
+        
         printf("Error! A function should never include decl!\n");
+    
     } else if (t->ntno == 4) { // var_decl
+    
         printf("Error! A function should never include var_decl!\n")
+    
     } else if (t->ntno == 5) { // type_spec
+        
         // 函数类型填入ALL，VOID为0，INT为1
         if (t->parent->ntno == 6) {
             if (t->procno == 1)
@@ -37,7 +46,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             else if (t->procno == 2)
                 ALL[funcno]->type = 1;
         }
+        
     } else if (t->ntno == 6) { // fun_decl
+        
         if (t->procno == 1) {
             fprintf(fp, "%s:\n", t->txt);
             // 保存寄存器
@@ -71,40 +82,83 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         } else if (t->procno == 2) {
             printf("Error! A function should never include fun_decl!\n")
         }
+        
     } else if (t->ntno == 7) { // params
         
+        if (t->procno == 1)
+            deal_with_node(fp, t->child[0], funcno);
+        
     } else if (t->ntno == 8) { // param_list
+        /*****    待修改   *****/
+        if (t->multiplicity > 1) {
+            deal_with_node(fp, t->child[0], funcno);
+            int select_space = t->child[0]->multiplicity;
+            if (select_space < 4) // 如果是前四个参数
+                st_add(t->child[1]->txt, 1, select_space, funcno);
+            else
+                st_add(t->child[1]->txt, 2, select_space - 4, funcno);
+        } else if (t->multiplicity == 1) {
+            st_add(t->child[1]->txt, 1, 0, funcno); // 第一个参数
+        }
         
     } else if (t->ntno == 9) { // param
         
+        // do nothing
+        
     } else if (t->ntno == 10) { // stmt_list
+        
         if (t->multiplicity > 1) {
             deal_with_node(fp, t->child[0], funcno);
             deal_with_node(fp, t->child[1], funcno);
         } else if (t->multiplicity == 1) {
             deal_with_node(fp, t->child[0], funcno);
         }
+        
     } else if (t->ntno == 11) { // stmt
+        
         deal_with_node(fp, t->child[0], funcno);
+    
     } else if (t->ntno == 12) { // expr_stmt
-        deal_with_node(fp, t->child[0], funcno);
+        
+        if (t->procno == 1) { // IDENT = expr;
+            deal_with_node(fp, t->child[0], funcno);
+            struct messenger *m = lookup(t->txt, funcno);
+            if (m->type == 1) {
+                fprintf(fp, "\tadd, %s, $t0, $zero\n", m->pos);
+            }
+            else if (m->type == 2) {
+                fprintf(fp, "sw, $t0, %s", m->pos);
+            }
+        } else if (t->procno == 2) { // IDENT[int_literal] = expr;
+            deal_with_node(fp, t->child[1], funcno);
+            fprintf(fp, "\tadd $t1, $t0, $zero\n");
+            deal_with_node(fp, t->child[0], funcno);
+            struct messenger *m = lookup(t->txt, funcno);
+        } else if (t->procno == 3) {
+            
+        }
         
     } else if (t->ntno == 13) { // while_stmt
         
     } else if (t->ntno == 14) { // block_stmt
+        
         deal_with_node(fp, t->child[0], funcno);
+        
     } else if (t->ntno == 15) { // compound_stmt
         
     } else if (t->ntno == 16) { // local_decls
+        
         if (t->multiplicity > 1) {
             deal_with_node(fp, t->child[0], funcno);
             deal_with_node(fp, t->child[1], funcno);
         } else if (t->multiplicity == 1) {
             deal_with_node(fp, t->child[0], funcno);
         }
+        
     } else if (t->ntno == 17) { // local_decl
         
     } else if (t->ntno == 18) { // if_stmt
+        
         if (procno == 1) {
             int label1 = getLabel();
             deal_with_node(fp, t->child[0], funcno);
@@ -122,7 +176,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[2], funcno);
             fprintf(fp, "L%d:\n", label2);
         }
+        
     } else if (t->ntno == 19) { // return_stmt
+        
         if (procno == 1) {
             if (ALL[funcno]->type == 0) {
                 // 恢复寄存器
@@ -158,7 +214,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 printf("Error! Return type mismatch!\n");
             }
         }
+        
     } else if (t->ntno == 20) { // expr
+        
         if (t->contain_expr) { // 如果t的产生式还含有expr
             if (t->procno == 1) { // ||
                 
@@ -322,7 +380,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
                 deal_with_node(fp, t->child[0], funcno);
             
-            } else if (t->procno == 20) { // IDENT[expr]
+            } else if (t->procno == 20) { // IDENT[int_literal]
                 
             } else if (t->procno == 24) { // &
             
@@ -380,6 +438,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
                 fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
                 
+                /*****    待修改   *****/
                 int local_space = t->child[0]->multiplicity - 8; // 8个寄存器是否足够
                 if (local_space > 0) {
                     local_space = local_space * 4;
@@ -426,9 +485,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 
             }
         }
+        
     } else if (t->ntno == 21) { // int_literal
         
     } else if (t->ntno == 22) { // arg_list
+        /*****    待修改   *****/
         if (t->multiplicity > 1) {
             deal_with_node(fp, t->child[0], funcno);
             deal_with_node(fp, t->child[1], funcno);
@@ -436,11 +497,12 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             if (select_space < 4) // 如果是前四个参数
                 fprintf(fp, "add $a%d, $t0, $zero\n", select_space);
             else
-                fprintf(fp, "sw $t0, %d($sp)\n", (select_space - 4) * 8);
+                fprintf(fp, "sw $t0, %d($sp)\n", (select_space - 4) * 4);
         } else if (t->multiplicity == 1) {
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tadd $a0, $t0, $zero\n"); // 第一个参数
         }
+        
     } else if (t->ntno == 23) { // continue_stmt
         
     } else if (t->ntno == 24) { // break_stmt
