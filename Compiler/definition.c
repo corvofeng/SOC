@@ -65,3 +65,32 @@ struct messenger * lookup(char *n, int funcno) {
     strcpy(m->pos, a);
     return m;
 }
+
+struct stack * init_stack() {
+    struct stack * s = (struct stack *)malloc(sizeof(struct stack));
+    s->len = 0;
+    return s;
+}
+
+void push(struct stack *s, int item) {
+    s->data[s->len++] = item;
+}
+
+void pop(struct stack *s) {
+    s->len--;
+}
+
+int top(struct stack *s) {
+    return s->data[len - 1];
+}
+
+bool empty(struct stack *s) {
+    if (s->len == 0)
+        return true;
+    else
+        return false;
+}
+
+void clear(struct stack *s) {
+    s->len = 0;
+}
