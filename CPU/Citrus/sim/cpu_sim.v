@@ -68,8 +68,12 @@ initial begin
     //              no=1;
     #1 clrn=1;
     #50 clrn=0;
-    #100 intr = 1;
+    #200 intr = 1;
     //         #500 clrn = 1;
 end
 always #5 clk=~clk;
+
+always @ ( inta ) begin
+    intr = 0;
+end
 endmodule
