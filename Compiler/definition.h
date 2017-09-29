@@ -39,11 +39,24 @@ struct messenger {
     char pos[10];
 };
 
+struct stack {
+    int data[10];
+    int len;
+};
+
 struct AST * makeNode(int num);
 struct symbolTable * makeST();
 struct symbolTableItem * makeSTitem();
 void st_add(char *name, int pos, int offset, int funcno);
 struct messenger * lookup(char *name, int funcno);
+
+struct stack * init_stack();
+void push(struct stack *s, int item);
+void pop(struct stack *s);
+int top(struct stack *s);
+bool empty(struct stack *s);
+void clear(struct stack *s);
+
 void GenerateMIPS();
 
 

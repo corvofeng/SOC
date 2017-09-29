@@ -2,6 +2,8 @@
 #include "y.tab.h"
 
 int labelno;
+struct stack *while1;
+struct stack *while2;
 
 void deal_with_node(FILE *fp, struct AST *t, int funcno);
 int getLabel();
@@ -13,6 +15,8 @@ void GenerateMIPS() {
     //fprintf(fp, "global: .word %d\n", sym->tableSize);
     fprintf(fp, ".text\n");
     labelno = 1;
+    while1 = init_stack();
+    while2 = init_stack();
     for (int i = 0; i < funcount; i++) {
         ALL[i]->st = makeST();
         deal_with_node(fp, ALL[i]->t, i);
@@ -51,32 +55,36 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
         if (t->procno == 1) {
             fprintf(fp, "%s:\n", t->txt);
-            // 保存寄存器
-            fprintf(fp, "\taddi $sp, $sp, -32\n");
-            fprintf(fp, "\tsw $s7, 28($sp)\n"); // 保存寄存器s7
-            fprintf(fp, "\tsw $s6, 24($sp)\n"); // 保存寄存器s6
-            fprintf(fp, "\tsw $s5, 20($sp)\n"); // 保存寄存器s5
-            fprintf(fp, "\tsw $s4, 16($sp)\n"); // 保存寄存器s4
-            fprintf(fp, "\tsw $s3, 12($sp)\n"); // 保存寄存器s3
-            fprintf(fp, "\tsw $s2, 8($sp)\n");  // 保存寄存器s2
-            fprintf(fp, "\tsw $s1, 4($sp)\n");  // 保存寄存器s1
-            fprintf(fp, "\tsw $s0, 0($sp)\n");  // 保存寄存器s0
+            if (strcmp(ALL[funcno]->name, "main") != 0) {
+                // 保存寄存器
+                fprintf(fp, "\taddi $sp, $sp, -32\n");
+                fprintf(fp, "\tsw $s7, 28($sp)\n"); // 保存寄存器s7
+                fprintf(fp, "\tsw $s6, 24($sp)\n"); // 保存寄存器s6
+                fprintf(fp, "\tsw $s5, 20($sp)\n"); // 保存寄存器s5
+                fprintf(fp, "\tsw $s4, 16($sp)\n"); // 保存寄存器s4
+                fprintf(fp, "\tsw $s3, 12($sp)\n"); // 保存寄存器s3
+                fprintf(fp, "\tsw $s2, 8($sp)\n");  // 保存寄存器s2
+                fprintf(fp, "\tsw $s1, 4($sp)\n");  // 保存寄存器s1
+                fprintf(fp, "\tsw $s0, 0($sp)\n");  // 保存寄存器s0
+            }
             
             deal_with_node(fp, t->child[0], funcno); // type_spec部分，记录返回类型
             deal_with_node(fp, t->child[1], funcno); // param部分，参数填表
             deal_with_node(fp, t->child[2], funcno); // compound_stmt部分
             
             if (ALL[funcno]->type == 0) {
-                // 恢复寄存器
-                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-                fprintf(fp, "\taddi $sp, $sp, 32\n");
+                if (strcmp(ALL[funcno]->name, "main") != 0) {
+                    // 恢复寄存器
+                    fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
+                    fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
+                    fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
+                    fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
+                    fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
+                    fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
+                    fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
+                    fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
+                    fprintf(fp, "\taddi $sp, $sp, 32\n");
+                }
                 fprintf(fp, "\tjr $ra\n");
             }
         } else if (t->procno == 2) {
@@ -89,7 +97,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[0], funcno);
         
     } else if (t->ntno == 8) { // param_list
-        /*****    待修改   *****/
+        
         if (t->multiplicity > 1) {
             deal_with_node(fp, t->child[0], funcno);
             int select_space = t->child[0]->multiplicity;
@@ -129,22 +137,47 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             else if (m->type == 2) {
                 fprintf(fp, "sw, $t0, %s", m->pos);
             }
-        } else if (t->procno == 2) { // IDENT[int_literal] = expr;
-            deal_with_node(fp, t->child[1], funcno);
-            fprintf(fp, "\tadd $t1, $t0, $zero\n");
+        } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
             deal_with_node(fp, t->child[0], funcno);
+            fprintf(fp, "\tadd $t1, $t0, $zero\n");
             struct messenger *m = lookup(t->txt, funcno);
-        } else if (t->procno == 3) {
+            if (m->type == 1) {
+                fprintf(fp, "add, $t0, %s, $zero", m->pos); // 数组指针进t0
+            } else if (m->type == 2) {
+                fprintf(fp, "lw, $t0, %s", m->pos); // 数组指针进t0
+            }
+            int o = atoi(t->numtxt);
+            fprintf(fp, "sw, $t1, %d($t0)", 4 * o);
+        } else if (t->procno == 3) { // $expr = expr;
             
         }
         
     } else if (t->ntno == 13) { // while_stmt
         
+        int label1 = getLabel();
+        int label2 = getLabel();
+        push(while1, label1);
+        push(while2, label2);
+        fprintf(fp, "L%d:\n", label1);
+        deal_with_node(fp, t->child[0], funcno);
+        fprintf(fp, "\tbeq $t0, $zero, L%d\n", label2);
+        deal_with_node(fp, t->child[1], funcno);
+        fprintf(fp, "\tj L%d\n", label1);
+        fprintf(fp, "L%d:\n", label2);
+        pop(while1);
+        pop(while2);
+    
     } else if (t->ntno == 14) { // block_stmt
         
         deal_with_node(fp, t->child[0], funcno);
         
     } else if (t->ntno == 15) { // compound_stmt
+        
+        if (t->procno == 1) {
+            deal_with_node(fp, t->child[0], funcno);
+            deal_with_node(fp, t->child[1], funcno);
+        } else if (t->procno == 2 || t->procno == 3)
+            deal_with_node(fp, t->child[0], funcno);
         
     } else if (t->ntno == 16) { // local_decls
         
@@ -180,40 +213,30 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     } else if (t->ntno == 19) { // return_stmt
         
         if (procno == 1) {
-            if (ALL[funcno]->type == 0) {
-                // 恢复寄存器
-                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-                fprintf(fp, "\taddi $sp, $sp, 32\n");
-                fprintf(fp, "\tjr $ra\n");
-            } else {
+            if (ALL[funcno]->type == 1) {
                 printf("Error! Return type mismatch!\n");
             }
         } else if (procno == 2) {
             if (ALL[funcno]->type == 1) {
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\taddi $v0, $t0, 0\n");
-                // 恢复寄存器
-                fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-                fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-                fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-                fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-                fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-                fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-                fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-                fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-                fprintf(fp, "\taddi $sp, $sp, 32\n");
-                fprintf(fp, "\tjr $ra\n");
             } else {
                 printf("Error! Return type mismatch!\n");
             }
         }
+        if (strcmp(ALL[funcno]->name, "main") != 0) {
+            // 恢复寄存器
+            fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
+            fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
+            fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
+            fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
+            fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
+            fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
+            fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
+            fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
+            fprintf(fp, "\taddi $sp, $sp, 32\n");
+        }
+        fprintf(fp, "\tjr $ra\n");
         
     } else if (t->ntno == 20) { // expr
         
@@ -368,7 +391,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else if (t->procno == 15) { // -(unary)
             
                 deal_with_node(fp, t->child[0], funcno);
-                
+                fprintf(fp, "\taddi $t1, $zero, -1\n");
+                fprintf(fp, "\tmult $t0, $t1\n");
+                fprintf(fp, "\tmflo $t0\n");
                 
             } else if (t->procno == 16) { // +(unary)
             
@@ -376,12 +401,12 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
             } else if (t->procno == 17) { // $
                 
+                
+                
             } else if (t->procno == 18) { // ()
             
                 deal_with_node(fp, t->child[0], funcno);
             
-            } else if (t->procno == 20) { // IDENT[int_literal]
-                
             } else if (t->procno == 24) { // &
             
                 deal_with_node(fp, t->child[1], funcno);
@@ -399,9 +424,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else if (t->procno == 26) { // ~
             
                 deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\tlui $t1, 0ffffh\n");
-                fprintf(fp, "\tori $t1, 0ffffh\n");
-                fprintf(fp, "\tnor $t0, $t0, $t1\n");
+                fprintf(fp, "\tnor $t0, $t0, $zero\n");
             
             } else if (t->procno == 27) { // <<
             
@@ -428,7 +451,25 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         } else {
             if (t->procno == 19) { // IDENT
                 
+                struct messenger *m = lookup(t->txt, funcno);
+                if (m->type == 1)
+                    fprintf(fp, "\tadd, $t0, %s, $zero\n", m->pos);
+                else if (m->type == 2)
+                    fprintf(fp, "lw, $t0, %s", m->pos);
+            
+            } else if (t->procno == 20) { // IDENT[DECNUM]
+                
+                struct messenger *m = lookup(t->txt, funcno);
+                if (m->type == 1) {
+                    fprintf(fp, "add, $t0, %s, $zero", m->pos); // 数组指针进t0
+                } else if (m->type == 2) {
+                    fprintf(fp, "lw, $t0, %s", m->pos); // 数组指针进t0
+                }
+                int o = atoi(t->numtxt);
+                fprintf(fp, "lw, $t0, %d($t0)", 4 * o);
+            
             } else if (t->procno == 21) { // 函数调用，有参数
+                
                 // 保存寄存器
                 fprintf(fp, "\taddi $sp, $sp, -24\n");
                 fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
@@ -438,7 +479,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
                 fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
                 
-                /*****    待修改   *****/
+                
                 int local_space = t->child[0]->multiplicity - 8; // 8个寄存器是否足够
                 if (local_space > 0) {
                     local_space = local_space * 4;
@@ -466,7 +507,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\taddi $sp, $sp, 24\n");
                 
                 fprintf(fp, "\taddi $t0, $v0, 0\n");
+            
             } else if (t->procno == 22) { // 函数调用，无参数
+                
                 // 保存寄存器
                 fprintf(fp, "\taddi $sp, $sp, -8\n");
                 fprintf(fp, "\tsw $ra, 4($sp)\n"); // 保存返回地址
@@ -481,15 +524,20 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\taddi $sp, $sp, 8\n");
                 
                 fprintf(fp, "\taddi $t0, $v0, 0\n");
+            
             } else if (t->procno == 23) { // int_literal
                 
+                fprintf(fp, "\taddi $t0, $zero, %s\n", t->child[0]->numtxt);
+            
             }
         }
         
     } else if (t->ntno == 21) { // int_literal
         
+        // do nothing
+        
     } else if (t->ntno == 22) { // arg_list
-        /*****    待修改   *****/
+        
         if (t->multiplicity > 1) {
             deal_with_node(fp, t->child[0], funcno);
             deal_with_node(fp, t->child[1], funcno);
@@ -505,7 +553,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 23) { // continue_stmt
         
+        int no = top(while1);
+        fprintf(fp, "\tj L%d\n", no);
+        
     } else if (t->ntno == 24) { // break_stmt
+        
+        int no = top(while2);
+        fprintf(fp, "\tj L%d\n", no);
         
     }
 }
