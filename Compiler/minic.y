@@ -96,13 +96,12 @@ decl
 var_decl
     : type_spec IDENT ';'       {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 4; $$->procno = 1;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text);
                                 }
-    | type_spec IDENT '[' int_literal ']' ';'
-                                {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
-                                    $$->child[1] = $4; $4->parent = $$;
+    | type_spec IDENT '[' DECNUM ']' ';'
+                                {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 4; $$->procno = 2;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
                                 }
     ;
 
@@ -120,7 +119,7 @@ fun_decl
                                 {   $$ = makeNode(3); $$->child[0] = $1; $1->parent = $$;
                                     $$->child[1] = $4; $4->parent = $$;
                                     $$->child[2] = $6; $6->parent = $$;
-                                    $$->ntno = 6; $$->procno = 1; $$->txt = $2.text;
+                                    $$->ntno = 6; $$->procno = 1; strcpy($$->txt, $2.text);
                                     ALL[funcount] = (struct allFunc *)malloc(sizeof(struct allFunc));
                                     strcpy(ALL[funcount]->name, $2.text);
                                     ALL[funcount]->t = $$;
@@ -129,7 +128,7 @@ fun_decl
     | type_spec IDENT '(' params ')' ';'
                                 {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
                                     $$->child[1] = $4; $4->parent = $$;
-                                    $$->ntno = 6; $$->procno = 2; $$->txt = $2.text;
+                                    $$->ntno = 6; $$->procno = 2; strcpy($$->txt, $2.text);
                                 }
     ;
 
@@ -155,13 +154,12 @@ param_list
 param
     : type_spec IDENT           {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 9; $$->procno = 1;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text);
                                 }
-    | type_spec IDENT '[' int_literal ']'
-                                {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
-                                    $$->child[1] = $4; $4->parent = $$;
+    | type_spec IDENT '[' DECNUM ']'
+                                {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 9; $$->procno = 2;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
                                 }
     ;
 
@@ -204,13 +202,12 @@ stmt
 expr_stmt
     : IDENT '=' expr ';'        {   $$ = makeNode(1); $$->child[0] = $3; $3->parent = $$;
                                     $$->ntno = 12; $$->procno = 1;
-                                    $$->txt = $1.text;
+                                    strcpy($$->txt, $1.text);
                                 }
-    | IDENT '[' expr ']' '=' expr ';'
-                                {   $$ = makeNode(2); $$->child[0] = $3; $3->parent = $$;
-                                    $$->child[1] = $6; $6->parent = $$;
+    | IDENT '[' DECNUM ']' '=' expr ';'
+                                {   $$ = makeNode(1); $$->child[0] = $6; $6->parent = $$;
                                     $$->ntno = 12; $$->procno = 2;
-                                    $$->txt = $1.text;
+                                    strcpy($$->txt, $1.text); strcpy($$->numtxt, $3.text);
                                 }
     | '$' expr '=' expr ';'     {   $$ = makeNode(2); $$->child[0] = $2; $2->parent = $$;
                                     $$->child[1] = $4; $4->parent = $$;
@@ -263,13 +260,12 @@ local_decls
 local_decl
     : type_spec IDENT ';'       {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 17; $$->procno = 1;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text);
                                 }
-    | type_spec IDENT '[' int_literal ']' ';'
-                                {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
-                                    $$->child[1] = $4; $4->parent = $$;
+    | type_spec IDENT '[' DECNUM ']' ';'
+                                {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 17; $$->procno = 2;
-                                    $$->txt = $2.text;
+                                    strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
                                 }
     ;
     
@@ -383,17 +379,17 @@ expr
                                     $$->contain_expr = 1;
                                 }
     | IDENT                     {   $$ = makeNode(0); $$->ntno = 20; $$->procno = 19;
-                                    $$->txt = $1.text;
+                                    strcpy($$->txt, $1.text);
                                 }
-    | IDENT '[' expr ']' 		{   $$ = makeNode(1); $$->child[0] = $3; $3->parent = $$;
-                                    $$->ntno = 20; $$->procno = 20;
-                                    $$->contain_expr = 1; $$->txt = $1.text;
+    | IDENT '[' DECNUM ']'      {   $$ = makeNode(0); $$->ntno = 20; $$->procno = 20;
+                                    strcpy($$->txt, $1.text); strcpy($$->numtxt, $3.text);
+        
                                 }
     | IDENT '(' arg_list ')'  	{   $$ = makeNode(1); $$->child[0] = $3; $3->parent = $$;
-                                    $$->ntno = 20; $$->procno = 21; $$->txt = $1.text;
+                                    $$->ntno = 20; $$->procno = 21; strcpy($$->txt, $1.text);
                                 }
     | IDENT '(' ')'             {   $$ = makeNode(0); $$->ntno = 20; $$->procno = 22;
-                                    $$->txt = $1.text;
+                                    strcpy($$->txt, $1.text);
                                 }
     | int_literal               {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 20; $$->procno = 23;
@@ -431,10 +427,10 @@ expr
     
 int_literal
     : DECNUM                    {   $$ = makeNode(0); $$->ntno = 21; $$->procno = 1;
-                                    $$->txt = $1.text;
+                                    strcpy($$->numtxt, $1.text);
                                 }
     | HEXNUM                    {   $$ = makeNode(0); $$->ntno = 21; $$->procno = 2;
-                                    $$->txt = $1.text;
+                                    strcpy($$->numtxt, $1.text);
                                 }
     ;
 

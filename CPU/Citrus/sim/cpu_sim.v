@@ -26,10 +26,14 @@ module cpu_sim(
        );
 reg clk,clrn;
 reg [7:0] vector;
+reg intr;
+wire inta;
 cpu cpu(
         .clk(clk),
         .clrn(clrn),
-        .vector(vector)
+        .vector(vector),
+        .intr(intr),
+        .inta(inta)
         //      .pc(pc),
         //      .inst(inst),
         ////      .wpcir(no)
@@ -60,10 +64,11 @@ initial begin
     clrn=0;
     clk=0;
     vector = 8'b01010101;
+    intr = 0;
     //              no=1;
     #1 clrn=1;
     #50 clrn=0;
-
+    #100 intr = 1;
     //         #500 clrn = 1;
 end
 always #5 clk=~clk;

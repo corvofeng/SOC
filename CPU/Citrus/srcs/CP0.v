@@ -86,16 +86,16 @@ always @(posedge i_clk) begin
         cause_reg = 8'b00000000;
         epc_reg = 8'b00000000;
     end else begin
-        case({i_wsta,i_wcau,i_wepc})
-            3'b100:status_reg <= sta_reg_in;
-            3'b010:cause_reg <= cau_reg_in;
-            3'b001:epc_reg <= epc_reg_in;
-            default;
-        endcase
+        if(i_wsta==1)
+            status_reg <= sta_reg_in;
+        if(i_wcau==1)
+            cause_reg <= cau_reg_in;
+        if(i_wepc==1)
+            epc_reg <= epc_reg_in;
     end
 end
 
-always @ ( i_mtc0 or i_data or sta_sel_data or i_cause or epc_sel_data ) begin
+always @ ( i_wsta or i_wcau or i_wepc or i_mtc0 or i_data or sta_sel_data or i_cause or epc_sel_data ) begin
     if( i_mtc0 == 1) begin
         sta_reg_in = i_data;
         cau_reg_in = i_data;
@@ -120,7 +120,7 @@ end
 always @ ( i_exc or o_status_data ) begin
     case(i_exc)
         0:sta_sel_data = {4'h0,o_status_data[31:4]};
-        1:sta_sel_data = {o_status_data[27:0],4'h0};
+        1:sta_sel_data = {o_status_data[27:0],4'hF};
     endcase
 end
 
