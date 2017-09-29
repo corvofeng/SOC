@@ -19,6 +19,7 @@ struct AST {
 struct allFunc {
     char name[50];
     int type;
+    int local_space;
     struct symbolTable *st;
     struct AST *t;
 };

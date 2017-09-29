@@ -2,10 +2,13 @@
 #include "y.tab.h"
 
 int labelno;
+int tno; // 临时存储数组指针的寄存器的编号
 struct stack *while1;
 struct stack *while2;
 
 void deal_with_node(FILE *fp, struct AST *t, int funcno);
+void alloc_array(FILE *fp, struct AST *t, int funcno);
+void alloc_all(FILE *fp, struct AST *t, int funcno);
 int getLabel();
 
 void GenerateMIPS() {
@@ -15,10 +18,12 @@ void GenerateMIPS() {
     //fprintf(fp, "global: .word %d\n", sym->tableSize);
     fprintf(fp, ".text\n");
     labelno = 1;
+    tno = 0;
     while1 = init_stack();
     while2 = init_stack();
     for (int i = 0; i < funcount; i++) {
         ALL[i]->st = makeST();
+        ALL[i]->local_space = 0;
         deal_with_node(fp, ALL[i]->t, i);
     }
     fclose(fp);
@@ -72,6 +77,12 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[1], funcno); // param部分，参数填表
             deal_with_node(fp, t->child[2], funcno); // compound_stmt部分
             
+            // 局部变量出栈
+            int ls = ALL[funcno]->local_space;
+            if (ls > 0) {
+                fprintf(fp, "\taddi $sp, $sp, %d\n", ls * 4);
+            }
+            
             if (ALL[funcno]->type == 0) {
                 if (strcmp(ALL[funcno]->name, "main") != 0) {
                     // 恢复寄存器
@@ -106,7 +117,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             else
                 st_add(t->child[1]->txt, 2, select_space - 4, funcno);
         } else if (t->multiplicity == 1) {
-            st_add(t->child[1]->txt, 1, 0, funcno); // 第一个参数
+            st_add(t->child[0]->txt, 1, 0, funcno); // 第一个参数
         }
         
     } else if (t->ntno == 9) { // param
@@ -181,14 +192,19 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 16) { // local_decls
         
-        if (t->multiplicity > 1) {
-            deal_with_node(fp, t->child[0], funcno);
-            deal_with_node(fp, t->child[1], funcno);
-        } else if (t->multiplicity == 1) {
-            deal_with_node(fp, t->child[0], funcno);
+        alloc_array(fp, t, funcno);
+        tno = 0;
+        int space = t->multiplicity - 8; // 8个寄存器是否足够
+        if (space > 0) {
+            fprintf(fp, "\taddi $sp, $sp, -%d\n", space * 4); // 不够则分配栈空间
+            ALL[funcno]->local_space += space;
         }
+        alloc_all(fp, t, funcno);
+        tno = 0;
         
     } else if (t->ntno == 17) { // local_decl
+        
+        // do nothing
         
     } else if (t->ntno == 18) { // if_stmt
         
@@ -480,10 +496,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
                 
                 
-                int local_space = t->child[0]->multiplicity - 8; // 8个寄存器是否足够
-                if (local_space > 0) {
-                    local_space = local_space * 4;
-                    fprintf(fp, "\taddi $sp, $sp, -%d\n", local_space); // 不够则分配栈空间
+                int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
+                if (arg_space > 0) {
+                    arg_space *= 4;
+                    fprintf(fp, "\taddi $sp, $sp, -%d\n", arg_space); // 不够则分配栈空间
                     fprintf(fp, "\tadd $t7, $sp, $zero\n"); // 参数部分指针给t7
                 }
                 
@@ -494,8 +510,8 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tjal %s\n", t->txt);
                 
                 // 参数部分退栈
-                if (local_space > 0)
-                    fprintf(fp, "\taddi $sp, $sp, %d\n", local_space);
+                if (arg_space > 0)
+                    fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
                 
                 // 恢复寄存器
                 fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
@@ -553,20 +569,69 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 23) { // continue_stmt
         
-        int no = top(while1);
-        fprintf(fp, "\tj L%d\n", no);
+        if (!empty(while1)) {
+            int no = top(while1);
+            fprintf(fp, "\tj L%d\n", no);
+        }
         
     } else if (t->ntno == 24) { // break_stmt
         
-        int no = top(while2);
-        fprintf(fp, "\tj L%d\n", no);
+        if (!empty(while2)) {
+            int no = top(while2);
+            fprintf(fp, "\tj L%d\n", no);
+        }
         
     }
+}
+
+void alloc_array(FILE *fp, struct AST *t, int funcno) {
+    
+    if (t->multiplicity > 1) {
+        alloc_array(fp, t->child[0], funcno);
+        if (t->child[1]->procno == 2) { // 如果是数组
+            int n = atoi(t->child[1]->numtxt);
+            ALL[funcno]->local_space += n;
+            n *= 4;
+            fprintf(fp, "\taddi $sp, $sp, -%d\n", n);
+            fprintf(fp, "\tadd $t%d, $sp, $zero\n", tno++); // 数组指针给t寄存器
+        }
+    } else if (t->multiplicity == 1) {
+        if (t->child[0]->procno == 2) { // 如果是数组
+            int n = atoi(t->child[0]->numtxt);
+            ALL[funcno]->local_space += n;
+            n *= 4;
+            fprintf(fp, "\taddi $sp, $sp, -%d\n", n);
+            fprintf(fp, "\tadd $t%d, $sp, $zero\n", tno++); // 数组指针给t寄存器
+        }
+    }
+    
+}
+
+void alloc_all(FILE *fp, struct AST *t, int funcno) {
+    
+    if (t->multiplicity > 1) {
+        alloc_all(fp, t->child[0], funcno);
+        int select_space = t->child[0]->multiplicity;
+        if (select_space < 8) { // 如果是前八个变量
+            st_add(t->child[1]->txt, 3, select_space, funcno);
+            if (t->child[1]->procno == 2)
+                fprintf(fp, "\tadd $s%d, $t%d, $zero\n", select_space, tno++);
+        }
+        else {
+            st_add(t->child[1]->txt, 4, select_space - 8, funcno);
+            if (t->child[1]->procno == 2)
+                fprintf(fp, "sw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
+        }
+        
+    } else if (t->multiplicity == 1) {
+        st_add(t->child[0]->txt, 3, 0, funcno); // 第一个变量
+        if (t->child[0]->procno == 2)
+            fprintf(fp, "\tadd $s0, $t%d, $zero\n", tno++);
+    }
+    
 }
 
 int getLabel() {
     return labelno++;
 }
-
-
 
