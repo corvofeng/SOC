@@ -6,20 +6,21 @@ extern int Totalerrors, funcount;
 extern struct allFunc **ALL;
 
 struct AST {
-	char txt[50];
+    char txt[50];
+    char numtxt[50];
     int ntno;
     int procno;
     int multiplicity;
     int contain_expr;
- 	struct AST *parent;
-	struct AST **child;
+    struct AST *parent;
+    struct AST **child;
 };
 
 struct allFunc {
-	char name[50];
+    char name[50];
     int type;
-	struct symbolTable *st;
-	struct AST *t;
+    struct symbolTable *st;
+    struct AST *t;
 };
 
 struct symbolTable {
@@ -33,11 +34,16 @@ struct symbolTableItem {
     int offset;
 };
 
+struct messenger {
+    int type; // 1-reg, 2-stack
+    char pos[10];
+};
+
 struct AST * makeNode(int num);
 struct symbolTable * makeST();
 struct symbolTableItem * makeSTitem();
 void st_add(char *name, int pos, int offset, int funcno);
-char * lookup(char *name, int funcno);
+struct messenger * lookup(char *name, int funcno);
 void GenerateMIPS();
 
 

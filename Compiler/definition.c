@@ -34,7 +34,8 @@ void st_add(char *n, int p, int o, int funcno) {
     ALL[funcno]->st->count++;
 }
 
-char * lookup(char *n, int funcno) {
+struct messenger * lookup(char *n, int funcno) {
+    struct messenger * m = (struct messenger *)malloc(sizeof(struct messenger));
     char a[10];
     char b[10];
     for (int i = 0; i < count; i++) {
@@ -42,20 +43,25 @@ char * lookup(char *n, int funcno) {
             if (ALL[funcno]->st->item[count]->pos == 1) {
                 strcpy(a, "$a");
                 sprintf(b, "%d", ALL[funcno]->st->item[count]->offset);
+                m->type = 1;
             } else if (ALL[funcno]->st->item[count]->pos == 2) {
                 sprintf(a, "%d", 4 * ALL[funcno]->st->item[count]->offset);
                 strcpy(b, "($t7)");
+                m->type = 2;
             } else if (ALL[funcno]->st->item[count]->pos == 3) {
                 strcpy(a, "$s");
                 sprintf(b, "%d", ALL[funcno]->st->item[count]->offset);
+                m->type = 1;
             } else if (ALL[funcno]->st->item[count]->pos == 4) {
                 sprintf(a, "%d", 4 * ALL[funcno]->st->item[count]->offset);
                 strcpy(b, "($sp)");
+                m->type = 2;
             }
             strcat(a, b);
             return a;
         }
     }
     strcpy(a, "NULL");
-    return a;
+    strcpy(m->pos, a);
+    return m;
 }
