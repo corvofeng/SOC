@@ -244,7 +244,7 @@ reg32 regfil(
       );
 
 CP0 reg_CP0(
-    .i_clk(clkn),
+    .i_clk(clk),
     .i_reset(clrn),
 
     .i_exc(exc),

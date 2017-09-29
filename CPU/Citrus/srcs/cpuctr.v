@@ -86,17 +86,17 @@ assign isbr = ibeq | ibne | ij | ijal | ijalr | ibltz | ibgez | iblez | ibgtz | 
 assign arith = iadd | isub | iaddi;
 wire overflow = ov & earith;
 assign inta = exc_int;
-wire exc_int = sta[0] & intr;
+wire exc_int = ~sta[0] & intr;
 //wire exc_sys = sta[1] & isyscall;
-wire exc_uni = sta[2] & unimpl_inst;
-wire exc_ovr = sta[3] & overflow;
+wire exc_uni = ~sta[2] & unimpl_inst;
+wire exc_ovr = ~sta[3] & overflow;
 assign exc = exc_int | exc_uni | exc_ovr; //| exc_sys
 assign cancel = exc;
 assign sepc[1] = exc_uni & eisbr | exc_ovr;
 assign sepc[0] = exc_int &  isbr //| exc_sys
         |exc_uni &~eisbr | exc_ovr & misbr;
 
-wire ExcCode0 = overflow;//|syscall;
+wire ExcCode0 = overflow | intr;//|syscall;
 wire ExcCode1 = unimpl_inst | overflow;
 assign cause = { vector,20'h0, ExcCode1, ExcCode0, 2'b00};
 assign mtc0 = imtc0;
