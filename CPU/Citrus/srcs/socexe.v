@@ -32,13 +32,20 @@ module socexe (
            input [3:0] ealuc,
            output reg [31:0] ealu,
            output reg [4:0] ern,
+           output ov,
 
-           output ov
+           input esta,
+           input ecau,
+           input eepc,
+           input [1:0] emfc0
+
        );
 wire epc8 = epc4 + 3'b100;//pc+4
 reg [31:0] ia,ib;
 wire [31:0]out;
 wire ov,zero;
+
+wire mfc0_out;
 
 always @ (ea or eimm or eshift) begin//shift
     case(eshift)
@@ -56,12 +63,21 @@ always @ (eb or eimm or ealuimm) begin//imme
     endcase
 end
 
-always @ (epc8 or out or ejal) begin //jal
-    case(ejal)
-        0:ealu <= out;
-        1:ealu <= epc8;
-        default:ealu <= 32'h0000_0000;
-    endcase
+always @ ( emfc0 or epc8 or esta or ecau or eepc ) begin
+    case(emfc0)
+        2'b00:mfc0_out <= epc8;
+        2'b01:mfc0_out <= esta;
+        2'b10:mfc0_out <= ecau;
+        2'b11:mfc0_out <= eepc;
+        default:mfc0_out <=32'h0000_0000;
+end
+
+always @ (mfc0_out or out or ejal) begin //jal
+    if(ejal|emfc0[1]|emfc0[0])begin
+        ealu <= mfc0_out;
+    end else begin
+        ealu <= out;
+    end
 end
 
 always @ (ern0 or ejal) begin//f

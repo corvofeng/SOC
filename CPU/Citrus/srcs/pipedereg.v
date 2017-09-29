@@ -39,9 +39,11 @@ module pipedereg(
     input [31:0]sta,
     input [31:0]cau,
     input [31:0]epc,
-    output [31:0]esta,
-    output [31:0]ecau,
-    output [31:0]eepc,
+    input [1:0] mfc0,
+    output [1:0] emfc0,
+    output [31:0] esta,
+    output [31:0] ecau,
+    output [31:0] eepc,
     output reg [31:0] epc4,
 	output reg [31:0] ea,
 	output reg [31:0] eb,
@@ -74,6 +76,7 @@ module pipedereg(
             esta    <= 32'h0000_0000;
             ecau    <= 32'h0000_0000;
             eepc    <= 32'h0000_0000;
+            emfc0   <= 2'b00;
 		end else begin
 		    epc4    <= dpc4;
 	        ea      <= da;
@@ -91,6 +94,7 @@ module pipedereg(
             esta    <= sta;
             ecau    <= cau;
             eepc    <= epc;
+            emfc0   <= mfc0;
 		end
 	end
 endmodule
