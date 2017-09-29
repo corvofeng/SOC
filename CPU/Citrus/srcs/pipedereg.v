@@ -36,6 +36,12 @@ module pipedereg(
 	input clk,
 	input clrn,
 	input [31:0]pcd,
+    input [31:0]sta,
+    input [31:0]cau,
+    input [31:0]epc,
+    output [31:0]esta,
+    output [31:0]ecau,
+    output [31:0]eepc,
     output reg [31:0] epc4,
 	output reg [31:0] ea,
 	output reg [31:0] eb,
@@ -65,6 +71,9 @@ module pipedereg(
             ealuimm <= 1'b0;
 	        eshift  <= 1'b0;
 	        ealuc   <= 4'h0;
+            esta    <= 32'h0000_0000;
+            ecau    <= 32'h0000_0000;
+            eepc    <= 32'h0000_0000;
 		end else begin
 		    epc4    <= dpc4;
 	        ea      <= da;
@@ -79,7 +88,9 @@ module pipedereg(
             ealuimm <= aluimm;
 	        eshift  <= shift;
 	        ealuc   <= aluc;
+            esta    <= sta;
+            ecau    <= cau;
+            eepc    <= epc;
 		end
 	end
-
 endmodule

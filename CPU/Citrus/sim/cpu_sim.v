@@ -34,31 +34,6 @@ cpu cpu(
         .vector(vector),
         .intr(intr),
         .inta(inta)
-        //      .pc(pc),
-        //      .inst(inst),
-        ////      .wpcir(no)
-        //      .aluc(aluc),
-        //      .ealuc(ealuc),
-        //      .ern0(ern0),
-        //      .fwda(fwda),
-        //      .fwdb(fwdb),
-        //      .mm2reg(mm2reg),
-        //      .ewreg(ewreg),
-        //      .wwreg(wwreg),
-        //      .wreg(wreg),
-        //      .m2reg(m2reg),
-        //      .wmem(wmem),
-        //      .jal(jal),
-        //      .aluimm(aluimm),
-        //      .shift(shift),
-        //      .em2reg(em2reg),
-        //      .ewmem(ewmem),
-        //      .ejal(ejal),
-        //      .ealuimm(ealuimm),
-        //      .eshift(eshift),
-        //      .mwreg(mwreg),
-        //      .mwmem(mwmem),
-        //      .wm2reg(wm2reg)
     );
 initial begin
     clrn=0;
