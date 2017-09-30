@@ -2,12 +2,12 @@
 #include "y.tab.h"
 
 struct AST * makeNode(int num) {
-	struct AST * node = (struct AST *)malloc(sizeof(struct AST));
-	node->parent = NULL;
+    struct AST * node = (struct AST *)malloc(sizeof(struct AST));
+    node->parent = NULL;
     node->child = (struct AST **)malloc(num * sizeof(struct AST *));
-	node->ntno = 0;
-	node->procno = 0;
-	node->multiplicity = 0;
+    node->ntno = 0;
+    node->procno = 0;
+    node->multiplicity = 0;
     node->contain_expr = 0;
     return node;
 }
