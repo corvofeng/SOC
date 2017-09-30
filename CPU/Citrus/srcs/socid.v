@@ -260,7 +260,7 @@ CP0 reg_CP0(
     .i_wepc(wepc),
 
     .i_mtc0(mtc0),
-    .i_data(qb),
+    .i_data(db),
 
     .o_status_data(sta),
     .o_epc_data(epc),

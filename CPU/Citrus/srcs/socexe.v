@@ -34,9 +34,9 @@ module socexe (
            output reg [4:0] ern,
            output ov,
 
-           input esta,
-           input ecau,
-           input eepc,
+           input[31:0] esta,
+           input[31:0] ecau,
+           input[31:0] eepc,
            input [1:0] emfc0
 
        );
@@ -45,7 +45,7 @@ reg [31:0] ia,ib;
 wire [31:0]out;
 wire ov,zero;
 
-wire mfc0_out;
+reg[31:0] mfc0_out;
 
 always @ (ea or eimm or eshift) begin//shift
     case(eshift)
@@ -70,6 +70,7 @@ always @ ( emfc0 or epc8 or esta or ecau or eepc ) begin
         2'b10:mfc0_out <= ecau;
         2'b11:mfc0_out <= eepc;
         default:mfc0_out <=32'h0000_0000;
+    endcase
 end
 
 always @ (mfc0_out or out or ejal) begin //jal

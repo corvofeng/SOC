@@ -120,8 +120,8 @@ and(unimpl_inst,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
            ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
            ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clrn,~ilui,~imfc0,~imtc0);
 and(c0_type,  ~op[5], op[4],~op[3],~op[2],~op[1],~op[0]);
-and(imfc0, c0_type, rs[2]); //mfc0 op=010000 rs=00100
-and(imtc0, c0_type,~rs[2]); //mtc0 op=010000 rs=00000
+and(imfc0, c0_type,~rs[2]); //mfc0 op=010000 rs=00000
+and(imtc0, c0_type, rs[2]); //mtc0 op=010000 rs=00100
 and(ieret, c0_type,~func[5], func[4], func[3],~func[2],~func[1],~func[0] );//eretfunc=011000
 //syscall
 //break
@@ -246,9 +246,9 @@ assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | ino
                   islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
                   ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
                   ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
-                  ijal )&clr;
+                  ijal  | imfc0 )&clr;
 assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
-                  ilh   | ilhu   | ilui   | islti | isltiu)&clr;
+                  ilh   | ilhu   | ilui   | islti | isltiu | imfc0 | imtc0 )&clr;
 assign jal     = (ijal  | ijalr)&clr;
 assign m2reg   = (ilb   | ilbu   | ilh | ilhu)&clr;
 assign shift   = (isll  | isrl   | isra)&clr;

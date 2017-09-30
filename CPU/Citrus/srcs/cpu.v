@@ -28,7 +28,7 @@ module cpu(
       wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
       rs,rt,rd,shamt,op,func,
 
-      pcd,pce,pcm,mfc0,sta,epc,cau,selpc,ov,
+      pcd,pce,pcm,mfc0,emfc0,selpc,ov,
 
       intr,inta,vector,
 
@@ -46,7 +46,7 @@ module cpu(
     assign dpc = da;
 
     output [31:0] pcd,pce,pcm;
-    output [1:0] mfc0;
+    output [1:0] mfc0,emfc0;
     output [31:0] sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc;
     output [1:0] selpc;
 
