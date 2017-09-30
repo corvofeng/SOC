@@ -56,7 +56,10 @@ module pipedereg(
 	output reg ealuimm,
 	output reg eshift,
 	output reg [31:0]pce,
-	output reg [3:0] ealuc
+	output reg [3:0] ealuc,
+
+    input cancel,
+    output ecancel
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
@@ -77,6 +80,7 @@ module pipedereg(
             ecau    <= 32'h0000_0000;
             eepc    <= 32'h0000_0000;
             emfc0   <= 2'b00;
+            ecancel <= 1'b0;
 		end else begin
 		    epc4    <= dpc4;
 	        ea      <= da;
@@ -95,6 +99,7 @@ module pipedereg(
             ecau    <= cau;
             eepc    <= epc;
             emfc0   <= mfc0;
+            ecancel <= cancel;
 		end
 	end
 endmodule

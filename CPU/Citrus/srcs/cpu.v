@@ -32,7 +32,8 @@ module cpu(
 
       intr,inta,vector,
 
-      sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc
+      sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc,
+      cancel,ecancel
     );
 
     input clk,clrn;
@@ -54,6 +55,8 @@ module cpu(
     input intr;
     output inta;
     input[7:0] vector;
+
+    output cancel,ecancel;
 
      pipepc p1(
         .npc(npc),
@@ -139,7 +142,10 @@ module cpu(
          .ov(ov),
          .intr(intr),
          .inta(inta),
-         .vector(vector)
+         .vector(vector),
+
+         .cancel(cancel),
+         .ecancel(ecancel)
          );
 
       pipedereg p5(
@@ -178,7 +184,10 @@ module cpu(
           .ecau(ecau),
           .eepc(eepc),
           .mfc0(mfc0),
-          .emfc0(emfc0)
+          .emfc0(emfc0),
+
+          .cancel(cancel),
+          .ecancel(ecancel)
          );
      socexe p6(
           .epc4(epc4),

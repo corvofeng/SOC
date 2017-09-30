@@ -246,7 +246,7 @@ assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | ino
                   islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
                   ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
                   ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
-                  ijal  | imfc0 )&clr;
+                  ijal  | imfc0 )&clr & nostall & ~ecancel & ~exc_ovr ;
 assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
                   ilh   | ilhu   | ilui   | islti | isltiu | imfc0 | imtc0 )&clr;
 assign jal     = (ijal  | ijalr)&clr;
@@ -265,7 +265,7 @@ assign aluc[1] = (ixor  | ixori | iand | iandi | ior | iori | islt | islti | isl
 assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isrl | isrlv |
                   ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal)&clr;
 
-assign wmem    = ((isw | isb | ish ) & nostall)&clr;
+assign wmem    = ((isw | isb | ish ) & nostall)&clr & ~ecancel & ~exc_ovr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
 
