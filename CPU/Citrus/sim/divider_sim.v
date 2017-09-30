@@ -5,7 +5,7 @@
 //
 // Create Date: 2017/09/20 10:05:33
 // Design Name:
-// Module Name: demo
+// Module Name: divider_sim
 // Project Name:
 // Target Devices:
 // Tool Versions:
@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module demo(
+module divider_sim(
 
 
 
