@@ -12,7 +12,7 @@
 
 #define MAX_LINE_LENGTH 256
 void temporary_parse(FILE *fptr, int pass, char* instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out);
-void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData);
+void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData);
 int binarySearch(char *instructions[], int low, int high, char *string);
 char instruction_type(char *instruction);
 char *register_address(char *registerName);
@@ -23,5 +23,6 @@ void word_rep(int binary_rep, FILE *Out);
 void ascii_rep(char string[], FILE *Out);
 void getBin(int num, char *str, int padding);
 int getDec(char *bin);
-
+void parseHex(char *bin, char *hex);
+void unit_test(FILE* out, FILE* check);
 #endif /* FILE_PARSER_H_ */

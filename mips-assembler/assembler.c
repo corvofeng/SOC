@@ -71,7 +71,8 @@ char *instructions[] = {
     "break",// R26
     "syscall",//R27
     "eret", // R28
-    ""
+    "mfc0", // R29 
+    "mtc0", // R30 
 
     "j",    // J0
     "jal"   // J1
@@ -127,15 +128,37 @@ int main (int argc, char *argv[])
             printf("Input file could not be opened.");
             exit(1);
         }
+		
+		FILE *Inint;
+        if(argc >= 2) {
+            Inint = fopen(argv[1], "r");
+            printf("Read from %d", argv[1]);
+        } else {
+            Inint = fopen("Inint.asm", "r");
+        }
 
+        if (Inint == NULL) {
+            printf("Input file could not be opened.");
+            exit(1);
+        }
+        
         FILE *outData;
-        
-        outData = fopen("data.txt", "w");
-        
+
+        outData = fopen("data.coe", "w");
+
         if (outData == NULL) {
             printf("Output file could not opened.");
             exit(1);
         }
+        
+//        FILE *outtest;
+//
+//        outtest = fopen("outtest.coe", "w");
+//
+//        if (outData == NULL) {
+//            printf("Output file could not opened.");
+//            exit(1);
+//        }
 
 //        FILE *Out1;
 //        if(argc >= 3) {
@@ -153,7 +176,7 @@ int main (int argc, char *argv[])
             Out2 = fopen(argv[2], "w");
             printf("Write to %d", argv[2]);
         } else {
-            Out2 = fopen("text.txt", "w");
+            Out2 = fopen("text.coe", "w");
         }
         if (Out2 == NULL) {
             printf("Output file could not opened.");
@@ -163,21 +186,32 @@ int main (int argc, char *argv[])
         // Sort the array using qsort for faster search
         qsort(instructions, inst_len, sizeof(char *), string_comp);
 
+
+
+		
         // Create a hash table of size 127
         hash_table_t *hash_table = create_hash_table(127);
-
+        char *a = "memory_initialization_radix = 16";
+        char *b = "memory_initialization_vector =";
+        
+        fprintf(Out2, "%s;\n%s\n",a,b);
+        fprintf(outData, "%s;\n%s\n",a,b);
+      //  fprintf(outtest, "%s;\n%s\n",a,b);
+//        for(int i=0;i<=65540;i++){
+//			fprintf(outtest,"%s,\n","00000000");
+//		}
         int passNumber = 1;
         // Parse in passes
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2, outData);
-
+        parse_file(In, Inint,passNumber, instructions, inst_len, hash_table, Out2, outData);
         // Rewind input file & start pass 2
         rewind(In);
         passNumber = 2;
-        parse_file(In, passNumber, instructions, inst_len, hash_table, Out2, outData);
-
+        parse_file(In, Inint,passNumber, instructions, inst_len, hash_table, Out2, outData);
+        fprintf(outData, "%s",";");
+        fprintf(Out2, "%s",";");
         // Close files
         fclose(In);
-
+        fclose(Inint);
         fclose(Out2);
         fclose(outData);
 

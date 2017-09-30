@@ -13,6 +13,10 @@
  */
 
 // Struct that stores registers and their respective binary reference
+static int isFirst = 1;
+static int isFirst2 = 1;
+static int isFirst3 = 1;
+
 struct {
     const char *name;
     char *address;
@@ -49,6 +53,9 @@ struct {
     { "sp", "11101" },	//å †æ ˆæŒ‡é’ˆ
     { "fp", "11110" },	//å¸§æŒ‡é’ˆ
     { "ra", "11111" },	//è¿”å›åœ°å€
+    { "status","01100"},
+    { "cause", "01101"},
+    { "epc", "01110"},
     { NULL, 0 }
 };
 
@@ -82,7 +89,6 @@ struct {
     { "mflo", "010010"},
     { "mthi", "010001"},
     { "mtlo", "010011"},
-    { "mtf0", "000000"},
     { "jalr", "001001"},
     { "break", "001101"},
     { "syscall", "001100"},
@@ -138,19 +144,78 @@ struct {
     { NULL, 0 }
 };
 
-void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData)
+struct {
+    const char* src;
+    const char dst;
+} cvt_tbl[] = {
+    { "0000", '0'},
+    { "0001", '1'},
+    { "0010", '2'},
+    { "0011", '3'},
+    { "0100", '4'},
+    { "0101", '5'},
+    { "0110", '6'},
+    { "0111", '7'},
+    { "1000", '8'},
+    { "1001", '9'},
+    { "1010", 'A'},
+    { "1011", 'B'},
+    { "1100", 'C'},
+    { "1101", 'D'},
+    { "1110", 'E'},
+    { "1111", 'F'},
+
+    {NULL, '0'}
+};
+char intchar[20][40] = {0};
+int iline,j = 0;
+void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData)
 {
 
+
     char line[MAX_LINE_LENGTH + 1];
-    char *tok_ptr, *ret, *token = NULL;
+    char *tok_ptr, *ret, *token, *int_ptr, *intoken = NULL;
+    char intLine[MAX_LINE_LENGTH + 1];
     int32_t line_num = 1;
-    int32_t instruction_count = 0x00000000;
+    int32_t instruction_count = 0x000000000;
     int data_reached = 0;
+
     int intnum = 0;
-    int parseN = 0;
+
+    while(1) {
+        if(fgets(intLine, MAX_LINE_LENGTH, intptr) == NULL)
+            break;
+        intLine[MAX_LINE_LENGTH] = 0;
+
+        iline ++;
+        int_ptr = intLine;
+
+        while (1) {
+            intoken = parse_token(int_ptr, " \n\t$,", &int_ptr, NULL);
+
+
+            if (intoken == NULL || *intoken == '#') {
+
+                //free(intoken);
+                break;
+            }
+            printf("inttoken: %s\n", intoken);
+
+            strcpy(intchar[j],intoken);
+            j++;
+        }
+    }
+    for(int i = 0; i < j; i++) {
+        printf("intchar: %s\n", intchar[i]);
+
+    }
+
+
+
     while (1) {
         if ((ret = fgets(line, MAX_LINE_LENGTH, fptr)) == NULL)
             break;
+
         line[MAX_LINE_LENGTH] = 0;
 
         tok_ptr = line;
@@ -192,8 +257,14 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
             // If token is ".data", reset instruction to .data starting address
             else if (strcmp(token, ".data") == 0) {
-                instruction_count = 0x0000ffff;
+                if(instruction_count <0x3c000 && pass ==2) {
+                    for(instruction_count; instruction_count <0x3c000; instruction_count=instruction_count+4)
+                        fprintf(Out, ",\n00000000");
+
+                }
+                instruction_count = 0x00003fffc;
                 data_reached = 1;
+                // printf("data_reached %d\n", data_reached);
                 free(token);
                 continue;
             }
@@ -290,7 +361,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             inst_count = (uint32_t *)malloc(sizeof(uint32_t));
                             *inst_count = instruction_count;
                             int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
-                            printf("The token is %s, The instCnt is %d\n", token, instruction_count);
+                            //printf("The token is %s, The instCnt is %d\n", token, instruction_count);
 
                             if (insert == 0) {
                                 fprintf(Out, "Error in hash table insertion\n");
@@ -347,8 +418,15 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                     //  printf("This should not appear %d\n", instruction_count);
                     // exit(-1);
+//                    int32_t instruct1 = instruction_count;
+//					for (instruct1; instruct1< 0x3c000; instruct1=instruct1+4) {
+//
+//                        fprintf(Out, ",\n00000000");
+
+                    //if(instruction_count <0x3c000)
                     // If instruction is supported
                     if (instruction_supported != -1) {
+
 
                         // token contains the instruction
                         // tok_ptr points to the rest of the line
@@ -357,7 +435,7 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                         inst_type = instruction_type(token);
 
                         if (inst_type == 'r') {
-                            printf("type r detected\n", data_reached);
+                            //  printf("type r detected\n", data_reached);
                             // R-Type with $rd, $rs, $rt format
                             if (strcmp(token, "MOV") == 0) {
 
@@ -516,8 +594,63 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                                     free(reg_store[i]);
                                 }
                                 free(reg_store);
-                            } else if (strcmp(token, "mult") == 0|| strcmp(token, "multu") == 0
-                                       || strcmp(token, "div") == 0 || strcmp(token, "divu") == 0) {
+                            }
+
+                            else if (strcmp(token, "mfc0") == 0 || strcmp(token, "mtc0") == 0) {
+
+                                // Parse the instructio - get rd, rs, rt registers
+                                char *inst_ptr = tok_ptr;
+                                char *reg = NULL;
+
+                                // Create an array of char* that stores rd, rs and shamt
+                                char **reg_store;
+                                reg_store = malloc(3 * sizeof(char*));
+                                if (reg_store == NULL) {
+                                    fprintf(Out, "Out of memory\n");
+                                    exit(1);
+                                }
+
+                                for (int i = 0; i < 3; i++) {
+                                    reg_store[i] = malloc(2 * sizeof(char));
+                                    if (reg_store[i] == NULL) {
+                                        fprintf(Out, "Out of memory\n");
+                                        exit(1);
+                                    }
+                                }
+
+                                // Keeps a reference to which register has been parsed for storage
+                                int count = 0;
+                                while (1) {
+
+                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
+
+                                    if (reg == NULL || *reg == '#') {
+                                        break;
+                                    }
+
+                                    strcpy(reg_store[count], reg);
+                                    count++;
+                                    free(reg);
+                                }
+
+                                // Send reg_store for output
+                                // rd is in position 0, rs is in position 1 and shamt is in position 2
+                                if (strcmp(token, "mfc0") == 0 ) {
+                                    rtype_instruction(token, "00000", reg_store[0], reg_store[1], 0, Out);
+                                }
+
+                                if (strcmp(token, "mtc0") == 0) {
+                                    rtype_instruction(token, "00100", reg_store[0], reg_store[1], 0, Out);
+                                }
+                                // Dealloc reg_store
+                                for (int i = 0; i < 3; i++) {
+                                    free(reg_store[i]);
+                                }
+                                free(reg_store);
+                            }
+
+                            else if (strcmp(token, "mult") == 0|| strcmp(token, "multu") == 0
+                                     || strcmp(token, "div") == 0 || strcmp(token, "divu") == 0) {
 
                                 // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
@@ -1090,74 +1223,89 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
                             // Send to jtype function
                             jtype_instruction(token, *address, Out);
                         }
+//                        else
+//                        if (strcmp(token, intchar[1]) == 0) {
+//                            char s[50],out[50];
+//                            size_t token_len = strlen(token);
+//                            token[token_len - 1] = '\0';
+//                            intnum++;
+//                            char immediate[17];
+//                            int *address = hash_find(hash_table, token, strlen(token)+1);
+//                            char *opcode = "0000000000000000";
+//                            int immediateStr = *address;
+//                            printf("wtf");
+//                            getBin(immediateStr, immediate, 16);
+//                            fprintf(outData, "%s%s\n", opcode, immediate);
+//
+//                        }
+
+
                     }
+//					else
+//					{int32_t instruct1 = instruction_count;
+//					for (instruct1; instruct1< 0x3c000; instruct1=instruct1+4) {
+//
+//                        fprintf(Out, ",\n00000000");
+//                    }
+//					 printf("instruct1: ",instruct1);
+//					}
+
+
 
                     if (strcmp(token, "nop") == 0) {
-                        fprintf(Out, "00000000000000000000000000000000\n");
+                        if(isFirst == 1 )
+                            isFirst = 0;
+                        else
+                            fprintf(Out, "%s,\n","");
+                        fprintf(Out, "00000000");
                     }
-                    if (strcmp(token, "int0:") == 0) {
-                        size_t token_len = strlen(token);
-                        token[token_len - 1] = '\0';
-                        intnum++;
-                        char immediate[17];
-                        int *address = hash_find(hash_table, token, strlen(token)+1);
-                        char *opcode = "0000000000000000";
-                        int immediateStr = *address;
 
-                        getBin(immediateStr, immediate, 16);
-                        fprintf(outData, "%s%s\n", opcode, immediate);
+                    for(int i=0; i<j; i++) {
 
+                        if (strcmp(token, intchar[i]) == 0) {
+                            if(isFirst3 == 1 )
+                                isFirst3 = 0;
+                            else
+                                fprintf(outData, "%s,\n","");
+
+                            char s[50],out[50];
+                            char opcode[20]= {0};
+                            printf("asadsada,\n");
+                            size_t token_len = strlen(token);
+                            token[token_len - 1] = '\0';
+                            intnum++;
+                            char immediate[17];
+                            int *address = hash_find(hash_table, token, strlen(token)+1);
+                            // char *opcode = intchar[i+1];
+                            strcpy(opcode,intchar[i+1]);
+                            int immediateStr = *address;
+                            getBin(immediateStr, immediate, 16);
+                            sprintf(s, "%s%s\n", opcode, immediate);
+                            parseHex(s,out);
+                            fprintf(outData, "%s",out);
+                        }
                     }
-                    if (strcmp(token, "int1:") == 0) {
-                        size_t token_len = strlen(token);
-                        token[token_len - 1] = '\0';
-                        intnum++;
-                        char immediate[17];
-                        int *address = hash_find(hash_table, token, strlen(token)+1);
-                        char *opcode = "0000000000000001";
-                        int immediateStr = *address;
 
-                        getBin(immediateStr, immediate, 16);
-                        fprintf(outData, "%s%s\n", opcode, immediate);
-
-                    }
-                    if (strcmp(token, "int2:") == 0) {
-                        size_t token_len = strlen(token);
-                        token[token_len - 1] = '\0';
-                        intnum++;
-                        char immediate[17];
-                        int *address = hash_find(hash_table, token, strlen(token)+1);
-                        char *opcode = "0000000000000010";
-                        int immediateStr = *address;
-
-                        getBin(immediateStr, immediate, 16);
-                        fprintf(outData, "%s%s\n", opcode, immediate);
-
-                    }
-                    if (strcmp(token, "int3:") == 0) {
-                        size_t token_len = strlen(token);
-                        token[token_len - 1] = '\0';
-                        intnum++;
-                        char immediate[17];
-                        int *address = hash_find(hash_table, token, strlen(token)+1);
-                        char *opcode = "0000000000000011";
-                        int immediateStr = *address;
-
-                        getBin(immediateStr, immediate, 16);
-                        fprintf(outData, "%s%s\n", opcode, immediate);
-                        //printf("intnum: %s\n",intnum);
-
-                    }
                 }
 
                 // If .data part reached
                 else {
 
-                    instruction_count = intnum * 0x10000 + instruction_count;
 
-                    for (instruction_count; instruction_count< 0x04000000; instruction_count=instruction_count+0x10000) {
+                    instruction_count = intnum * 0x40000 + instruction_count;
+//								if(isFirst3 == 1 )
+//                                isFirst3 = 0;
+//                                else
+//                                fprintf(outData, "%s,","");
+                    printf("00000000,\n");
+                    for (instruction_count; instruction_count< 0x010000000; instruction_count=instruction_count+0x40000) {
                         //printf("intnum: %s\n",intnum);
-                        fprintf(outData, "00000000000000000000000000000000\n");
+                        if(isFirst3 == 1 )
+                            isFirst3 = 0;
+                        else
+                            fprintf(outData, "%s,\n","");
+
+                        fprintf(outData, "00000000");
                     }
 
 
@@ -1201,19 +1349,25 @@ void parse_file(FILE *fptr, int pass, char *instructions[], size_t inst_len, has
 
                         // Variable is a single variable
                         else {
+                            if (strncmp(".word 0x", var_tok_ptr, 8) == 0) {
 
-                            // Extract variable value
-                            sscanf(var_tok_ptr, "%*s %d", &var_value);
+                                // Extract variable value
+                                var_tok_ptr = var_tok_ptr + 8;
+                                sscanf(var_tok_ptr, "%x", &var_value);
 
-                            // Variable is in var_value. Send to binary rep function
-                            word_rep(var_value, outData);
+                                // Variable is in var_value. Send to binary rep function
+                                word_rep(var_value, outData);
+                            } else {
+                                sscanf(var_tok_ptr, "%*s %d", &var_value);
+                                word_rep(var_value, outData);
+                            }
                         }
                     }
 
                     // Variable is a string
                     else if (strstr(tok_ptr, ".asciiz")) {
 
-                        printf("tok_ptr '%s'\n", tok_ptr);
+                        printf("tok_ptr '%s\n", tok_ptr);
 
                         if (strncmp(".asciiz ", var_tok_ptr, 8) == 0) {
 
@@ -1284,7 +1438,8 @@ char instruction_type(char *instruction)
             || strcmp(instruction, "mthi") == 0 || strcmp(instruction, "mtlo") == 0
             || strcmp(instruction, "mfhi") == 0 || strcmp(instruction, "mflo") == 0
             || strcmp(instruction, "jalr") == 0 || strcmp(instruction, "eret") == 0
-            || strcmp(instruction, "MOV") == 0) {
+            || strcmp(instruction, "MOV") == 0 || strcmp(instruction, "mfc0") == 0
+            || strcmp(instruction, "mtc0") == 0) {
 
         return 'r';
     }
@@ -1332,20 +1487,26 @@ char *register_address(char *registerName)
 // Write out the R-Type instruction
 void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int shamt, FILE *Out)
 {
+    if(isFirst == 1 )
+        isFirst = 0;
+    else
+        fprintf(Out, "%s,\n","");
 
     // Set the instruction bits
     char *opcode = "000000";
-
+    char s[50],out[50];
 
     char *rdBin = "00000";
     if (strcmp(rd, "00000") != 0)
         rdBin = register_address(rd);
 
     char *rsBin = "00000";
-    if (strcmp(rs, "00000") != 0 && strcmp(rs, "10000") != 0 )
+    if (strcmp(rs, "00000") != 0 && strcmp(rs, "10000") != 0 && strcmp(rs, "00100") != 0 )
         rsBin = register_address(rs);
     if (strcmp(rs, "10000") == 0)
         rsBin = "10000";
+    if (strcmp(rs, "00100") == 0)
+        rsBin = "00100";
 
     char *rtBin = "00000";
     if (strcmp(rt, "00000") != 0)
@@ -1365,15 +1526,25 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
     }
     if (strcmp(func, "011000") == 0&&strcmp(rs, "10000") == 0)
         opcode = "010000";
-
+    if (strcmp(func, "000000") == 0&&strcmp(rs, "00000") == 0 && shamt ==0)
+        opcode = "010000";
+    if (strcmp(func, "000000") == 0&&strcmp(rs, "00100") == 0)
+        opcode = "010000";
+    sprintf(s, "%s%s%s%s%s%s", opcode, rsBin, rtBin, rdBin, shamtBin, func);
     // Print out the instruction to the file
-    fprintf(Out, "%s%s%s%s%s%s\n", opcode, rsBin, rtBin, rdBin, shamtBin, func);
+    parseHex(s,out);
+    fprintf(Out, "%s",out);
 }
 
 // Write out the I-Type instruction
 void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, FILE *Out)
 {
+    if(isFirst == 1 )
+        isFirst = 0;
+    else
+        fprintf(Out, "%s,\n","");
 
+    char s[50],out[50];
     // Set the instruction bit
     char *rsBin = "00000";
     if (strcmp(rs, "00000") != 0)
@@ -1402,18 +1573,23 @@ void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, 
 
     // Convert immediate to binary
     getBin(immediateNum, immediate, 16);
-
+    sprintf(s, "%s%s%s%s,\n", opcode, rsBin, rtBin, immediate);
     // Print out the instruction to the file
-    fprintf(Out, "%s%s%s%s\n", opcode, rsBin, rtBin, immediate);
+    parseHex(s,out);
+    fprintf(Out, "%s",out);
 }
 
 // Write out the J-Type instruction
 void jtype_instruction(char *instruction, int immediate, FILE *Out)
 {
+    if(isFirst == 1 )
+        isFirst = 0;
+    else
+        fprintf(Out, "%s,\n","");
 
     // Set the instruction bits
     char *opcode = NULL;
-
+    char s[50],out[50];
     // Get opcode bits
     size_t i;
     for (i = 0; jMap[i].name != NULL; i++) {
@@ -1425,26 +1601,42 @@ void jtype_instruction(char *instruction, int immediate, FILE *Out)
     // Convert immediate to binary
     char immediateStr[27];
     getBin(immediate, immediateStr, 26);
-
-    // Print out instruction to file
-    fprintf(Out, "%s%s\n", opcode, immediateStr);
+    sprintf(s,"%s%s\n", opcode, immediateStr);
+    // Print out the instruction to the file
+    parseHex(s,out);
+    fprintf(Out, "%s",out);
 }
 
 
 // Write out the variable in binary
+// input number
+// output char[]
 void word_rep(int binary_rep, FILE *Out)
 {
 
-    for (int k = 31; k >= 0; k--) {
-        fprintf(Out, "%c", (binary_rep & (1 << k)) ? '1' : '0');
+    fprintf(Out, "%s,\n","");
+
+    char s[33] =  {0};
+    char out[33] = {0};
+    int i = 31;
+
+    while(i >= 0) {
+        s[i] = (binary_rep & 0x1) ? '1' : '0';
+        i --;
+        binary_rep = binary_rep >> 1;
     }
-    fprintf(Out, "\n");
+
+    parseHex(s,out);
+    fprintf(Out, "%s",out);
 }
 
 // Write out the ascii string
 void ascii_rep(char string[], FILE *Out)
 {
-
+//    if(isFirst3 == 1 )
+//        isFirst3 = 0;
+//    else
+    fprintf(Out, "%s,\n","");
     // Separate the string, and put each four characters in an element of an array of strings
     size_t str_length = strlen(string);
     str_length++;
@@ -1491,6 +1683,14 @@ void ascii_rep(char string[], FILE *Out)
         }
     }
 
+//        while(i >= 0) {
+//        s[i] = (binary_rep & 0x1) ? '1' : '0';
+//        i --;
+//        binary_rep = binary_rep >> 1;
+//    }
+//
+    char s[33] =  {0};
+    char out[33] = {0};
     // Convert into binary
     for (int i = 0; i < num_strs; i++) {
 
@@ -1500,8 +1700,7 @@ void ascii_rep(char string[], FILE *Out)
                 fprintf(Out, "%c", (c & (1 << k)) ? '1' : '0');
             }
         }
-
-        fprintf(Out, "\n");
+        //fprintf(Out, "\n");
     }
 
     // Deallocate sep_str
@@ -1563,3 +1762,39 @@ int getDec(char *bin)
     return sum;
 }
 
+char getHex(char *bin)
+{
+    int i = 0;
+    while(i <= 16) {
+        if(strncmp(cvt_tbl[i].src, bin, 4) == 0)
+            break;
+        i++;
+    }
+    return cvt_tbl[i].dst;
+}
+
+/**
+ * @brief ½«2½øÖÆµÄ×Ö·û´®×ª»»Îª16½øÖÆĞÎÊ½µÄ±íÊ¾
+ *
+ * @param bin ÊäÈëµÄ32Îª×Ö·û´®
+ * @param hex ´æ·Å×ª»»¹ıºóµÄ×Ö·û´®
+ */
+void parseHex(char *bin, char *hex)
+{
+
+    int len = strlen(bin);
+    if(len < 32) {
+        printf("err occured in input %s", bin);
+        exit(-1);
+    }
+    bin[32] = 0;
+
+    int i = 0;
+    int j = 0;
+    while(i < 32) {
+        hex[j++] = getHex(bin+i);
+        i += 4;
+    }
+    hex[8] = 0;
+    return;
+}
