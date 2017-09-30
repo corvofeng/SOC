@@ -59,7 +59,7 @@ module pipedereg(
 	output reg [3:0] ealuc,
 
     input cancel,
-    output ecancel
+    output reg ecancel
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
