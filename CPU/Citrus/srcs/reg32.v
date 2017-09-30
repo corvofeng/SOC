@@ -33,7 +33,7 @@ module reg32(
        );
 reg[31:0] register[31:0];
 
-always @(posedge clk) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
+always @(posedge clk) begin       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´Ä¿ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
     if( clrn==1 ) begin
         qa <= 32'd0;
         qb <= 32'd0;
@@ -70,7 +70,7 @@ always @(posedge clk) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
         register[30] <= 32'd0;
         register[31] <= 32'd0;
     end
-    if( we == 1 ) begin  // ×¢Òâ¼Ä´æÆ÷0ºãµÈÓÚ0
+    if( we == 1 ) begin  // ×¢ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½0
         case( wn[4:0] )
             5'd0:register[0] <= 32'd0;
             5'd1:register[1] <= i;
@@ -108,7 +108,7 @@ always @(posedge clk) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
     end
 end
 
-always @( ra ) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
+always @( ra or register) begin       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´Ä¿ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
     case( ra [4:0] )
         5'd0:qa <= register[0];
         5'd1:qa <= register[1];
@@ -145,7 +145,7 @@ always @( ra ) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
     endcase
 end
 
-always @( rb ) begin       // ±¾½ø³ÌÐ´Ä¿±ê¼Ä´æÆ÷
+always @( rb or register) begin       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´Ä¿ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½
     case( rb [4:0] )
         5'd0:qb <= register[0];
         5'd1:qb <= register[1];
