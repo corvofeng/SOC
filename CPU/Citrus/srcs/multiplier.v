@@ -47,8 +47,8 @@ module multiplier(
     end
 
     wallace_tree32_unsigned mul(
-        .a(a),
-        .b(b),
+        .a(unsigned_a),
+        .b(unsigned_b),
         .s(out)
         );
 
