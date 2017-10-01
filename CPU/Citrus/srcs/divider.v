@@ -20,45 +20,75 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module divider(a,b,start,clock,resetn,q,r,busy
-              );
+module divider(
+    a,
+    b,
+    symbol,
+    start,
+    clock,
+    resetn,
+    q,
+    r,
+    busy
+    );
+    integer i=0;
+    input [31:0] a;
+    input [31:0] b;
+    input start;
+    input clock,resetn;
+    wire [31:0] out;
+    output [31:0] r;
+    output busy;
+    reg [31:0] reg_q;
+    reg [31:0] reg_r;
+    reg [31:0] reg_b;
+    reg busy;
 
-integer i=0;
-input [31:0] a;
-input [31:0] b;
-input start;
-input clock,resetn;
-output [31:0] q;
-output [31:0] r;
-output busy;
-reg [31:0] reg_q;
-reg [31:0] reg_r;
-reg [31:0] reg_b;
-reg busy, busy2;
-always @ (posedge clock or negedge resetn) begin
-    if (resetn == 0) begin
-        busy <= 0;
-        busy2 <= 0;
-    end else begin
-        busy2 <= busy;
-        if(start) begin
-            reg_r <= 16'h0;
-            reg_q <= a;
-            reg_b <= b;
-            busy <= 1'b1;
-        end else if (busy) begin
-            reg_r <= mux_out;
-            reg_q <= {reg_q[30:0],~sub_out[32]};
-            i = i+1;
-            if (i == 32)
-                busy <= 0;
+    input symbol;
+    reg [31:0] unsigned_a;
+    reg [31:0] unsigned_b;
+    wire ab_symbol;
+    output[31:0] q;
+
+    always @ ( * ) begin
+        if(symbol == 0) begin
+            unsigned_a <= a;
+            unsigned_b <= b;
+        end else begin
+            unsigned_a <= a[31]?(~a+1):a;
+            unsigned_b <= b[31]?(~b+1):b;
         end
     end
-end
-wire [32:00] sub_out = {r,q[31]} - {1'b0,reg_b};
-wire [31:00] mux_out = sub_out[32]?
-     {r[30:0],q[31]} : sub_out[31:0];
-assign q = reg_q;
+
+    always @ (posedge clock or negedge resetn) begin
+        if (resetn == 0) begin
+            busy <= 0;
+            i = 0;
+        end else begin
+            if(start) begin
+                reg_r <= 16'h0;
+                reg_q <= unsigned_a;
+                reg_b <= unsigned_b;
+                busy <= 1'b1;
+            end else if (busy) begin
+                reg_r <= mux_out;
+                reg_q <= {reg_q[30:0],~sub_out[32]};
+                i = i+1;
+                if (i == 32) begin
+                    busy <= 0;
+                    i = 0;
+                end
+            end
+        end
+    end
+
+    xor(ab_symbol,a[31],b[31]);
+
+    assign q = (symbol == 0 || symbol&&~ab_symbol)?out:(~out + 1);
+
+wire [32:00] sub_out = {r,out[31]} - {1'b0,reg_b};
+wire [31:00] mux_out = sub_out[32]?{r[30:0],out[31]} : sub_out[31:0];
+assign out = reg_q;
 assign r = reg_r;
 
 endmodule
