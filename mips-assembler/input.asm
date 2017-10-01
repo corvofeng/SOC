@@ -1,14 +1,13 @@
 .text
 fun: 
-bgez t0,int1
-j int0
-jal int1
+mfc0 k1  status
+add k1 k0 k1
 int0:
-addi t0,t0,7
-int1:
-jal int0
-int2:
-mult t0,t1
+mtc0 k1  status
+mfc0 k0 cause
+int1: 
+sub k0 k0 k1
+mtc0 k0 cause
 .data
-buf1: .word 3
+a: .word 0:10
 

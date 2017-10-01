@@ -1,7 +1,9 @@
 %{
 #include "definition.h"
-int Totalerrors, funcount;
+int Totalerrors, funcount, gcount;
 struct allFunc **ALL;
+struct globalVar **gVar;
+%}
 
 // 终结符的定义
 %token IDENT VOID INT WHILE IF ELSE RETURN EQ NE LE GE
@@ -10,7 +12,7 @@ struct allFunc **ALL;
 // 定义运算符结合性
 %left OR
 %left AND
-%left EQ NE LE GE '<' '>
+%left EQ NE LE GE '<' '>'
 %left '+' '-'
 %left '|'
 %left '&' '^'
@@ -19,7 +21,7 @@ struct allFunc **ALL;
 %right '!'
 %right '~'
 %nonassoc UMINUS
-%nonassoc MPR
+%nonassoc ELSE
 
 // 定义program为开始符号，所有推导从它开始
 %start program
@@ -97,21 +99,23 @@ var_decl
     : type_spec IDENT ';'       {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 4; $$->procno = 1;
                                     strcpy($$->txt, $2.text);
+                                    gVar[gcount] = (struct globalVar *)malloc(sizeof(struct globalVar));
+                                    strcpy(gVar[gcount]->name, $2.text);
+                                    gVar[gcount]->space = 1; gcount++;
                                 }
     | type_spec IDENT '[' DECNUM ']' ';'
                                 {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 4; $$->procno = 2;
                                     strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
+                                    gVar[gcount] = (struct globalVar *)malloc(sizeof(struct globalVar));
+                                    strcpy(gVar[gcount]->name, $2.text);
+                                    gVar[gcount]->space = atoi($4.text); gcount++;
                                 }
     ;
 
 type_spec
-    : VOID                      {   $$ = makeNode(0);
-                                    $$->ntno = 5; $$->procno = 1;
-                                }
-    | INT                       {   $$ = makeNode(0);
-                                    $$->ntno = 5; $$->procno = 2;
-                                }
+    : VOID                      {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 1; }
+    | INT                       {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 2; }
     ;
 
 fun_decl
@@ -122,8 +126,7 @@ fun_decl
                                     $$->ntno = 6; $$->procno = 1; strcpy($$->txt, $2.text);
                                     ALL[funcount] = (struct allFunc *)malloc(sizeof(struct allFunc));
                                     strcpy(ALL[funcount]->name, $2.text);
-                                    ALL[funcount]->t = $$;
-                                    funcount++;
+                                    ALL[funcount]->t = $$; funcount++;
                                 }
     | type_spec IDENT '(' params ')' ';'
                                 {   $$ = makeNode(2); $$->child[0] = $1; $1->parent = $$;
@@ -275,7 +278,7 @@ if_stmt
                                     $$->child[1] = $5; $5->parent = $$;
                                     $$->ntno = 18; $$->procno = 1;
                                 }
-    | IF '(' expr ')' stmt ELSE stmt %prec MPR
+    | IF '(' expr ')' stmt ELSE stmt
                                 {   $$ = makeNode(3); $$->child[0] = $3; $3->parent = $$;
                                     $$->child[1] = $5; $5->parent = $$;
                                     $$->child[2] = $7; $7->parent = $$;
@@ -447,34 +450,36 @@ arg_list
     ;
 
 continue_stmt
-    : CONTINUE ';'              {   $$ = makeNode(0); }
+    : CONTINUE ';'              {   $$ = makeNode(0); $$->ntno = 23; $$->procno = 1; }
     ;
 
 break_stmt
-    : BREAK ';'                 {   $$ = makeNode(0); }
+    : BREAK ';'                 {   $$ = makeNode(0); $$->ntno = 24; $$->procno = 1; }
     ;
 %%
 // 错误处理函数
 yyerror(s)
 char *s;
 {
-        fflush(stdout);
-		printf("Parse Error\n");
-		return 0;
+    fflush(stdout);
+    printf("Parse Error\n");
+    Totalerrors++;
+    return 0;
 }
 
 int main()
 {
-	Totalerrors=0;
-	funcount = 0;
-	init();
-	yyparse();
-	if (Totalerrors > 0)
-		printf("Total symantic errors: %d\n", Totalerrors);
-	else{
-		printf("Generating MIPS code...\n");
-		GenerateMIPS();
-	}
-	
-	return 0;
+    Totalerrors = 0;
+    funcount = 0;
+    gcount = 0;
+    ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
+    gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
+    yyparse();
+    if (Totalerrors > 0)
+        printf("Total symantic errors: %d\n", Totalerrors);
+    else {
+        printf("Generating MIPS code...\n");
+        GenerateMIPS();
+    }
+    return 0;
 }

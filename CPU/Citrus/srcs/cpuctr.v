@@ -85,7 +85,7 @@ wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
 assign isbr = ibeq | ibne | ij | ijal | ijalr | ibltz | ibgez | iblez | ibgtz | ibltzal | ibgezal;
 assign arith = iadd | isub | iaddi;
 wire overflow = ov & earith;
-assign inta = exc_int;
+assign inta = ieret;
 wire exc_int = ~sta[0] & intr;
 //wire exc_sys = sta[1] & isyscall;
 wire exc_uni = ~sta[2] & unimpl_inst;
@@ -118,10 +118,10 @@ and(unimpl_inst,~iadd,~iaddu,~isub,~isubu,~imult,~imultu,~idiv, ~idivu, ~imfhi,
            ~isll, ~isrl, ~isra, ~isllv, ~isrlv, ~israv, ~ijr, ~ijalr,
            ~iaddi, ~iaddiu, ~iandi, ~iori, ~ixori, ~ilb, ~ilh, ~ilw, ~ilbu,
            ~ilhu, ~isb, ~ish, ~isw, ~ibeq, ~ibne, ~ibltz, ~ibgez, ~iblez, ~ibgtz, ~ibltzal,
-           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clrn,~ilui);
+           ~ibgezal, ~islti, ~isltiu, ~ij, ~ijal,~clrn,~ilui,~imfc0,~imtc0);
 and(c0_type,  ~op[5], op[4],~op[3],~op[2],~op[1],~op[0]);
-and(imfc0, c0_type, rs[2]); //mfc0 op=010000 rs=00100
-and(imtc0, c0_type,~rs[2]); //mtc0 op=010000 rs=00000
+and(imfc0, c0_type,~rs[2]); //mfc0 op=010000 rs=00000
+and(imtc0, c0_type, rs[2]); //mtc0 op=010000 rs=00100
 and(ieret, c0_type,~func[5], func[4], func[3],~func[2],~func[1],~func[0] );//eretfunc=011000
 //syscall
 //break
@@ -246,9 +246,9 @@ assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | ino
                   islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
                   ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
                   ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
-                  ijal )&clr;
+                  ijal  | imfc0 )&clr & nostall & ~ecancel & ~exc_ovr ;
 assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
-                  ilh   | ilhu   | ilui   | islti | isltiu)&clr;
+                  ilh   | ilhu   | ilui   | islti | isltiu | imfc0 | imtc0 )&clr;
 assign jal     = (ijal  | ijalr)&clr;
 assign m2reg   = (ilb   | ilbu   | ilh | ilhu)&clr;
 assign shift   = (isll  | isrl   | isra)&clr;
@@ -265,7 +265,7 @@ assign aluc[1] = (ixor  | ixori | iand | iandi | ior | iori | islt | islti | isl
 assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isrl | isrlv |
                   ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal)&clr;
 
-assign wmem    = ((isw | isb | ish ) & nostall)&clr;
+assign wmem    = ((isw | isb | ish ) & nostall)&clr & ~ecancel & ~exc_ovr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
 

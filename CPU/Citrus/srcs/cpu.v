@@ -28,9 +28,12 @@ module cpu(
       wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
       rs,rt,rd,shamt,op,func,
 
-      pcd,pce,pcm,mfc0,sta,epc,cau,selpc,ov,
+      pcd,pce,pcm,mfc0,emfc0,selpc,ov,
 
-      intr,inta,vector
+      intr,inta,vector,
+
+      sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc,
+      cancel,ecancel
     );
 
     input clk,clrn;
@@ -44,14 +47,16 @@ module cpu(
     assign dpc = da;
 
     output [31:0] pcd,pce,pcm;
-    output [1:0] mfc0;
-    output [31:0] sta,epc,cau;
+    output [1:0] mfc0,emfc0;
+    output [31:0] sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc;
     output [1:0] selpc;
 
     output ov;
     input intr;
     output inta;
     input[7:0] vector;
+
+    output cancel,ecancel;
 
      pipepc p1(
         .npc(npc),
@@ -137,7 +142,10 @@ module cpu(
          .ov(ov),
          .intr(intr),
          .inta(inta),
-         .vector(vector)
+         .vector(vector),
+
+         .cancel(cancel),
+         .ecancel(ecancel)
          );
 
       pipedereg p5(
@@ -168,7 +176,18 @@ module cpu(
           .eshift(eshift),
           .ealuc(ealuc),
           .pce(pce),
-          .pcd(pcd)
+          .pcd(pcd),
+          .sta(sta),
+          .cau(cau),
+          .epc(epc),
+          .esta(esta),
+          .ecau(ecau),
+          .eepc(eepc),
+          .mfc0(mfc0),
+          .emfc0(emfc0),
+
+          .cancel(cancel),
+          .ecancel(ecancel)
          );
      socexe p6(
           .epc4(epc4),
@@ -182,7 +201,11 @@ module cpu(
           .ealu(ealu),
           .ern(ern),
           .ejal(jal),
-          .ov(ov)
+          .ov(ov),
+          .esta(esta),
+          .ecau(ecau),
+          .eepc(eepc),
+          .emfc0(emfc0)
           );
     pipeemreg p7(
           .ealu(ealu),
@@ -200,7 +223,13 @@ module cpu(
           .mm2reg(mm2reg),
           .mwmem(mwmem),
           .pcm(pcm),
-          .pce(pce)
+          .pce(pce),
+          .esta(esta),
+          .ecau(ecau),
+          .eepc(eepc),
+          .msta(msta),
+          .mcau(mcau),
+          .mepc(mepc)
           );
       socmem p8(
           .mwmem(mwmem),
@@ -221,18 +250,19 @@ module cpu(
           .wmo(wmo),
           .wrn(wrn),
           .wwreg(wwreg),
-          .wm2reg(wm2reg)
+          .wm2reg(wm2reg),
+          .msta(msta),
+          .mcau(mcau),
+          .mepc(mepc),
+          .wsta(wsta),
+          .wcau(wcau),
+          .wepc(wepc)
            );
        socwb p10(
           .wmo(wmo),//wmo
           .walu(walu),//walu
           .wm2reg(wm2reg),//pc来源
-          .wdi(wdi),//wdi
-          .wi(wi),
-          .mfc0(mfc0),
-          .sta(sta),
-          .cau(epc),
-          .epc(cau)
+          .wdi(wdi)
        );
 
 endmodule
