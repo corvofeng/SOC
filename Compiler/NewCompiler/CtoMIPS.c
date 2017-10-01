@@ -12,15 +12,26 @@ void alloc_all(FILE *fp, struct AST *t, int funcno);
 int getLabel();
 
 void GenerateMIPS() {
-    FILE *fp;
-    fp = fopen("mips_code.s", "w");
-    fprintf(fp, ".data\n");
-    //fprintf(fp, "global: .word %d\n", sym->tableSize);
-    fprintf(fp, ".text\n");
     labelno = 1;
     tno = 0;
     while1 = init_stack();
     while2 = init_stack();
+    for (int i = 0; i < funcount; i++) {
+        if (ALL[i]->t->child[1]->procno == 1)
+            ALL[i]->param_count = ALL[i]->t->child[1]->child[0]->multiplicity;
+        else
+            ALL[i]->param_count = 0;
+    }
+    FILE *fp;
+    fp = fopen("mips_code.s", "w");
+    fprintf(fp, ".data\n");
+    for (int i = 0; i < gcount; i++) {
+        if (gVar[i]->space == 1)
+            fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
+        else
+            fprintf(fp, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
+    }
+    fprintf(fp, ".text\n");
     for (int i = 0; i < funcount; i++) {
         ALL[i]->st = makeST();
         ALL[i]->local_space = 0;
@@ -36,7 +47,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     
     } else if (t->ntno == 2) { // decl_list
         
-        printf("Error! A function should never include decl_list!\n")
+        printf("Error! A function should never include decl_list!\n");
     
     } else if (t->ntno == 3) { // decl
         
@@ -44,7 +55,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     
     } else if (t->ntno == 4) { // var_decl
     
-        printf("Error! A function should never include var_decl!\n")
+        printf("Error! A function should never include var_decl!\n");
     
     } else if (t->ntno == 5) { // type_spec
         
@@ -74,7 +85,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             }
             
             deal_with_node(fp, t->child[0], funcno); // type_spec部分，记录返回类型
-            deal_with_node(fp, t->child[1], funcno); // param部分，参数填表
+            deal_with_node(fp, t->child[1], funcno); // params部分，参数填表
             deal_with_node(fp, t->child[2], funcno); // compound_stmt部分
             
             // 局部变量出栈
@@ -99,7 +110,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tjr $ra\n");
             }
         } else if (t->procno == 2) {
-            printf("Error! A function should never include fun_decl!\n")
+            printf("Error! A function should never include fun_decl!\n");
         }
         
     } else if (t->ntno == 7) { // params
@@ -143,24 +154,36 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[0], funcno);
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
-                fprintf(fp, "\tadd, %s, $t0, $zero\n", m->pos);
-            }
-            else if (m->type == 2) {
-                fprintf(fp, "sw, $t0, %s", m->pos);
+                fprintf(fp, "\tadd %s, $t0, $zero\n", m->pos);
+            } else if (m->type == 2) {
+                fprintf(fp, "\tsw $t0, %s\n", m->pos);
+            } else {
+                if (lookup_global(t->txt) == 1)
+                    fprintf(fp, "\tsw $t0, %s\n", t->txt);
+                else
+                    printf("Error! Undeclared variable '%s'\n", t->txt);
             }
         } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tadd $t1, $t0, $zero\n");
+            fprintf(fp, "\tadd $t1 $t0, $zero\n");
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
-                fprintf(fp, "add, $t0, %s, $zero", m->pos); // 数组指针进t0
+                fprintf(fp, "\tadd $t0, %s, $zero\n", m->pos); // 数组指针进t0
             } else if (m->type == 2) {
-                fprintf(fp, "lw, $t0, %s", m->pos); // 数组指针进t0
+                fprintf(fp, "\tlw $t0, %s\n", m->pos); // 数组指针进t0
+            } else {
+                if (lookup_global(t->txt) == 1)
+                    fprintf(fp, "\tla $t0, %s\n", t->txt);
+                else
+                    printf("Error! Undeclared variable '%s'\n", t->txt);
             }
             int o = atoi(t->numtxt);
-            fprintf(fp, "sw, $t1, %d($t0)", 4 * o);
+            fprintf(fp, "\tsw $t1, %d($t0)\n", 4 * o);
         } else if (t->procno == 3) { // $expr = expr;
-            
+            deal_with_node(fp, t->child[1], funcno);
+            fprintf(fp, "\tadd $t1, $t0, $zero\n");
+            deal_with_node(fp, t->child[0], funcno);
+            fprintf(fp, "\tsw $t1, ($t0)\n");
         }
         
     } else if (t->ntno == 13) { // while_stmt
@@ -208,13 +231,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 18) { // if_stmt
         
-        if (procno == 1) {
+        if (t->procno == 1) {
             int label1 = getLabel();
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tbeq $t0, $zero, L%d\n", label1);
             deal_with_node(fp, t->child[1], funcno);
             fprintf(fp, "L%d:\n", label1);
-        } else if (procno == 2) {
+        } else if (t->procno == 2) {
             int label1 = getLabel();
             int label2 = getLabel();
             deal_with_node(fp, t->child[0], funcno);
@@ -228,16 +251,16 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 19) { // return_stmt
         
-        if (procno == 1) {
+        if (t->procno == 1) {
             if (ALL[funcno]->type == 1) {
-                printf("Error! Return type mismatch!\n");
+                printf("Error! Return type mismatch for function '%s'\n", ALL[funcno]->name);
             }
-        } else if (procno == 2) {
+        } else if (t->procno == 2) {
             if (ALL[funcno]->type == 1) {
                 deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\taddi $v0, $t0, 0\n");
+                fprintf(fp, "\tadd $v0, $t0, $zero\n");
             } else {
-                printf("Error! Return type mismatch!\n");
+                printf("Error! Return type mismatch for function '%s'\n", ALL[funcno]->name);
             }
         }
         if (strcmp(ALL[funcno]->name, "main") != 0) {
@@ -417,7 +440,8 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
             } else if (t->procno == 17) { // $
                 
-                
+                deal_with_node(fp, t->child[0], funcno);
+                fprintf(fp, "\tlw $t0, ($t0)\n");
                 
             } else if (t->procno == 18) { // ()
             
@@ -469,78 +493,123 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 
                 struct messenger *m = lookup(t->txt, funcno);
                 if (m->type == 1)
-                    fprintf(fp, "\tadd, $t0, %s, $zero\n", m->pos);
+                    fprintf(fp, "\tadd $t0, %s, $zero\n", m->pos);
                 else if (m->type == 2)
-                    fprintf(fp, "lw, $t0, %s", m->pos);
+                    fprintf(fp, "\tlw $t0, %s\n", m->pos);
+                else {
+                    if (lookup_global(t->txt) == 1)
+                        fprintf(fp, "\tlw $t0, %s\n", t->txt);
+                    else
+                        printf("Error! Undeclared variable '%s'\n", t->txt);
+                }
             
             } else if (t->procno == 20) { // IDENT[DECNUM]
                 
                 struct messenger *m = lookup(t->txt, funcno);
                 if (m->type == 1) {
-                    fprintf(fp, "add, $t0, %s, $zero", m->pos); // 数组指针进t0
+                    fprintf(fp, "\tadd $t0, %s, $zero\n", m->pos); // 数组指针进t0
                 } else if (m->type == 2) {
-                    fprintf(fp, "lw, $t0, %s", m->pos); // 数组指针进t0
+                    fprintf(fp, "\tlw $t0, %s\n", m->pos); // 数组指针进t0
+                } else {
+                    if (lookup_global(t->txt) == 1)
+                        fprintf(fp, "\tla $t0, %s\n", t->txt);
+                    else
+                        printf("Error! Undclared variable '%s'\n", t->txt);
                 }
                 int o = atoi(t->numtxt);
-                fprintf(fp, "lw, $t0, %d($t0)", 4 * o);
+                fprintf(fp, "\tlw $t0, %d($t0)\n", 4 * o);
             
             } else if (t->procno == 21) { // 函数调用，有参数
                 
-                // 保存寄存器
-                fprintf(fp, "\taddi $sp, $sp, -24\n");
-                fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
-                fprintf(fp, "\tsw $t7, 16($sp)\n"); // 保存参数部分指针地址
-                fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
-                fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
-                fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
-                fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
-                
-                
-                int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
-                if (arg_space > 0) {
-                    arg_space *= 4;
-                    fprintf(fp, "\taddi $sp, $sp, -%d\n", arg_space); // 不够则分配栈空间
-                    fprintf(fp, "\tadd $t7, $sp, $zero\n"); // 参数部分指针给t7
+                int name_found = 0;
+                int pcount_matched = 0;
+                for (int i = 0; i < funcount; i++) {
+                    if (strcmp(ALL[i]->name, t->txt) == 0) {
+                        name_found = 1;
+                        if (ALL[i]->param_count == t->child[0]->multiplicity)
+                            pcount_matched = 1;
+                    }
                 }
                 
-                // 在处理arg_list的过程中完成参数赋值
-                deal_with_node(fp, t->child[0], funcno);
+                if (pcount_matched == 1) {
+                    
+                    // 保存寄存器
+                    fprintf(fp, "\taddi $sp, $sp, -24\n");
+                    fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
+                    fprintf(fp, "\tsw $t9, 16($sp)\n"); // 保存参数部分指针地址
+                    fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
+                    fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
+                    fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
+                    fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
+                    
+                    
+                    int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
+                    if (arg_space > 0) {
+                        arg_space *= 4;
+                        fprintf(fp, "\taddi $sp, $sp, -%d\n", arg_space); // 不够则分配栈空间
+                        fprintf(fp, "\tadd $t9, $sp, $zero\n"); // 参数部分指针给t9
+                    }
+                    
+                    // 在处理arg_list的过程中完成参数赋值
+                    deal_with_node(fp, t->child[0], funcno);
+                    
+                    // 函数调用
+                    fprintf(fp, "\tjal %s\n", t->txt);
+                    
+                    // 参数部分退栈
+                    if (arg_space > 0)
+                        fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
+                    
+                    // 恢复寄存器
+                    fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
+                    fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
+                    fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
+                    fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
+                    fprintf(fp, "\tlw $t9, 16($sp)\n"); // 恢复参数部分指针地址
+                    fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
+                    fprintf(fp, "\taddi $sp, $sp, 24\n");
+                    
+                    fprintf(fp, "\tadd $t0, $v0, $zero\n");
+                    
+                } else if (name_found == 1)
+                    printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
+                else
+                    printf("Error! Undeclared function '%s'\n", t->txt);
                 
-                // 函数调用
-                fprintf(fp, "\tjal %s\n", t->txt);
-                
-                // 参数部分退栈
-                if (arg_space > 0)
-                    fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
-                
-                // 恢复寄存器
-                fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
-                fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
-                fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
-                fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
-                fprintf(fp, "\tlw $t7, 16($sp)\n"); // 恢复参数部分指针地址
-                fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
-                fprintf(fp, "\taddi $sp, $sp, 24\n");
-                
-                fprintf(fp, "\taddi $t0, $v0, 0\n");
-            
             } else if (t->procno == 22) { // 函数调用，无参数
                 
-                // 保存寄存器
-                fprintf(fp, "\taddi $sp, $sp, -8\n");
-                fprintf(fp, "\tsw $ra, 4($sp)\n"); // 保存返回地址
-                fprintf(fp, "\tsw $t7, 0($sp)\n"); // 保存参数部分指针地址
+                int name_found = 0;
+                int pcount_matched = 0;
+                for (int i = 0; i < funcount; i++) {
+                    if (strcmp(ALL[i]->name, t->txt) == 0) {
+                        name_found = 1;
+                        if (ALL[i]->param_count == 0)
+                            pcount_matched = 1;
+                    }
+                }
+
+                if (pcount_matched == 1) {
+                    
+                    // 保存寄存器
+                    fprintf(fp, "\taddi $sp, $sp, -8\n");
+                    fprintf(fp, "\tsw $ra, 4($sp)\n"); // 保存返回地址
+                    fprintf(fp, "\tsw $t9, 0($sp)\n"); // 保存参数部分指针地址
+                    
+                    // 函数调用
+                    fprintf(fp, "\tjal %s\n", t->txt);
+                    
+                    // 恢复寄存器
+                    fprintf(fp, "\tlw $t9, 0($sp)\n"); // 恢复参数部分指针地址
+                    fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
+                    fprintf(fp, "\taddi $sp, $sp, 8\n");
+                    
+                    fprintf(fp, "\tadd $t0, $v0, $zero\n");
+                    
+                } else if (name_found == 1)
+                    printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
+                else
+                    printf("Error! Undeclared function '%s'\n", t->txt);
                 
-                // 函数调用
-                fprintf(fp, "\tjal %s\n", t->txt);
-                
-                // 恢复寄存器
-                fprintf(fp, "\tlw $t7, 0($sp)\n"); // 恢复参数部分指针地址
-                fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
-                fprintf(fp, "\taddi $sp, $sp, 8\n");
-                
-                fprintf(fp, "\taddi $t0, $v0, 0\n");
-            
             } else if (t->procno == 23) { // int_literal
                 
                 fprintf(fp, "\taddi $t0, $zero, %s\n", t->child[0]->numtxt);
@@ -559,9 +628,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[1], funcno);
             int select_space = t->child[0]->multiplicity;
             if (select_space < 4) // 如果是前四个参数
-                fprintf(fp, "add $a%d, $t0, $zero\n", select_space);
+                fprintf(fp, "\tadd $a%d, $t0, $zero\n", select_space);
             else
-                fprintf(fp, "sw $t0, %d($sp)\n", (select_space - 4) * 4);
+                fprintf(fp, "\tsw $t0, %d($sp)\n", (select_space - 4) * 4);
         } else if (t->multiplicity == 1) {
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tadd $a0, $t0, $zero\n"); // 第一个参数
@@ -569,14 +638,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 23) { // continue_stmt
         
-        if (!empty(while1)) {
+        if (empty(while1) == 0) {
             int no = top(while1);
             fprintf(fp, "\tj L%d\n", no);
         }
         
     } else if (t->ntno == 24) { // break_stmt
         
-        if (!empty(while2)) {
+        if (empty(while2) == 0) {
             int no = top(while2);
             fprintf(fp, "\tj L%d\n", no);
         }
@@ -620,7 +689,7 @@ void alloc_all(FILE *fp, struct AST *t, int funcno) {
         else {
             st_add(t->child[1]->txt, 4, select_space - 8, funcno);
             if (t->child[1]->procno == 2)
-                fprintf(fp, "sw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
+                fprintf(fp, "\tsw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
         }
         
     } else if (t->multiplicity == 1) {

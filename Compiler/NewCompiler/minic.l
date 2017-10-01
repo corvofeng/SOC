@@ -35,9 +35,11 @@ int totalError = 0;
 ";"             { yylval.Sval.text = strdup(yytext); return(';'); }
 "{"             { yylval.Sval.text = strdup(yytext); return('{'); }
 "}"             { yylval.Sval.text = strdup(yytext); return('}'); }
-"%"             { yylval.Sval.text = strdup(yytext); return('%'); }
+"+"             { yylval.Sval.text = strdup(yytext); return('+'); }
+"-"             { yylval.Sval.text = strdup(yytext); return('-'); }
 "*"             { yylval.Sval.text = strdup(yytext); return('*'); }
 "/"             { yylval.Sval.text = strdup(yytext); return('/'); }
+"%"             { yylval.Sval.text = strdup(yytext); return('%'); }
 "="             { yylval.Sval.text = strdup(yytext); return('='); }
 "("             { yylval.Sval.text = strdup(yytext); return('('); }
 ")"             { yylval.Sval.text = strdup(yytext); return(')'); }
@@ -60,8 +62,9 @@ int totalError = 0;
 
 yywrap()
 {
-	if (totalError > 0)
+    if (totalError > 0)
         printf("Total count of lexical error: %d\n", totalError);
+    fflush(stdout);
     return(1);
 }
 
@@ -92,6 +95,7 @@ comment2()
 lexerror()
 {
     printf("Lexical error: invalid '%s' at line %d\n", yytext, yylineno);
+    fflush(stdout);
     totalError++;
 }
 

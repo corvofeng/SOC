@@ -46,7 +46,7 @@ struct messenger * lookup(char *n, int funcno) {
                 m->type = 1;
             } else if (ALL[funcno]->st->item[i]->pos == 2) {
                 sprintf(a, "%d", 4 * ALL[funcno]->st->item[i]->offset);
-                strcpy(b, "($t7)");
+                strcpy(b, "($t9)");
                 m->type = 2;
             } else if (ALL[funcno]->st->item[i]->pos == 3) {
                 strcpy(a, "$s");
