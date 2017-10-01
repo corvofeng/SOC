@@ -78,7 +78,11 @@ module socid (
            output inta,
            input [7:0] vector,
            input ecancel,
-           output cancel
+           output cancel,
+           
+           output rmem,
+           output rio,
+           output wio
 
 
        );
@@ -88,6 +92,7 @@ wire [15:0] imme;
 wire [25:0] addr;
 wire  [31:0] qa,qb;
 wire [31:0] bpc,bpc0;
+wire [7:0] immehi;
 wire sext,regrt,ilui;
 reg  rsrtequ;
 wire clkn=~clk;
@@ -99,6 +104,7 @@ assign op[5:0]    = inst[31:26],
        shamt[4:0] = inst[10:6],
        func[5:0]  = inst[5:0],
        imme[15:0] = inst[15:0],
+       immehi[7:0]= inst[15:8],
        addr[25:0] = inst[25:0];
 
 assign jpc[31:28] = dpc4[31:28],//jpc
@@ -230,7 +236,12 @@ cpuctr cpuctr0(
            .mfc0(mfc0),
            .selpc(selpc),
            .sepc(sepc),
-           .cause(cause)
+           .cause(cause),
+           
+           .immehi(immehi),
+           .rmem(rmem),
+           .wio(wio),
+           .rio(rio)
        );
 
 reg32 regfil(

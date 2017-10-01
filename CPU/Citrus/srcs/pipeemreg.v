@@ -42,7 +42,14 @@ module pipeemreg(
 	output reg [4:0] mrn,
 	output reg mwreg,
 	output reg mm2reg,
-	output reg mwmem
+	output reg mwmem,
+	
+	input ermem,
+	input erio,
+	input ewio,
+	output reg mrmem,
+	output reg mrio,
+	output reg mwio
     );
 
 	always @ ( posedge clk ) begin
@@ -57,6 +64,9 @@ module pipeemreg(
             msta    <= 32'h0000_0000;
             mcau    <= 32'h0000_0000;
             mepc    <= 32'h0000_0000;
+            mrmem   <= 1'b0;
+            mwio    <= 1'b0;
+            mrio    <= 1'b0;
 		end else begin
 		    malu   <= ealu;
 	        mb     <= eb;
@@ -68,6 +78,9 @@ module pipeemreg(
             msta    <= esta;
             mcau    <= ecau;
             mepc    <= eepc;
+            mrmem   <= ermem;
+            mwio    <= ewio;
+            mrio    <= erio;
 		end
 	end
 
