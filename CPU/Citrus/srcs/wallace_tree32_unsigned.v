@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer: IceTesla
+//
 // Create Date: 2017/08/25 14:39:48
-// Design Name: 
+// Design Name:
 // Module Name: wallace_tree32_unsigned
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -41,7 +41,7 @@ module wallace_tree32_unsigned (a, b, s);
 	wire [10:0] s1[61:1];
 	wire [10:0] c1[62:2];
 	// index 62 : p[31][31]
-	
+
     add1 fa1_61_0 (p[31][30], p[30][31],      1'b0, s1[61][0], c1[62][0]);
 
 	add1 fa1_60_0 (p[31][29], p[30][30], p[29][31], s1[60][0], c1[61][0]);
@@ -472,7 +472,7 @@ module wallace_tree32_unsigned (a, b, s);
 	// index 62 : p[31][31], c1[62][0]
 	// index 61 : s1[61][0], c1[61][0]
     // index 60 : s1[60][0], c1[60][0]
-	
+
 	add1 fa2_59_0 (s1[59][0], p[28][31], c1[59][1], s2[59][0], c2[60][0]);
 	// index 59 : c1[59][0]
 
@@ -789,7 +789,7 @@ module wallace_tree32_unsigned (a, b, s);
 	wire [4:0] c3[61:4];
 	// index 62 : p[31][31], c1[62][0]
 	// index 61 : s1[61][0], c1[61][0]
-	
+
 	add1 fa3_60_0 (s1[60][0], c1[60][0], c2[60][0], s3[60][0], c3[61][0]);
 
 	add1 fa3_59_0 (s2[59][0], c1[59][0], c2[59][0], s3[59][0], c3[60][0]);
@@ -1523,7 +1523,7 @@ module wallace_tree32_unsigned (a, b, s);
 	// add-layer 7
 	wire [45:7] s7;
 	wire [46:8] c7;
-	
+
 	// index 62 : p[31][31], c1[62][0], c4[62][0]
     // index 61 : s4[61][0], c4[61][0]
 	// index 60 : s4[60][0], c4[60][0]
@@ -1650,7 +1650,7 @@ module wallace_tree32_unsigned (a, b, s);
 	add1 fa8_8_0  ( s7[8],  c7[8],       1'b0,  s8[8],  c8[9]);
 
 	assign s[8] = s8[8];
-	
+
 	assign s[63:9] = {1'b0, s8[62:9]} + c8[63:9];
 
 endmodule

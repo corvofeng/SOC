@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company:
-// Engineer:
+// Engineer:IceTesla
 //
 // Create Date: 2017/10/01 17:16:54
 // Design Name:
@@ -24,7 +24,7 @@ module multiplier(
     input[31:0] a,
     input[31:0] b,
     input symbol,
-    output[63:0] o,
+    output[63:0] o
 
     );
 
