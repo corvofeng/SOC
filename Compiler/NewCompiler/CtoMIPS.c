@@ -154,23 +154,23 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[0], funcno);
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
-                fprintf(fp, "\tadd, %s, $t0, $zero\n", m->pos);
+                fprintf(fp, "\tadd %s, $t0, $zero\n", m->pos);
             } else if (m->type == 2) {
-                fprintf(fp, "\tsw, $t0, %s\n", m->pos);
+                fprintf(fp, "\tsw $t0, %s\n", m->pos);
             } else {
                 if (lookup_global(t->txt) == 1)
-                    fprintf(fp, "\tsw, $t0, %s\n", t->txt);
+                    fprintf(fp, "\tsw $t0, %s\n", t->txt);
                 else
                     printf("Error! Undeclared variable '%s'\n", t->txt);
             }
         } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tadd $t1, $t0, $zero\n");
+            fprintf(fp, "\tadd $t1 $t0, $zero\n");
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
-                fprintf(fp, "\tadd, $t0, %s, $zero\n", m->pos); // 数组指针进t0
+                fprintf(fp, "\tadd $t0, %s, $zero\n", m->pos); // 数组指针进t0
             } else if (m->type == 2) {
-                fprintf(fp, "\tlw, $t0, %s\n", m->pos); // 数组指针进t0
+                fprintf(fp, "\tlw $t0, %s\n", m->pos); // 数组指针进t0
             } else {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tla $t0, %s\n", t->txt);
@@ -178,7 +178,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     printf("Error! Undeclared variable '%s'\n", t->txt);
             }
             int o = atoi(t->numtxt);
-            fprintf(fp, "\tsw, $t1, %d($t0)\n", 4 * o);
+            fprintf(fp, "\tsw $t1, %d($t0)\n", 4 * o);
         } else if (t->procno == 3) { // $expr = expr;
             deal_with_node(fp, t->child[1], funcno);
             fprintf(fp, "\tadd $t1, $t0, $zero\n");
@@ -258,7 +258,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         } else if (t->procno == 2) {
             if (ALL[funcno]->type == 1) {
                 deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\taddi $v0, $t0, 0\n");
+                fprintf(fp, "\tadd $v0, $t0, $zero\n");
             } else {
                 printf("Error! Return type mismatch for function '%s'\n", ALL[funcno]->name);
             }
@@ -569,7 +569,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
                     fprintf(fp, "\taddi $sp, $sp, 24\n");
                     
-                    fprintf(fp, "\taddi $t0, $v0, 0\n");
+                    fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1)
                     printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
@@ -603,7 +603,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
                     fprintf(fp, "\taddi $sp, $sp, 8\n");
                     
-                    fprintf(fp, "\taddi $t0, $v0, 0\n");
+                    fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1)
                     printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
