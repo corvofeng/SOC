@@ -91,7 +91,6 @@ extern int YYPARSE_DECL();
 #define LSHIFT 274
 #define RSHIFT 275
 #define UMINUS 276
-#define MPR 277
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
@@ -433,8 +432,8 @@ static const YYINT yycheck[] = {                         33,
 #ifndef YYDEBUG
 #define YYDEBUG 0
 #endif
-#define YYMAXTOKEN 277
-#define YYUNDFTOKEN 303
+#define YYMAXTOKEN 276
+#define YYUNDFTOKEN 302
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
 static const char *const yyname[] = {
@@ -448,8 +447,8 @@ static const char *const yyname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"IDENT","VOID","INT",
 "WHILE","IF","ELSE","RETURN","EQ","NE","LE","GE","AND","OR","DECNUM","CONTINUE",
-"BREAK","HEXNUM","LSHIFT","RSHIFT","UMINUS","MPR",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,"illegal-symbol",
+"BREAK","HEXNUM","LSHIFT","RSHIFT","UMINUS",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,"illegal-symbol",
 };
 static const char *const yyrule[] = {
 "$accept : program",
@@ -573,27 +572,29 @@ static YYSTACKDATA yystack;
 yyerror(s)
 char *s;
 {
-        fflush(stdout);
-		printf("Parse Error\n");
-        Totalerrors++;
-        return 0;
+    fflush(stdout);
+    printf("Parse Error\n");
+    Totalerrors++;
+    return 0;
 }
 
 int main()
 {
-	Totalerrors = 0;
-	funcount = 0;
+    Totalerrors = 0;
+    funcount = 0;
     gcount = 0;
-	yyparse();
-	if (Totalerrors > 0)
-		printf("Total symantic errors: %d\n", Totalerrors);
-	else{
-		printf("Generating MIPS code...\n");
-		GenerateMIPS();
-	}
-	return 0;
+    ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
+    gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
+    yyparse();
+    if (Totalerrors > 0)
+        printf("Total symantic errors: %d\n", Totalerrors);
+    else {
+        printf("Generating MIPS code...\n");
+        GenerateMIPS();
+    }
+    return 0;
 }
-#line 597 "y.tab.c"
+#line 598 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>	/* needed for printf */
@@ -1338,7 +1339,7 @@ case 78:
 #line 461 "minic.y"
 	{   yyval.node = makeNode(0); }
 break;
-#line 1342 "y.tab.c"
+#line 1343 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

@@ -18,7 +18,6 @@
 #define LSHIFT 274
 #define RSHIFT 275
 #define UMINUS 276
-#define MPR 277
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

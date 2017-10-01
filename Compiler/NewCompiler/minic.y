@@ -21,7 +21,7 @@ struct globalVar **gVar;
 %right '!'
 %right '~'
 %nonassoc UMINUS
-%nonassoc MPR
+%nonassoc ELSE
 
 // 定义program为开始符号，所有推导从它开始
 %start program
@@ -282,7 +282,7 @@ if_stmt
                                     $$->child[1] = $5; $5->parent = $$;
                                     $$->ntno = 18; $$->procno = 1;
                                 }
-    | IF '(' expr ')' stmt ELSE stmt %prec MPR
+    | IF '(' expr ')' stmt ELSE stmt
                                 {   $$ = makeNode(3); $$->child[0] = $3; $3->parent = $$;
                                     $$->child[1] = $5; $5->parent = $$;
                                     $$->child[2] = $7; $7->parent = $$;
@@ -465,23 +465,25 @@ break_stmt
 yyerror(s)
 char *s;
 {
-        fflush(stdout);
-		printf("Parse Error\n");
-        Totalerrors++;
-        return 0;
+    fflush(stdout);
+    printf("Parse Error\n");
+    Totalerrors++;
+    return 0;
 }
 
 int main()
 {
-	Totalerrors = 0;
-	funcount = 0;
+    Totalerrors = 0;
+    funcount = 0;
     gcount = 0;
-	yyparse();
-	if (Totalerrors > 0)
-		printf("Total symantic errors: %d\n", Totalerrors);
-	else{
-		printf("Generating MIPS code...\n");
-		GenerateMIPS();
-	}
-	return 0;
+    ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
+    gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
+    yyparse();
+    if (Totalerrors > 0)
+        printf("Total symantic errors: %d\n", Totalerrors);
+    else {
+        printf("Generating MIPS code...\n");
+        GenerateMIPS();
+    }
+    return 0;
 }
