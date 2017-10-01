@@ -1,6 +1,9 @@
 %{
 #include "definition.h"
-int Totalerrors, funcount, gcount;
+extern char * yytext;
+extern int yylineno;
+extern int totalError;
+int syntaxError, funcount, gcount;
 struct allFunc **ALL;
 struct globalVar **gVar;
 %}
@@ -84,6 +87,7 @@ decl_list
                                     $$->ntno = 2; $$->procno = 2;
                                     $$->multiplicity = 1;
                                 }
+    | error
     ;
 
 decl
@@ -93,6 +97,7 @@ decl
     | fun_decl                  {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 3; $$->procno = 2;
                                 }
+    | error
     ;
 
 var_decl
@@ -111,11 +116,13 @@ var_decl
                                     strcpy(gVar[gcount]->name, $2.text);
                                     gVar[gcount]->space = atoi($4.text); gcount++;
                                 }
+    | error
     ;
 
 type_spec
     : VOID                      {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 1; }
     | INT                       {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 2; }
+    | error
     ;
 
 fun_decl
@@ -133,6 +140,7 @@ fun_decl
                                     $$->child[1] = $4; $4->parent = $$;
                                     $$->ntno = 6; $$->procno = 2; strcpy($$->txt, $2.text);
                                 }
+    | error
     ;
 
 params
@@ -140,6 +148,7 @@ params
                                     $$->ntno = 7; $$->procno = 1;
                                 }
     | VOID                      {   $$ = makeNode(0); $$->ntno = 7; $$->procno = 2; }
+    | error
     ;
     
 param_list
@@ -152,6 +161,7 @@ param_list
                                     $$->ntno = 8; $$->procno = 2;
                                     $$->multiplicity = 1;
                                 }
+    | error
     ;
     
 param
@@ -164,6 +174,7 @@ param
                                     $$->ntno = 9; $$->procno = 2;
                                     strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
                                 }
+    | error
     ;
 
 stmt_list
@@ -176,6 +187,7 @@ stmt_list
                                     $$->ntno = 10; $$->procno = 2;
                                     $$->multiplicity = 1;
                                 }
+    | error
     ;
     
 stmt
@@ -200,6 +212,7 @@ stmt
     | break_stmt                {   $$ = makeNode(1); $$->child[0] = $1; $1->parent = $$;
                                     $$->ntno = 11; $$->procno = 7;
                                 }
+    | error
     ;
     
 expr_stmt
@@ -216,6 +229,7 @@ expr_stmt
                                     $$->child[1] = $4; $4->parent = $$;
                                     $$->ntno = 12; $$->procno = 3;
                                 }
+    | error
     ;
 
 while_stmt
@@ -223,12 +237,14 @@ while_stmt
                                     $$->child[1] = $5; $5->parent = $$;
                                     $$->ntno = 13; $$->procno = 1;
                                 }
+    | error
     ;
 
 block_stmt
     : '{' stmt_list '}'         {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
                                     $$->ntno = 14; $$->procno = 1;
                                 }
+    | error
     ;
     
 compound_stmt
@@ -246,6 +262,7 @@ compound_stmt
     | '{' '}'                   {   $$ = makeNode(0);
                                     $$->ntno = 15; $$->procno = 4;
                                 }
+    | error
     ;
 
 local_decls
@@ -258,6 +275,7 @@ local_decls
                                     $$->ntno = 16; $$->procno = 2;
                                     $$->multiplicity = 1;
                                 }
+    | error
     ;
     
 local_decl
@@ -270,6 +288,7 @@ local_decl
                                     $$->ntno = 17; $$->procno = 2;
                                     strcpy($$->txt, $2.text); strcpy($$->numtxt, $4.text);
                                 }
+    | error
     ;
     
 if_stmt
@@ -284,6 +303,7 @@ if_stmt
                                     $$->child[2] = $7; $7->parent = $$;
                                     $$->ntno = 18; $$->procno = 2;
                                 }
+    | error
     ;
 
 return_stmt
@@ -293,6 +313,7 @@ return_stmt
     | RETURN expr ';'           {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
                                     $$->ntno = 19; $$->procno = 2;
                                 }
+    | error
     ;
 
 expr
@@ -426,6 +447,7 @@ expr
                                     $$->ntno = 20; $$->procno = 29;
                                     $$->contain_expr = 1;
                                 }
+    | error
     ;
     
 int_literal
@@ -435,6 +457,7 @@ int_literal
     | HEXNUM                    {   $$ = makeNode(0); $$->ntno = 21; $$->procno = 2;
                                     strcpy($$->numtxt, $1.text);
                                 }
+    | error
     ;
 
 arg_list
@@ -447,39 +470,45 @@ arg_list
                                     $$->ntno = 22; $$->procno = 2;
                                     $$->multiplicity = 1;
                                 }
+    | error
     ;
 
 continue_stmt
     : CONTINUE ';'              {   $$ = makeNode(0); $$->ntno = 23; $$->procno = 1; }
+    | error
     ;
 
 break_stmt
     : BREAK ';'                 {   $$ = makeNode(0); $$->ntno = 24; $$->procno = 1; }
+    | error
     ;
 %%
-// 错误处理函数
+// 错误处理
 yyerror(s)
 char *s;
 {
+    printf("line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
     fflush(stdout);
-    printf("Parse Error\n");
-    Totalerrors++;
+    syntaxError++;
     return 0;
 }
 
 int main()
 {
-    Totalerrors = 0;
+    syntaxError = 0;
     funcount = 0;
     gcount = 0;
     ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
     gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
     yyparse();
-    if (Totalerrors > 0)
-        printf("Total symantic errors: %d\n", Totalerrors);
-    else {
+    if (syntaxError > 0) {
+        printf("Total count of syntax error: %d\n", syntaxError);
+        fflush(stdout);
+    }
+    else if (totalError == 0) {
         printf("Generating MIPS code...\n");
         GenerateMIPS();
+        printf("MIPS code generated.\n");
     }
     return 0;
 }

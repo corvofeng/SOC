@@ -1008,7 +1008,7 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 58 "minic.l"
-{ comment(); }
+{ comment1(); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
@@ -2032,44 +2032,43 @@ void yyfree (void * ptr )
 
 #line 61 "minic.l"
 
-
-yywrap()
-{
-    if (totalError > 0)
-        printf("Total count of lexical error: %d\n", totalError);
-    fflush(stdout);
-    return(1);
-}
-
 // 处理/* */型的注释
-comment()
+comment1()
 {
-	char c, c1;
-	c=input();
-	while(1){
-		c1 = input();
+    char c, c1;
+    c = input();
+    while(1){
+        c1 = input();
         if (c == '*' && c1 == '/')
             break;
         else if (c == '\n')
             yylineno++;
-		c=c1;
-	}
+        c = c1;
+    }
 }
 
 // 处理//型的注释
 comment2()
 {
-	char c;
-	while ((c = input()) != '\n');
+    char c;
+    while ((c = input()) != '\n');
     yylineno++;
 }
 
 // 错误处理
 lexerror()
 {
-    printf("Lexical error: invalid '%s' at line %d\n", yytext, yylineno);
+    printf("line %d: lexical error: invalid '%s'\n", yylineno, yytext);
     fflush(stdout);
     totalError++;
+}
+
+yywrap()
+{
+    if (totalError > 0)
+    printf("Total count of lexical error: %d\n", totalError);
+    fflush(stdout);
+    return(1);
 }
 
 
