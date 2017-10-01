@@ -536,7 +536,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     // 保存寄存器
                     fprintf(fp, "\taddi $sp, $sp, -24\n");
                     fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
-                    fprintf(fp, "\tsw $t7, 16($sp)\n"); // 保存参数部分指针地址
+                    fprintf(fp, "\tsw $t9, 16($sp)\n"); // 保存参数部分指针地址
                     fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
                     fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
                     fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
@@ -547,7 +547,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     if (arg_space > 0) {
                         arg_space *= 4;
                         fprintf(fp, "\taddi $sp, $sp, -%d\n", arg_space); // 不够则分配栈空间
-                        fprintf(fp, "\tadd $t7, $sp, $zero\n"); // 参数部分指针给t7
+                        fprintf(fp, "\tadd $t9, $sp, $zero\n"); // 参数部分指针给t9
                     }
                     
                     // 在处理arg_list的过程中完成参数赋值
@@ -565,7 +565,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
                     fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
                     fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
-                    fprintf(fp, "\tlw $t7, 16($sp)\n"); // 恢复参数部分指针地址
+                    fprintf(fp, "\tlw $t9, 16($sp)\n"); // 恢复参数部分指针地址
                     fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
                     fprintf(fp, "\taddi $sp, $sp, 24\n");
                     
@@ -593,13 +593,13 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     // 保存寄存器
                     fprintf(fp, "\taddi $sp, $sp, -8\n");
                     fprintf(fp, "\tsw $ra, 4($sp)\n"); // 保存返回地址
-                    fprintf(fp, "\tsw $t7, 0($sp)\n"); // 保存参数部分指针地址
+                    fprintf(fp, "\tsw $t9, 0($sp)\n"); // 保存参数部分指针地址
                     
                     // 函数调用
                     fprintf(fp, "\tjal %s\n", t->txt);
                     
                     // 恢复寄存器
-                    fprintf(fp, "\tlw $t7, 0($sp)\n"); // 恢复参数部分指针地址
+                    fprintf(fp, "\tlw $t9, 0($sp)\n"); // 恢复参数部分指针地址
                     fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
                     fprintf(fp, "\taddi $sp, $sp, 8\n");
                     

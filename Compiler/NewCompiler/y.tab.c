@@ -567,7 +567,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 464 "minic.y"
+#line 460 "minic.y"
 // 错误处理函数
 yyerror(s)
 char *s;
@@ -848,18 +848,14 @@ case 7:
 break;
 case 8:
 #line 117 "minic.y"
-	{   yyval.node = makeNode(0);
-                                    yyval.node->ntno = 5; yyval.node->procno = 1;
-                                }
+	{   yyval.node = makeNode(0); yyval.node->ntno = 5; yyval.node->procno = 1; }
 break;
 case 9:
-#line 120 "minic.y"
-	{   yyval.node = makeNode(0);
-                                    yyval.node->ntno = 5; yyval.node->procno = 2;
-                                }
+#line 118 "minic.y"
+	{   yyval.node = makeNode(0); yyval.node->ntno = 5; yyval.node->procno = 2; }
 break;
 case 10:
-#line 127 "minic.y"
+#line 123 "minic.y"
 	{   yyval.node = makeNode(3); yyval.node->child[0] = yystack.l_mark[-5].node; yystack.l_mark[-5].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[2] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
@@ -870,24 +866,24 @@ case 10:
                                 }
 break;
 case 11:
-#line 136 "minic.y"
+#line 132 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-5].node; yystack.l_mark[-5].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->ntno = 6; yyval.node->procno = 2; strcpy(yyval.node->txt, yystack.l_mark[-4].Sval.text);
                                 }
 break;
 case 12:
-#line 143 "minic.y"
+#line 139 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 7; yyval.node->procno = 1;
                                 }
 break;
 case 13:
-#line 146 "minic.y"
+#line 142 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 7; yyval.node->procno = 2; }
 break;
 case 14:
-#line 150 "minic.y"
+#line 146 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 8; yyval.node->procno = 1;
@@ -895,28 +891,28 @@ case 14:
                                 }
 break;
 case 15:
-#line 155 "minic.y"
+#line 151 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 8; yyval.node->procno = 2;
                                     yyval.node->multiplicity = 1;
                                 }
 break;
 case 16:
-#line 162 "minic.y"
+#line 158 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 9; yyval.node->procno = 1;
                                     strcpy(yyval.node->txt, yystack.l_mark[0].Sval.text);
                                 }
 break;
 case 17:
-#line 167 "minic.y"
+#line 163 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-4].node; yystack.l_mark[-4].node->parent = yyval.node;
                                     yyval.node->ntno = 9; yyval.node->procno = 2;
                                     strcpy(yyval.node->txt, yystack.l_mark[-3].Sval.text); strcpy(yyval.node->numtxt, yystack.l_mark[-1].Sval.text);
                                 }
 break;
 case 18:
-#line 174 "minic.y"
+#line 170 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 10; yyval.node->procno = 1;
@@ -924,115 +920,115 @@ case 18:
                                 }
 break;
 case 19:
-#line 179 "minic.y"
+#line 175 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 10; yyval.node->procno = 2;
                                     yyval.node->multiplicity = 1;
                                 }
 break;
 case 20:
-#line 186 "minic.y"
+#line 182 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 1;
                                 }
 break;
 case 21:
-#line 189 "minic.y"
+#line 185 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 2;
                                 }
 break;
 case 22:
-#line 192 "minic.y"
+#line 188 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 3;
                                 }
 break;
 case 23:
-#line 195 "minic.y"
+#line 191 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 4;
                                 }
 break;
 case 24:
-#line 198 "minic.y"
+#line 194 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 5;
                                 }
 break;
 case 25:
-#line 201 "minic.y"
+#line 197 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 6;
                                 }
 break;
 case 26:
-#line 204 "minic.y"
+#line 200 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 11; yyval.node->procno = 7;
                                 }
 break;
 case 27:
-#line 210 "minic.y"
+#line 206 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 12; yyval.node->procno = 1;
                                     strcpy(yyval.node->txt, yystack.l_mark[-3].Sval.text);
                                 }
 break;
 case 28:
-#line 215 "minic.y"
+#line 211 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 12; yyval.node->procno = 2;
                                     strcpy(yyval.node->txt, yystack.l_mark[-6].Sval.text); strcpy(yyval.node->numtxt, yystack.l_mark[-4].Sval.text);
                                 }
 break;
 case 29:
-#line 219 "minic.y"
+#line 215 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-3].node; yystack.l_mark[-3].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 12; yyval.node->procno = 3;
                                 }
 break;
 case 30:
-#line 226 "minic.y"
+#line 222 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 13; yyval.node->procno = 1;
                                 }
 break;
 case 31:
-#line 233 "minic.y"
+#line 229 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 14; yyval.node->procno = 1;
                                 }
 break;
 case 32:
-#line 240 "minic.y"
+#line 236 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 15; yyval.node->procno = 1;
                                 }
 break;
 case 33:
-#line 244 "minic.y"
+#line 240 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 15; yyval.node->procno = 2;
                                 }
 break;
 case 34:
-#line 247 "minic.y"
+#line 243 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 15; yyval.node->procno = 3;
                                 }
 break;
 case 35:
-#line 250 "minic.y"
+#line 246 "minic.y"
 	{   yyval.node = makeNode(0);
                                     yyval.node->ntno = 15; yyval.node->procno = 4;
                                 }
 break;
 case 36:
-#line 256 "minic.y"
+#line 252 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 16; yyval.node->procno = 1;
@@ -1040,35 +1036,35 @@ case 36:
                                 }
 break;
 case 37:
-#line 261 "minic.y"
+#line 257 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 16; yyval.node->procno = 2;
                                     yyval.node->multiplicity = 1;
                                 }
 break;
 case 38:
-#line 268 "minic.y"
+#line 264 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->ntno = 17; yyval.node->procno = 1;
                                     strcpy(yyval.node->txt, yystack.l_mark[-1].Sval.text);
                                 }
 break;
 case 39:
-#line 273 "minic.y"
+#line 269 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-5].node; yystack.l_mark[-5].node->parent = yyval.node;
                                     yyval.node->ntno = 17; yyval.node->procno = 2;
                                     strcpy(yyval.node->txt, yystack.l_mark[-4].Sval.text); strcpy(yyval.node->numtxt, yystack.l_mark[-2].Sval.text);
                                 }
 break;
 case 40:
-#line 281 "minic.y"
+#line 277 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 18; yyval.node->procno = 1;
                                 }
 break;
 case 41:
-#line 286 "minic.y"
+#line 282 "minic.y"
 	{   yyval.node = makeNode(3); yyval.node->child[0] = yystack.l_mark[-4].node; yystack.l_mark[-4].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[2] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
@@ -1076,19 +1072,19 @@ case 41:
                                 }
 break;
 case 42:
-#line 294 "minic.y"
+#line 290 "minic.y"
 	{   yyval.node = makeNode(0);
                                     yyval.node->ntno = 19; yyval.node->procno = 1;
                                 }
 break;
 case 43:
-#line 297 "minic.y"
+#line 293 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 19; yyval.node->procno = 2;
                                 }
 break;
 case 44:
-#line 303 "minic.y"
+#line 299 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 1;
@@ -1096,7 +1092,7 @@ case 44:
                                 }
 break;
 case 45:
-#line 308 "minic.y"
+#line 304 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 2;
@@ -1104,7 +1100,7 @@ case 45:
                                 }
 break;
 case 46:
-#line 313 "minic.y"
+#line 309 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 3;
@@ -1112,7 +1108,7 @@ case 46:
                                 }
 break;
 case 47:
-#line 318 "minic.y"
+#line 314 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 4;
@@ -1120,7 +1116,7 @@ case 47:
                                 }
 break;
 case 48:
-#line 323 "minic.y"
+#line 319 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 5;
@@ -1128,7 +1124,7 @@ case 48:
                                 }
 break;
 case 49:
-#line 328 "minic.y"
+#line 324 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 6;
@@ -1136,7 +1132,7 @@ case 49:
                                 }
 break;
 case 50:
-#line 333 "minic.y"
+#line 329 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 7;
@@ -1144,7 +1140,7 @@ case 50:
                                 }
 break;
 case 51:
-#line 338 "minic.y"
+#line 334 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 8;
@@ -1152,7 +1148,7 @@ case 51:
                                 }
 break;
 case 52:
-#line 343 "minic.y"
+#line 339 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 9;
@@ -1160,7 +1156,7 @@ case 52:
                                 }
 break;
 case 53:
-#line 348 "minic.y"
+#line 344 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 10;
@@ -1168,7 +1164,7 @@ case 53:
                                 }
 break;
 case 54:
-#line 353 "minic.y"
+#line 349 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 11;
@@ -1176,7 +1172,7 @@ case 54:
                                 }
 break;
 case 55:
-#line 358 "minic.y"
+#line 354 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 12;
@@ -1184,7 +1180,7 @@ case 55:
                                 }
 break;
 case 56:
-#line 363 "minic.y"
+#line 359 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 13;
@@ -1192,73 +1188,73 @@ case 56:
                                 }
 break;
 case 57:
-#line 368 "minic.y"
+#line 364 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 14;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 58:
-#line 372 "minic.y"
+#line 368 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 15;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 59:
-#line 376 "minic.y"
+#line 372 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 16;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 60:
-#line 380 "minic.y"
+#line 376 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 17;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 61:
-#line 384 "minic.y"
+#line 380 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 18;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 62:
-#line 388 "minic.y"
+#line 384 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 20; yyval.node->procno = 19;
                                     strcpy(yyval.node->txt, yystack.l_mark[0].Sval.text);
                                 }
 break;
 case 63:
-#line 391 "minic.y"
+#line 387 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 20; yyval.node->procno = 20;
                                     strcpy(yyval.node->txt, yystack.l_mark[-3].Sval.text); strcpy(yyval.node->numtxt, yystack.l_mark[-1].Sval.text);
         
                                 }
 break;
 case 64:
-#line 395 "minic.y"
+#line 391 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[-1].node; yystack.l_mark[-1].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 21; strcpy(yyval.node->txt, yystack.l_mark[-3].Sval.text);
                                 }
 break;
 case 65:
-#line 398 "minic.y"
+#line 394 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 20; yyval.node->procno = 22;
                                     strcpy(yyval.node->txt, yystack.l_mark[-2].Sval.text);
                                 }
 break;
 case 66:
-#line 401 "minic.y"
+#line 397 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 23;
                                 }
 break;
 case 67:
-#line 404 "minic.y"
+#line 400 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 24;
@@ -1266,7 +1262,7 @@ case 67:
                                 }
 break;
 case 68:
-#line 409 "minic.y"
+#line 405 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 25;
@@ -1274,14 +1270,14 @@ case 68:
                                 }
 break;
 case 69:
-#line 414 "minic.y"
+#line 410 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 26;
                                     yyval.node->contain_expr = 1;
                                 }
 break;
 case 70:
-#line 418 "minic.y"
+#line 414 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 27;
@@ -1289,7 +1285,7 @@ case 70:
                                 }
 break;
 case 71:
-#line 423 "minic.y"
+#line 419 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 28;
@@ -1297,7 +1293,7 @@ case 71:
                                 }
 break;
 case 72:
-#line 428 "minic.y"
+#line 424 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 20; yyval.node->procno = 29;
@@ -1305,19 +1301,19 @@ case 72:
                                 }
 break;
 case 73:
-#line 436 "minic.y"
+#line 432 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 21; yyval.node->procno = 1;
                                     strcpy(yyval.node->numtxt, yystack.l_mark[0].Sval.text);
                                 }
 break;
 case 74:
-#line 439 "minic.y"
+#line 435 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 21; yyval.node->procno = 2;
                                     strcpy(yyval.node->numtxt, yystack.l_mark[0].Sval.text);
                                 }
 break;
 case 75:
-#line 445 "minic.y"
+#line 441 "minic.y"
 	{   yyval.node = makeNode(2); yyval.node->child[0] = yystack.l_mark[-2].node; yystack.l_mark[-2].node->parent = yyval.node;
                                     yyval.node->child[1] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 22; yyval.node->procno = 1;
@@ -1325,21 +1321,21 @@ case 75:
                                 }
 break;
 case 76:
-#line 450 "minic.y"
+#line 446 "minic.y"
 	{   yyval.node = makeNode(1); yyval.node->child[0] = yystack.l_mark[0].node; yystack.l_mark[0].node->parent = yyval.node;
                                     yyval.node->ntno = 22; yyval.node->procno = 2;
                                     yyval.node->multiplicity = 1;
                                 }
 break;
 case 77:
-#line 457 "minic.y"
-	{   yyval.node = makeNode(0); }
+#line 453 "minic.y"
+	{   yyval.node = makeNode(0); yyval.node->ntno = 23; yyval.node->procno = 1; }
 break;
 case 78:
-#line 461 "minic.y"
-	{   yyval.node = makeNode(0); }
+#line 457 "minic.y"
+	{   yyval.node = makeNode(0); yyval.node->ntno = 24; yyval.node->procno = 1; }
 break;
-#line 1343 "y.tab.c"
+#line 1339 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

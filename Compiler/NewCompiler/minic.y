@@ -114,12 +114,8 @@ var_decl
     ;
 
 type_spec
-    : VOID                      {   $$ = makeNode(0);
-                                    $$->ntno = 5; $$->procno = 1;
-                                }
-    | INT                       {   $$ = makeNode(0);
-                                    $$->ntno = 5; $$->procno = 2;
-                                }
+    : VOID                      {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 1; }
+    | INT                       {   $$ = makeNode(0); $$->ntno = 5; $$->procno = 2; }
     ;
 
 fun_decl
@@ -454,11 +450,11 @@ arg_list
     ;
 
 continue_stmt
-    : CONTINUE ';'              {   $$ = makeNode(0); }
+    : CONTINUE ';'              {   $$ = makeNode(0); $$->ntno = 23; $$->procno = 1; }
     ;
 
 break_stmt
-    : BREAK ';'                 {   $$ = makeNode(0); }
+    : BREAK ';'                 {   $$ = makeNode(0); $$->ntno = 24; $$->procno = 1; }
     ;
 %%
 // 错误处理函数
