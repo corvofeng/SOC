@@ -229,6 +229,16 @@ expr_stmt
                                     $$->child[1] = $4; $4->parent = $$;
                                     $$->ntno = 12; $$->procno = 3;
                                 }
+    | IDENT '(' arg_list ')' ';'
+                                {   $$ = makeNode(1); $$->child[0] = $3; $3->parent = $$;
+                                    $$->ntno = 12; $$->procno = 4;
+                                    strcpy($$->txt, $1.text);
+                                }
+    | IDENT '(' ')' ';'
+                                {   $$ = makeNode(0);
+                                    $$->ntno = 12; $$->procno = 5;
+                                    strcpy($$->txt, $1.text);
+                                }
     | error
     ;
 
@@ -487,8 +497,7 @@ break_stmt
 yyerror(s)
 char *s;
 {
-    printf("line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
-    fflush(stdout);
+    fprintf(stderr, "line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
     syntaxError++;
     return 0;
 }
@@ -501,10 +510,8 @@ int main()
     ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
     gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
     yyparse();
-    if (syntaxError > 0) {
-        printf("Total count of syntax error: %d\n", syntaxError);
-        fflush(stdout);
-    }
+    if (syntaxError > 0)
+        fprintf(stderr, "Total count of syntax error: %d\n", syntaxError);
     else if (totalError == 0) {
         printf("Generating MIPS code...\n");
         GenerateMIPS();

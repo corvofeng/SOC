@@ -41,23 +41,7 @@ void GenerateMIPS() {
 }
 
 void deal_with_node(FILE *fp, struct AST *t, int funcno) {
-    if (t->ntno == 1) { // program
-        
-        printf("Error! A function should never include program!\n");
-    
-    } else if (t->ntno == 2) { // decl_list
-        
-        printf("Error! A function should never include decl_list!\n");
-    
-    } else if (t->ntno == 3) { // decl
-        
-        printf("Error! A function should never include decl!\n");
-    
-    } else if (t->ntno == 4) { // var_decl
-    
-        printf("Error! A function should never include var_decl!\n");
-    
-    } else if (t->ntno == 5) { // type_spec
+    if (t->ntno == 5) { // type_spec
         
         // 函数类型填入ALL，VOID为0，INT为1
         if (t->parent->ntno == 6) {
@@ -109,8 +93,6 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 }
                 fprintf(fp, "\tjr $ra\n");
             }
-        } else if (t->procno == 2) {
-            printf("Error! A function should never include fun_decl!\n");
         }
         
     } else if (t->ntno == 7) { // params
@@ -151,6 +133,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     } else if (t->ntno == 12) { // expr_stmt
         
         if (t->procno == 1) { // IDENT = expr;
+            
             deal_with_node(fp, t->child[0], funcno);
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
@@ -161,9 +144,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tsw $t0, %s\n", t->txt);
                 else
-                    printf("Error! Undeclared variable '%s'\n", t->txt);
+                    fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
             }
+            
         } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
+            
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tadd $t1 $t0, $zero\n");
             struct messenger *m = lookup(t->txt, funcno);
@@ -175,15 +160,105 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tla $t0, %s\n", t->txt);
                 else
-                    printf("Error! Undeclared variable '%s'\n", t->txt);
+                    fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
             }
             int o = atoi(t->numtxt);
             fprintf(fp, "\tsw $t1, %d($t0)\n", 4 * o);
+        
         } else if (t->procno == 3) { // $expr = expr;
+            
             deal_with_node(fp, t->child[1], funcno);
             fprintf(fp, "\tadd $t1, $t0, $zero\n");
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tsw $t1, ($t0)\n");
+            
+        } else if (t->procno == 4) {
+            
+            int name_found = 0;
+            int pcount_matched = 0;
+            for (int i = 0; i < funcount; i++) {
+                if (strcmp(ALL[i]->name, t->txt) == 0) {
+                    name_found = 1;
+                    if (ALL[i]->param_count == t->child[0]->multiplicity)
+                        pcount_matched = 1;
+                }
+            }
+            
+            if (pcount_matched == 1) {
+                
+                // 保存寄存器
+                fprintf(fp, "\taddi $sp, $sp, -24\n");
+                fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
+                fprintf(fp, "\tsw $t9, 16($sp)\n"); // 保存参数部分指针地址
+                fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
+                fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
+                fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
+                fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
+                
+                
+                int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
+                if (arg_space > 0) {
+                    arg_space *= 4;
+                    fprintf(fp, "\taddi $sp, $sp, -%d\n", arg_space); // 不够则分配栈空间
+                    fprintf(fp, "\tadd $t9, $sp, $zero\n"); // 参数部分指针给t9
+                }
+                
+                // 在处理arg_list的过程中完成参数赋值
+                deal_with_node(fp, t->child[0], funcno);
+                
+                // 函数调用
+                fprintf(fp, "\tjal %s\n", t->txt);
+                
+                // 参数部分退栈
+                if (arg_space > 0)
+                    fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
+                
+                // 恢复寄存器
+                fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
+                fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
+                fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
+                fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
+                fprintf(fp, "\tlw $t9, 16($sp)\n"); // 恢复参数部分指针地址
+                fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
+                fprintf(fp, "\taddi $sp, $sp, 24\n");
+                
+            } else if (name_found == 1)
+                fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
+            else
+                fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+            
+        } else if (t->procno == 5) {
+            
+            int name_found = 0;
+            int pcount_matched = 0;
+            for (int i = 0; i < funcount; i++) {
+                if (strcmp(ALL[i]->name, t->txt) == 0) {
+                    name_found = 1;
+                    if (ALL[i]->param_count == 0)
+                        pcount_matched = 1;
+                }
+            }
+            
+            if (pcount_matched == 1) {
+                
+                // 保存寄存器
+                fprintf(fp, "\taddi $sp, $sp, -8\n");
+                fprintf(fp, "\tsw $ra, 4($sp)\n"); // 保存返回地址
+                fprintf(fp, "\tsw $t9, 0($sp)\n"); // 保存参数部分指针地址
+                
+                // 函数调用
+                fprintf(fp, "\tjal %s\n", t->txt);
+                
+                // 恢复寄存器
+                fprintf(fp, "\tlw $t9, 0($sp)\n"); // 恢复参数部分指针地址
+                fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
+                fprintf(fp, "\taddi $sp, $sp, 8\n");
+                
+            } else if (name_found == 1)
+                fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
+            else
+                fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+            
         }
         
     } else if (t->ntno == 13) { // while_stmt
@@ -253,14 +328,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
         if (t->procno == 1) {
             if (ALL[funcno]->type == 1) {
-                printf("Error! Return type mismatch for function '%s'\n", ALL[funcno]->name);
+                fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
             }
         } else if (t->procno == 2) {
             if (ALL[funcno]->type == 1) {
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $v0, $t0, $zero\n");
             } else {
-                printf("Error! Return type mismatch for function '%s'\n", ALL[funcno]->name);
+                fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
             }
         }
         if (strcmp(ALL[funcno]->name, "main") != 0) {
@@ -500,7 +575,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tlw $t0, %s\n", t->txt);
                     else
-                        printf("Error! Undeclared variable '%s'\n", t->txt);
+                        fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
                 }
             
             } else if (t->procno == 20) { // IDENT[DECNUM]
@@ -514,7 +589,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tla $t0, %s\n", t->txt);
                     else
-                        printf("Error! Undclared variable '%s'\n", t->txt);
+                        fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
                 }
                 int o = atoi(t->numtxt);
                 fprintf(fp, "\tlw $t0, %d($t0)\n", 4 * o);
@@ -572,9 +647,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1)
-                    printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
+                    fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
                 else
-                    printf("Error! Undeclared function '%s'\n", t->txt);
+                    fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
                 
             } else if (t->procno == 22) { // 函数调用，无参数
                 
@@ -606,9 +681,9 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1)
-                    printf("Error! Parameter count mismatch for function '%s\n'", t->txt);
+                    fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n'", ALL[funcno]->name, t->txt);
                 else
-                    printf("Error! Undeclared function '%s'\n", t->txt);
+                    fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
                 
             } else if (t->procno == 23) { // int_literal
                 
