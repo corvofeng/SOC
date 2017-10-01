@@ -2,8 +2,8 @@
 #include "definition.h"
 extern char * yytext;
 extern int yylineno;
-extern int totalError;
-int syntaxError, funcount, gcount;
+extern int total_err;
+int syntax_err, funcount, gcount, prg_err;
 struct allFunc **ALL;
 struct globalVar **gVar;
 %}
@@ -498,24 +498,27 @@ yyerror(s)
 char *s;
 {
     fprintf(stderr, "line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
-    syntaxError++;
+    syntax_err++;
     return 0;
 }
 
 int main()
 {
-    syntaxError = 0;
+    syntax_err = 0;
     funcount = 0;
     gcount = 0;
     ALL = (struct allFunc **)malloc(20 * sizeof(struct allFunc *));
     gVar = (struct globalVar **)malloc(20 * sizeof(struct globalVar *));
     yyparse();
-    if (syntaxError > 0)
-        fprintf(stderr, "Total count of syntax error: %d\n", syntaxError);
-    else if (totalError == 0) {
+    if (syntax_err > 0)
+        fprintf(stderr, "Total count of syntax error: %d\n", syntax_err);
+    else if (total_err == 0) {
         printf("Generating MIPS code...\n");
-        GenerateMIPS();
-        printf("MIPS code generated.\n");
+        prg_err = generateMIPS();
+        if (prg_err == 0)
+            printf("MIPS code generated.\n");
+        else
+            fprintf(stderr, "Generate failed. Total count of program error: %d\n", prg_err);
     }
     return 0;
 }

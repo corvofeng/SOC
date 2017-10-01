@@ -16,7 +16,7 @@ fib:
 	slt $t0, $t0, $t1
 	beq $t0, $zero, L1
 	add $t0, $a0, $zero
-	addi $v0, $t0, 0
+	add $v0, $t0, $zero
 	lw $s0, 0($sp)
 	lw $s1, 4($sp)
 	lw $s2, 8($sp)
@@ -63,7 +63,7 @@ L4:
 	j L2
 L3:
 	add $t0, $s2, $zero
-	addi $v0, $t0, 0
+	add $v0, $t0, $zero
 	lw $s0, 0($sp)
 	lw $s1, 4($sp)
 	lw $s2, 8($sp)
@@ -79,7 +79,7 @@ main:
 	add $s0, $t0, $zero
 	addi $sp, $sp, -24
 	sw $ra, 20($sp)
-	sw $t7, 16($sp)
+	sw $t9, 16($sp)
 	sw $a3, 12($sp)
 	sw $a2, 8($sp)
 	sw $a1, 4($sp)
@@ -91,9 +91,9 @@ main:
 	lw $a1, 4($sp)
 	lw $a2, 8($sp)
 	lw $a3, 12($sp)
-	lw $t7, 16($sp)
+	lw $t9, 16($sp)
 	lw $ra, 20($sp)
 	addi $sp, $sp, 24
-	addi $t0, $v0, 0
+	add $t0, $v0, $zero
 	add $s1, $t0, $zero
 	jr $ra

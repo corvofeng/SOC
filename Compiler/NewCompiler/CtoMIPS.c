@@ -3,6 +3,7 @@
 
 int labelno;
 int tno; // 临时存储数组指针的寄存器的编号
+int err_count;
 struct stack *while1;
 struct stack *while2;
 
@@ -11,9 +12,10 @@ void alloc_array(FILE *fp, struct AST *t, int funcno);
 void alloc_all(FILE *fp, struct AST *t, int funcno);
 int getLabel();
 
-void GenerateMIPS() {
+int generateMIPS() {
     labelno = 1;
     tno = 0;
+    err_count = 0;
     while1 = init_stack();
     while2 = init_stack();
     for (int i = 0; i < funcount; i++) {
@@ -38,6 +40,7 @@ void GenerateMIPS() {
         deal_with_node(fp, ALL[i]->t, i);
     }
     fclose(fp);
+    return err_count;
 }
 
 void deal_with_node(FILE *fp, struct AST *t, int funcno) {
@@ -143,8 +146,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tsw $t0, %s\n", t->txt);
-                else
+                else {
                     fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                    err_count++;
+                }
             }
             
         } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
@@ -159,8 +164,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tla $t0, %s\n", t->txt);
-                else
+                else {
                     fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                    err_count++;
+                }
             }
             int o = atoi(t->numtxt);
             fprintf(fp, "\tsw $t1, %d($t0)\n", 4 * o);
@@ -222,10 +229,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
                 fprintf(fp, "\taddi $sp, $sp, 24\n");
                 
-            } else if (name_found == 1)
+            } else if (name_found == 1) {
                 fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
-            else
+                err_count++;
+            }
+            else {
                 fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                err_count++;
+            }
             
         } else if (t->procno == 5) {
             
@@ -254,10 +265,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tlw $ra, 4($sp)\n"); // 恢复返回地址
                 fprintf(fp, "\taddi $sp, $sp, 8\n");
                 
-            } else if (name_found == 1)
+            } else if (name_found == 1) {
                 fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
-            else
+                err_count++;
+            }
+            else {
                 fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                err_count++;
+            }
             
         }
         
@@ -329,6 +344,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         if (t->procno == 1) {
             if (ALL[funcno]->type == 1) {
                 fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
+                err_count++;
             }
         } else if (t->procno == 2) {
             if (ALL[funcno]->type == 1) {
@@ -336,6 +352,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tadd $v0, $t0, $zero\n");
             } else {
                 fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
+                err_count++;
             }
         }
         if (strcmp(ALL[funcno]->name, "main") != 0) {
@@ -574,8 +591,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 else {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tlw $t0, %s\n", t->txt);
-                    else
+                    else {
                         fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                        err_count++;
+                    }
                 }
             
             } else if (t->procno == 20) { // IDENT[DECNUM]
@@ -588,8 +607,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 } else {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tla $t0, %s\n", t->txt);
-                    else
+                    else {
                         fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                        err_count++;
+                    }
                 }
                 int o = atoi(t->numtxt);
                 fprintf(fp, "\tlw $t0, %d($t0)\n", 4 * o);
@@ -646,10 +667,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
-                } else if (name_found == 1)
+                } else if (name_found == 1) {
                     fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
-                else
+                    err_count++;
+                }
+                else {
                     fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                    err_count++;
+                }
                 
             } else if (t->procno == 22) { // 函数调用，无参数
                 
@@ -680,10 +705,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
-                } else if (name_found == 1)
+                } else if (name_found == 1) {
                     fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n'", ALL[funcno]->name, t->txt);
-                else
+                    err_count++;
+                }
+                else {
                     fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                    err_count++;
+                }
                 
             } else if (t->procno == 23) { // int_literal
                 

@@ -511,7 +511,7 @@ char *yytext;
 #include "y.tab.h"
 #include "definition.h"
 extern YYSTYPE yylval;
-int totalError = 0;
+int total_err = 0;
 #line 515 "lex.yy.c"
 #line 516 "lex.yy.c"
 
@@ -2059,13 +2059,13 @@ comment2()
 lexerror()
 {
     fprintf(stderr, "line %d: lexical error: invalid '%s'\n", yylineno, yytext);
-    totalError++;
+    total_err++;
 }
 
 yywrap()
 {
-    if (totalError > 0)
-    fprintf(stderr, "Total count of lexical error: %d\n", totalError);
+    if (total_err > 0)
+    fprintf(stderr, "Total count of lexical error: %d\n", total_err);
     return(1);
 }
 

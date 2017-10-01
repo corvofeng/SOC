@@ -66,4 +66,4 @@ int top(struct stack *s);
 int empty(struct stack *s);
 void clear(struct stack *s);
 
-void GenerateMIPS();
+int generateMIPS();
