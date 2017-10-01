@@ -2058,16 +2058,14 @@ comment2()
 // 错误处理
 lexerror()
 {
-    printf("line %d: lexical error: invalid '%s'\n", yylineno, yytext);
-    fflush(stdout);
+    fprintf(stderr, "line %d: lexical error: invalid '%s'\n", yylineno, yytext);
     totalError++;
 }
 
 yywrap()
 {
     if (totalError > 0)
-    printf("Total count of lexical error: %d\n", totalError);
-    fflush(stdout);
+    fprintf(stderr, "Total count of lexical error: %d\n", totalError);
     return(1);
 }
 

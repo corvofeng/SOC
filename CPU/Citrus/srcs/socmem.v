@@ -25,17 +25,59 @@ module socmem (
            input clk,
            input [31:0] malu,
            input [31:0] mb,
-           output [31:0] mmo
+           output [31:0] mmo,
+           input clrn,
+           input mrmem,
+           input mrio,
+           input mwio,
+           
+           output LEDCtrl,
+           output KEYCtrl,
+           output CTCCtrl,
+           output PWMCtrl,
+           output UARTCtrl,
+           output WDTCtrl,
+           output[11:0] address,
+           output[31:0] write_data,
+           input [31:0] mread_data,
+           input [15:0] ioread_data_key,
+           input [15:0] ioread_data_ctc,
+           input [15:0] ioread_data_uart
        );
 wire clkn;
 assign clkn = ~clk;
+wire [15:0]caddr= malu[15:0];
+
+MiniSysBus bus(
+    .caddress(caddr),
+    .clk(clkn),
+    .clrn(clrn),
+    .memread(mrmem),
+    .memwrite(mwmem),
+    .ioread(mrio),
+    .iowrite(mwio),
+    .wdata(mb),
+    .rdata(mmo),
+    .LEDCtrl(LEDCtrl),
+    .KEYCtrl(KEYCtrl),
+    .CTCCtrl(CTCCtrl),
+    .PWMCtrl(PWMCtrl),
+    .UARTCtrl(UARTCtrl),
+    .WDTCtrl(WDTCtrl),
+    .address(address),
+    .write_data(write_data),
+    .mread_data(mread_data),
+    .ioread_data_key(ioread_data_key),
+    .ioread_data_ctc(ioread_data_ctc),
+    .ioread_data_uart(ioread_data_uart)
+    );
 
 ram64k mem(
-           .addr(malu),
-           .data_in(mb),
-           .clk(clkn),
-           .we(mwmem),
-           .data_out(mmo)
+    .addr(malu),
+    .data_in(mb),
+    .clk(clkn),
+    .we(mwmem),
+    .data_out(mmo)
        );
 
 endmodule

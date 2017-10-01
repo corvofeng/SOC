@@ -25,7 +25,8 @@ module cpuctr(
            input [4:0] rs,
            input [4:0] rt,
            input [4:0] rd,
-           input [5:0]func,
+           input [5:0] func,
+           input [7:0] immehi,
            input rerteqe,
            input ewreg,
            input em2reg,
@@ -37,6 +38,10 @@ module cpuctr(
            output wreg,
            output m2reg,
            output wmem,
+           output rmem,
+           output wio,
+           output rio,
+           
            output [1:0] pcsource,
            output nostall,
            output reg [1:0] fwda,
@@ -265,10 +270,13 @@ assign aluc[1] = (ixor  | ixori | iand | iandi | ior | iori | islt | islti | isl
 assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isrl | isrlv |
                   ibgez | ibgtz | iblez | ibltz | ibgezal | ibltzal)&clr;
 
-assign wmem    = ((isw | isb | ish ) & nostall)&clr & ~ecancel & ~exc_ovr;
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
 
+assign rmem    = ((ilw | ilb | ilh | ilhu ) & (immehi != 8'hff) & nostall)&clr & ~ecancel;
+assign wmem    = ((isw | isb | ish ) & (immehi != 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
+assign rio     = ((ilw | ilb | ilh | ilhu ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
+assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
 
 
 endmodule

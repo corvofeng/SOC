@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "file_parser.h"
 #include "tokenizer.h"
-
+#include <errno.h>
 /*
  * The structs below map a character to an integer.
  * They are used in order to map a specific instruciton/register to its binary format in ASCII
@@ -1270,7 +1270,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                             char s[50],out[50];
                             char opcode[20]= {0};
-                            printf("asadsada,\n");
+
                             size_t token_len = strlen(token);
                             token[token_len - 1] = '\0';
                             intnum++;
@@ -1327,7 +1327,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                     // If variable is .word
                     if (strstr(tok_ptr, ".word")) {
 
-                        int var_value;
+                        long long  var_value;
 
                         // Variable is array
                         if (strstr(var_tok_ptr, ":")) {
@@ -1349,14 +1349,29 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                         // Variable is a single variable
                         else {
-                            if (strncmp(".word 0x", var_tok_ptr, 8) == 0) {
-
+						char *p = "0x"; char *q = NULL;
+                            if (strstr(var_tok_ptr,p) != NULL) {
+                                int len = 0;
+                                char *s[8] = {0};
+                                //	printf("var_tok_ptr1 %s\n", var_tok_ptr);
                                 // Extract variable value
-                                var_tok_ptr = var_tok_ptr + 8;
-                                sscanf(var_tok_ptr, "%x", &var_value);
+                                //var_tok_ptr = var_tok_ptr + 8;
+								// printf("uuuuuuuuuuuu %s\n", var_tok_ptr);
+								 q = parse_token(var_tok_ptr, p, &var_tok_ptr, NULL);
+								// printf("strlen .%d.\n", strlen(q-1));
+								 var_tok_ptr = var_tok_ptr + 1 ;
+								// printf("q .%s.....\n", q);
+								// printf("var_tok_ptr .%s.......\n", var_tok_ptr);
+								 len = strlen(var_tok_ptr);
+								 //	printf("len .%d.\n", len);
+                                if(len <= 9) {
+								//	printf("len .%d.\n", len);
+                                    sscanf(var_tok_ptr,"%x", &var_value);
+                                    // Variable is in var_value. Send to binary rep function
+                                    word_rep(var_value, outData);
+                                } else
+                                    fprintf(stderr, "error! Please intput the right size variable\n");
 
-                                // Variable is in var_value. Send to binary rep function
-                                word_rep(var_value, outData);
                             } else {
                                 sscanf(var_tok_ptr, "%*s %d", &var_value);
                                 word_rep(var_value, outData);

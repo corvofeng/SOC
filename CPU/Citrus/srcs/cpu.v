@@ -33,7 +33,10 @@ module cpu(
       intr,inta,vector,
 
       sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc,
-      cancel,ecancel
+      cancel,ecancel,
+      LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl,
+      address,write_data,mread_data,
+      ioread_data_key,ioread_data_ctc,ioread_data_uart
     );
 
     input clk,clrn;
@@ -57,6 +60,12 @@ module cpu(
     input[7:0] vector;
 
     output cancel,ecancel;
+    wire mrmem,mrio,mwio,ermem,erio,ewio,rmem,rio,wio;
+    output LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl;
+    output[11:0] address;
+    output[31:0] write_data;
+    input [31:0] mread_data;
+    input [15:0] ioread_data_key,ioread_data_ctc,ioread_data_uart;
 
      pipepc p1(
         .npc(npc),
@@ -70,7 +79,7 @@ module cpu(
         .bpc(bpc),//npc1
         .dpc(dpc),//npc2
         .jpc(jpc),//npc3
-        .pcsource(pcsource),//pc婧?
+        .pcsource(pcsource),//pc�??
         .pc4(pc4),//pc+4
         .ins(ins),//is
         .selpc(selpc),
@@ -93,7 +102,7 @@ module cpu(
          .dpc4(dpc4),//pc
          .inst(inst),//指令
          .wdi(wdi),//reginput
-         .wrn(wrn),//目的寄存器
+         .wrn(wrn),//目的寄存�?
          .fwda(fwda),
          .fwdb(fwdb),
          .ealu(ealu),
@@ -145,7 +154,12 @@ module cpu(
          .vector(vector),
 
          .cancel(cancel),
-         .ecancel(ecancel)
+         .ecancel(ecancel),
+         
+         .rmem(rmem),
+         .rio(rio),
+         .wio(wio)
+
          );
 
       pipedereg p5(
@@ -187,7 +201,13 @@ module cpu(
           .emfc0(emfc0),
 
           .cancel(cancel),
-          .ecancel(ecancel)
+          .ecancel(ecancel),
+          .rmem(rmem),
+          .rio(rio),
+          .wio(wio),
+          .ermem(ermem),
+          .erio(erio),
+          .ewio(ewio)
          );
      socexe p6(
           .epc4(epc4),
@@ -229,14 +249,36 @@ module cpu(
           .eepc(eepc),
           .msta(msta),
           .mcau(mcau),
-          .mepc(mepc)
+          .mepc(mepc),
+          .ermem(ermem),
+          .erio(erio),
+          .ewio(ewio),
+          .mrmem(mrmem),
+          .mrio(mrio),
+          .mwio(mwio)
           );
       socmem p8(
           .mwmem(mwmem),
           .malu(malu),
           .mb(mb),
           .mmo(mmo),
-          .clk(clk)
+          .clk(clk),
+          .clrn(clrn),
+          .mrmem(mrmem),
+          .mrio(mrio),
+          .mwio(mwio),
+          .LEDCtrl(LEDCtrl),
+          .KEYCtrl(KEYCtrl),
+          .CTCCtrl(CTCCtrl),
+          .PWMCtrl(PWMCtrl),
+          .UARTCtrl(UARTCtrl),
+          .WDTCtrl(WDTCtrl),
+          .address(address),
+          .write_data(write_data),
+          .mread_data(mread_data),
+          .ioread_data_key(ioread_data_key),
+          .ioread_data_ctc(ioread_data_ctc),
+          .ioread_data_uart(ioread_data_uart)
          );
       pipemwreg p9(
           .malu(malu),
