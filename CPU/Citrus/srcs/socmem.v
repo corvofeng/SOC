@@ -5,7 +5,7 @@
 //
 // Create Date: 2016/07/06 16:08:58
 // Design Name:
-// Module Name: socmem  memÄ£¿é
+// Module Name: socmem  memÄ£ï¿½ï¿½
 // Project Name:
 // Target Devices:
 // Tool Versions:
@@ -30,7 +30,7 @@ module socmem (
            input mrmem,
            input mrio,
            input mwio,
-           
+
            output LEDCtrl,
            output KEYCtrl,
            output CTCCtrl,
@@ -75,14 +75,14 @@ MiniSysBus bus(
     .ioread_data_uart(ioread_data_uart)
     );
 
-dist_mem_gen_0 mem(
+mem_ram mem(
     .a(mem_in),
     .d(mb),
     .clk(clkn),
     .we(mwmem),
-    .dpo(memout)
+    .spo(memout)
        );
-always @(posedge clk or negedge clk) begin 
+always @(posedge clk or negedge clk) begin
    if( mrio| mwio ) begin
        mmo<=ioout;
    end else begin

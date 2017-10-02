@@ -62,9 +62,9 @@ always @ ( selpc or npc or epc ) begin
     endcase
 end
 
-rom64k instmem(
-           .addr(tpc),
-           .data(ins)
+inst_rom instmem(
+           .a(tpc),
+           .spo(ins)
        );
 
 endmodule
