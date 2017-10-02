@@ -57,7 +57,7 @@ always @ ( selpc or npc or epc ) begin
     case(selpc)
         2'b00:next_pc <= npc;
         2'b01:next_pc <= epc;
-        2'b10:next_pc <= 32'H1000;
+        2'b10:next_pc <= 32'H640;
         default:next_pc <= 32'h0000_0004;
     endcase
 end
