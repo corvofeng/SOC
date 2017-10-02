@@ -30,12 +30,6 @@ module pipeemreg(
 	input ewmem,
 	input clk,
 	input clrn,
-    input[31:0] esta,
-    input[31:0] ecau,
-    input[31:0] eepc,
-    output reg [31:0] msta,
-    output reg [31:0] mcau,
-    output reg [31:0] mepc,
 	output reg [31:0] malu,
 	output reg [31:0] pcm,
 	output reg [31:0] mb,
@@ -43,7 +37,7 @@ module pipeemreg(
 	output reg mwreg,
 	output reg mm2reg,
 	output reg mwmem,
-	
+
 	input ermem,
 	input erio,
 	input ewio,
@@ -61,9 +55,6 @@ module pipeemreg(
 	        mwreg  <= 1'b0;
 	        mm2reg <= 1'b0;
 	        mwmem  <= 1'b0;
-            msta    <= 32'h0000_0000;
-            mcau    <= 32'h0000_0000;
-            mepc    <= 32'h0000_0000;
             mrmem   <= 1'b0;
             mwio    <= 1'b0;
             mrio    <= 1'b0;
@@ -75,9 +66,6 @@ module pipeemreg(
 	        mwreg  <= ewreg;
 	        mm2reg <= em2reg;
 	        mwmem  <= ewmem;
-            msta    <= esta;
-            mcau    <= ecau;
-            mepc    <= eepc;
             mrmem   <= ermem;
             mwio    <= ewio;
             mrio    <= erio;

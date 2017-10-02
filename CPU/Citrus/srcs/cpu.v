@@ -259,12 +259,7 @@ module cpu(
           .mwmem(mwmem),
           .pcm(pcm),
           .pce(pce),
-          .esta(esta),
-          .ecau(ecau),
-          .eepc(eepc),
-          .msta(msta),
-          .mcau(mcau),
-          .mepc(mepc),
+
           .ermem(ermem),
           .erio(erio),
           .ewio(ewio),
@@ -307,13 +302,7 @@ module cpu(
           .wmo(wmo),
           .wrn(wrn),
           .wwreg(wwreg),
-          .wm2reg(wm2reg),
-          .msta(msta),
-          .mcau(mcau),
-          .mepc(mepc),
-          .wsta(wsta),
-          .wcau(wcau),
-          .wepc(wepc)
+          .wm2reg(wm2reg)
            );
        socwb p10(
           .wmo(wmo),//wmo
