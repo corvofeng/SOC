@@ -39,7 +39,7 @@ struct messenger * lookup(char *n, int funcno) {
     char a[10];
     char b[10];
     for (int i = 0; i < ALL[funcno]->st->count; i++) {
-        if (strcmp(ALL[funcno]->st->item[i]->name, n) == 0) {
+        if (!strcmp(ALL[funcno]->st->item[i]->name, n)) {
             if (ALL[funcno]->st->item[i]->pos == 1) {
                 strcpy(a, "$a");
                 sprintf(b, "%d", ALL[funcno]->st->item[i]->offset);
@@ -73,6 +73,16 @@ int lookup_global(char *n) {
         if (strcmp(gVar[i]->name, n) == 0)
             return 1;
     }
+    return 0;
+}
+
+int checkdup(char *n, int funcno) {
+    int t = 0;
+    for (int i = 0; i < ALL[funcno]->st->count; i++)
+        if (!strcmp(ALL[funcno]->st->item[i]->name, n))
+            t++;
+    if (t > 1)
+        return 1;
     return 0;
 }
 

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int Totalerrors, funcount, gcount;
+extern int funcount, gcount;
 extern struct allFunc **ALL;
 extern struct globalVar **gVar;
 
@@ -58,6 +58,7 @@ struct symbolTableItem * makeSTitem();
 void st_add(char *name, int pos, int offset, int funcno);
 struct messenger * lookup(char *name, int funcno);
 int lookup_global(char *name);
+int checkdup(char *name, int funcno);
 
 struct stack * init_stack();
 void push(struct stack *s, int item);

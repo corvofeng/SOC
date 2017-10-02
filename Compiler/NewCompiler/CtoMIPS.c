@@ -28,6 +28,12 @@ int generateMIPS() {
     fp = fopen("mips_code.s", "w");
     fprintf(fp, ".data\n");
     for (int i = 0; i < gcount; i++) {
+        for (int j = 0; j < gcount; j++)
+            if (!strcmp(gVar[i]->name, gVar[j]->name) && i != j) {
+                fprintf(stderr, "var_decl: program error: duplicate global variable '%s'\n", gVar[i]->name);
+                err_count++;
+                break;
+            }
         if (gVar[i]->space == 1)
             fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
         else
@@ -35,6 +41,12 @@ int generateMIPS() {
     }
     fprintf(fp, ".text\n");
     for (int i = 0; i < funcount; i++) {
+        for (int j = 0; j < funcount; j++)
+            if (!strcmp(ALL[i]->name, ALL[j]->name) && i != j) {
+                fprintf(stderr, "fun_decl: program error: duplicate function '%s'\n", ALL[i]->name);
+                err_count++;
+                break;
+            }
         ALL[i]->st = makeST();
         ALL[i]->local_space = 0;
         deal_with_node(fp, ALL[i]->t, i);
@@ -112,6 +124,10 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 st_add(t->child[1]->txt, 1, select_space, funcno);
             else
                 st_add(t->child[1]->txt, 2, select_space - 4, funcno);
+            if (checkdup(t->child[1]->txt, funcno)) {
+                fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
+                err_count++;
+            }
         } else if (t->multiplicity == 1) {
             st_add(t->child[0]->txt, 1, 0, funcno); // 第一个参数
         }
@@ -155,7 +171,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         } else if (t->procno == 2) { // IDENT[DECNUM] = expr;
             
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tadd $t1 $t0, $zero\n");
+            fprintf(fp, "\tadd $t1, $t0, $zero\n");
             struct messenger *m = lookup(t->txt, funcno);
             if (m->type == 1) {
                 fprintf(fp, "\tadd $t0, %s, $zero\n", m->pos); // 数组指针进t0
@@ -184,7 +200,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             int name_found = 0;
             int pcount_matched = 0;
             for (int i = 0; i < funcount; i++) {
-                if (strcmp(ALL[i]->name, t->txt) == 0) {
+                if (!strcmp(ALL[i]->name, t->txt)) {
                     name_found = 1;
                     if (ALL[i]->param_count == t->child[0]->multiplicity)
                         pcount_matched = 1;
@@ -243,7 +259,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             int name_found = 0;
             int pcount_matched = 0;
             for (int i = 0; i < funcount; i++) {
-                if (strcmp(ALL[i]->name, t->txt) == 0) {
+                if (!strcmp(ALL[i]->name, t->txt)) {
                     name_found = 1;
                     if (ALL[i]->param_count == 0)
                         pcount_matched = 1;
@@ -620,7 +636,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 int name_found = 0;
                 int pcount_matched = 0;
                 for (int i = 0; i < funcount; i++) {
-                    if (strcmp(ALL[i]->name, t->txt) == 0) {
+                    if (!strcmp(ALL[i]->name, t->txt)) {
                         name_found = 1;
                         if (ALL[i]->param_count == t->child[0]->multiplicity)
                             pcount_matched = 1;
@@ -681,7 +697,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 int name_found = 0;
                 int pcount_matched = 0;
                 for (int i = 0; i < funcount; i++) {
-                    if (strcmp(ALL[i]->name, t->txt) == 0) {
+                    if (!strcmp(ALL[i]->name, t->txt)) {
                         name_found = 1;
                         if (ALL[i]->param_count == 0)
                             pcount_matched = 1;
@@ -742,14 +758,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
     } else if (t->ntno == 23) { // continue_stmt
         
-        if (empty(while1) == 0) {
+        if (!empty(while1)) {
             int no = top(while1);
             fprintf(fp, "\tj L%d\n", no);
         }
         
     } else if (t->ntno == 24) { // break_stmt
         
-        if (empty(while2) == 0) {
+        if (!empty(while2)) {
             int no = top(while2);
             fprintf(fp, "\tj L%d\n", no);
         }
@@ -795,11 +811,18 @@ void alloc_all(FILE *fp, struct AST *t, int funcno) {
             if (t->child[1]->procno == 2)
                 fprintf(fp, "\tsw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
         }
-        
+        if (checkdup(t->child[1]->txt, funcno)) {
+            fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
+            err_count++;
+        }
     } else if (t->multiplicity == 1) {
         st_add(t->child[0]->txt, 3, 0, funcno); // 第一个变量
         if (t->child[0]->procno == 2)
             fprintf(fp, "\tadd $s0, $t%d, $zero\n", tno++);
+        if (checkdup(t->child[0]->txt, funcno)) {
+            fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[0]->txt);
+            err_count++;
+        }
     }
     
 }
