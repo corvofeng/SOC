@@ -35,8 +35,6 @@ reg[31:0] register[31:0];
 
 always @(posedge clk) begin       // ������дĿ���Ĵ���
     if( clrn==1 ) begin
-        qa <= 32'd0;
-        qb <= 32'd0;
         register[0] <= 32'd0;
         register[1] <= 32'd0;
         register[2] <= 32'd0;
