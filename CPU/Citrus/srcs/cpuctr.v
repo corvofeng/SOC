@@ -78,6 +78,7 @@ module cpuctr(
            output [31:0] cause,
 
            input mul_busy,
+           input div_busy2,
            input div_busy,
            output mul_div,
            output symbol,
@@ -291,12 +292,12 @@ assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecanc
 
 assign mul_div = idiv | idivu;
 assign symbol =  imult | idiv;
-assign mul_start = imult | imultu;
-assign div_start = idiv | idivu;
+assign mul_start = (imult | imultu)&&~mul_busy;
+assign div_start = (idiv | idivu)&&~div_busy;
 assign mthi = imthi;
 assign mtlo = imtlo;
-assign whi = mul_busy | div_busy | imthi;
-assign wlo = mul_busy | div_busy | imtlo;
+assign whi = mul_busy | div_busy | div_busy2 | imthi;
+assign wlo = mul_busy | div_busy | div_busy2 | imtlo;
 assign mfhilo[1] = imfhi | imflo; // 00选择原数据，10选择LO,11选择HI
 assign mfhilo[0] = imfhi;
 endmodule
