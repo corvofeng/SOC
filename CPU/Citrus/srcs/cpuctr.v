@@ -255,7 +255,7 @@ assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | ino
 assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
                   ilh   | ilhu   | ilui   | islti | isltiu | imfc0 | imtc0 )&clr;
 assign jal     = (ijal  | ijalr)&clr;
-assign m2reg   = (ilb   | ilbu   | ilh | ilhu)&clr;
+assign m2reg   = (ilb | ilw  | ilbu   | ilh | ilhu)&clr;
 assign shift   = (isll  | isrl   | isra)&clr;
 assign aluimm  = (iaddi | iaddiu | iandi | iori | ixori | ilw | ilb | ilbu | ilh |
                   ilhu  | ilui   | isw   | ish  | isb)&clr;
@@ -273,9 +273,9 @@ assign aluc[0] = (iaddu | iaddiu | isub | ior | iori | inor | islt | islti | isr
 assign pcsource[1] =( ij | ijr | ijal | ijalr)&clr;
 assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&clr;
 
-assign rmem    = ((ilw | ilb | ilh | ilhu ) & (immehi != 8'hff) & nostall)&clr & ~ecancel;
+assign rmem    = ((ilw | ilb | ilbu  | ilh | ilhu ) & (immehi != 8'hff) & nostall)&clr & ~ecancel;
 assign wmem    = ((isw | isb | ish ) & (immehi != 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
-assign rio     = ((ilw | ilb | ilh | ilhu ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
+assign rio     = ((ilw | ilb | ilh | ilhu |ilbu  ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
 assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
 
 

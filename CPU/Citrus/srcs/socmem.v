@@ -25,7 +25,7 @@ module socmem (
            input clk,
            input [31:0] malu,
            input [31:0] mb,
-           output [31:0] mmo,
+           output reg [31:0] mmo,
            input clrn,
            input mrmem,
            input mrio,
@@ -47,6 +47,9 @@ module socmem (
 wire clkn;
 assign clkn = ~clk;
 wire [15:0]caddr= malu[15:0];
+wire [7:0]mem_in= malu[7:0];
+wire [31:0] ioout, memout;
+
 
 MiniSysBus bus(
     .caddress(caddr),
@@ -57,7 +60,7 @@ MiniSysBus bus(
     .ioread(mrio),
     .iowrite(mwio),
     .wdata(mb),
-    .rdata(mmo),
+    .rdata(ioout),
     .LEDCtrl(LEDCtrl),
     .KEYCtrl(KEYCtrl),
     .CTCCtrl(CTCCtrl),
@@ -72,12 +75,19 @@ MiniSysBus bus(
     .ioread_data_uart(ioread_data_uart)
     );
 
-ram64k mem(
-    .addr(malu),
-    .data_in(mb),
+dist_mem_gen_0 mem(
+    .a(mem_in),
+    .d(mb),
     .clk(clkn),
     .we(mwmem),
-    .data_out(mmo)
+    .dpo(memout)
        );
+always @(posedge clk or negedge clk) begin 
+   if( mrio| mwio ) begin
+       mmo<=ioout;
+   end else begin
+       mmo<=memout;
+    end
+end
 
 endmodule

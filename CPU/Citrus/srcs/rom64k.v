@@ -10,18 +10,13 @@
  */
 `timescale 1ns / 1ps
 
-
-/**
- * 此接口为封装好的rom, 
- * 数据初始化: 
- * 双击genRom, 选择RST&initialization页面, 添加coe文件, 注意路径中不要带中文
- */
 module rom64k(addr, data);
 input [15:0] addr;
 output [31:0] data;
+wire [7:0] ai= addr[7:0];
 
-dist_mem_gen_rom gemRom(
-                     .a(addr),
+inst_rom insrom(
+                     .a(ai),
                      .spo(data)
                  );
 endmodule
