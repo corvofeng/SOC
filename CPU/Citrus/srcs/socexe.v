@@ -37,8 +37,11 @@ module socexe (
            input[31:0] esta,
            input[31:0] ecau,
            input[31:0] eepc,
-           input [1:0] emfc0
+           input [1:0] emfc0,
 
+           input[1:0] emfhilo,
+           input[31:0] HI_data,
+           input [31:0] LO_data
        );
 wire epc8 = epc4 + 3'b100;//pc+4
 reg [31:0] ia,ib;
@@ -46,6 +49,7 @@ wire [31:0]out;
 wire ov,zero;
 
 reg[31:0] mfc0_out;
+reg[31:0] mfhilo_out;
 
 always @ (ea or eimm or eshift) begin//shift
     case(eshift)
@@ -73,9 +77,18 @@ always @ ( emfc0 or epc8 or esta or ecau or eepc ) begin
     endcase
 end
 
+always @ ( emfhilo or LO_data or HI_data) begin
+    case(emfhilo)
+        2'b00:mfhilo_out <= mfc0_out;
+        2'b10:mfhilo_out <= LO_data;
+        2'b11:mfhilo_out <= HI_data;
+        default:mfhilo_out <= mfc0_out;
+    endcase
+end
+
 always @ (mfc0_out or out or ejal) begin //jal
-    if(ejal|emfc0[1]|emfc0[0])begin
-        ealu <= mfc0_out;
+    if(ejal|emfc0[1]|emfc0[0]|emfhilo[1])begin
+        ealu <= mfhilo_out;
     end else begin
         ealu <= out;
     end
@@ -96,23 +109,4 @@ alu_impl alu(
              .Result(out),
              .Zero(zero)
          );
-
-multiplier mul(
-    .a(),
-    .b(),
-    .symbol(),
-    .o()
-    );
-
-divider div(
-    .a(),
-    .b(),
-    .symbol(),
-    .start(),
-    .clk(),
-    .resetn(),
-    .q(),
-    .r(),
-    .busy()
-    );
 endmodule

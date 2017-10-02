@@ -79,12 +79,14 @@ module socid (
            input [7:0] vector,
            input ecancel,
            output cancel,
-           
+
            output rmem,
            output rio,
-           output wio
+           output wio,
 
-
+           output[1:0] mfhilo,
+           output[31:0] o_HI_data,
+           output[31:0] o_LO_data
        );
 //    output [4:0] rs,rt,rd,shamt;
 //	output [5:0] func,op;
@@ -237,11 +239,21 @@ cpuctr cpuctr0(
            .selpc(selpc),
            .sepc(sepc),
            .cause(cause),
-           
+
            .immehi(immehi),
            .rmem(rmem),
            .wio(wio),
-           .rio(rio)
+           .rio(rio),
+
+           .mul_div(mul_div),
+           .symbol(symbol),
+           .mul_start(mul_start),
+           .div_start(div_start),
+           .mthi(mthi),
+           .mtlo(mtlo),
+           .whi(whi),
+           .wlo(wlo),
+           .mfhilo(mfhilo)
        );
 
 reg32 regfil(
@@ -278,5 +290,67 @@ CP0 reg_CP0(
     .o_status_data(sta),
     .o_epc_data(epc),
     .o_cause_data(cau)
+    );
+
+reg[31:0] i_HI_data;
+reg[31:0] i_LO_data;
+wire [63:0] mul_out;
+wire [31:0] div_q;
+wire [31:0] div_r;
+
+wire mul_div;
+wire mthi;
+wire mtlo;
+wire whi;
+wire wlo;
+wire symbol;
+wire mul_start;
+wire div_start;
+
+
+always @ ( mul_div or mul_out or div_r or div_q ) begin
+    if(mul_div == 0) begin
+        i_HI_data <= mul_out[63:32];
+        i_LO_data <= mul_out[31:0];
+    end else begin
+        i_HI_data <= div_r;
+        i_LO_data <= div_q;
+    end
+end
+
+HI_LO reg_HILO(
+    .i_clk(i_clk),
+    .i_reset(clrn),
+    .i_data(da),
+    .i_HI_data(i_HI_data),
+    .i_LO_data(i_LO_data),
+    .i_mthi(mthi),
+    .i_mtlo(mtlo),
+    .i_whi(whi),
+    .i_wlo(wlo),
+
+    .o_HI_data(o_HI_data),
+    .o_LO_data(o_LO_data)
+    );
+
+multiplier mul(
+    .a(da),
+    .b(db),
+    .symbol(symbol),
+    .start(mul_start),
+    .clk(i_clk),
+    .reset(clrn),
+    .o(mul_out)
+    );
+
+divider div(
+    .a(da),
+    .b(db),
+    .symbol(symbol),
+    .start(div_start),
+    .clk(i_clk),
+    .reset(clrn),
+    .q(div_q),
+    .r(div_r)
     );
 endmodule

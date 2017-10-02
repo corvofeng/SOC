@@ -26,7 +26,7 @@ module divider(
     symbol,
     start,
     clock,
-    resetn,
+    reset,
     q,
     r,
     busy
@@ -35,7 +35,7 @@ module divider(
     input [31:0] a;
     input [31:0] b;
     input start;
-    input clock,resetn;
+    input clock,reset;
     wire [31:0] out;
     output [31:0] r;
     output busy;
@@ -60,8 +60,8 @@ module divider(
         end
     end
 
-    always @ (posedge clock or negedge resetn) begin
-        if (resetn == 0) begin
+    always @ (posedge clock or posedge reset) begin
+        if (reset == 1) begin
             busy <= 0;
             i = 0;
         end else begin

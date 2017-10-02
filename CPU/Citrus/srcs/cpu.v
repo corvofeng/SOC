@@ -67,6 +67,10 @@ module cpu(
     input [31:0] mread_data;
     input [15:0] ioread_data_key,ioread_data_ctc,ioread_data_uart;
 
+    wire[1:0] mfhilom,emfhilo;
+    wire[31:0] HI_data;
+    wire[31:0] LO_data;
+
      pipepc p1(
         .npc(npc),
         .wpc(wpcir),
@@ -79,7 +83,7 @@ module cpu(
         .bpc(bpc),//npc1
         .dpc(dpc),//npc2
         .jpc(jpc),//npc3
-        .pcsource(pcsource),//pc�??
+        .pcsource(pcsource),//pc��??
         .pc4(pc4),//pc+4
         .ins(ins),//is
         .selpc(selpc),
@@ -102,7 +106,7 @@ module cpu(
          .dpc4(dpc4),//pc
          .inst(inst),//指令
          .wdi(wdi),//reginput
-         .wrn(wrn),//目的寄存�?
+         .wrn(wrn),//目的寄存��?
          .fwda(fwda),
          .fwdb(fwdb),
          .ealu(ealu),
@@ -155,10 +159,14 @@ module cpu(
 
          .cancel(cancel),
          .ecancel(ecancel),
-         
+
          .rmem(rmem),
          .rio(rio),
-         .wio(wio)
+         .wio(wio),
+
+         .mfhilo(mfhilo),
+         .o_HI_data(o_HI_data),
+         .o_LO_data(o_LO_data)
 
          );
 
@@ -208,6 +216,9 @@ module cpu(
           .ermem(ermem),
           .erio(erio),
           .ewio(ewio)
+
+          .mfhilo(mfhilo),
+          .emfhilo(emfhilo)
          );
      socexe p6(
           .epc4(epc4),
@@ -225,7 +236,11 @@ module cpu(
           .esta(esta),
           .ecau(ecau),
           .eepc(eepc),
-          .emfc0(emfc0)
+          .emfc0(emfc0),
+
+          .emfhilo(emfhilo),
+          .HI_data(HI_data),
+          .LO_data(LO_data)
           );
     pipeemreg p7(
           .ealu(ealu),

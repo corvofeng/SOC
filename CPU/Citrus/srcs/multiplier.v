@@ -24,9 +24,27 @@ module multiplier(
     input[31:0] a,
     input[31:0] b,
     input symbol,
+    input start,
+    input clk,
+    input reset,
     output[63:0] o
 
     );
+
+    reg [31:0] a_latch;
+    reg [31:0] b_latch;
+
+    always @(posedge clk) begin
+        if(reset==1) begin
+            a_latch = 32'h00000000;
+            b_latch = 32'h00000000;
+        end else begin
+            if(start==1) begin
+                a_latch <= a;
+                b_latch <= b;
+            end
+        end
+    end
 
     reg [31:0] unsigned_a;
     reg [31:0] unsigned_b;
@@ -38,11 +56,11 @@ module multiplier(
 
     always @ ( * ) begin
         if(symbol == 0) begin
-            unsigned_a <= a;
-            unsigned_b <= b;
+            unsigned_a <= a_latch;
+            unsigned_b <= b_latch;
         end else begin
-            unsigned_a <= a[31]?(~a+1):a;
-            unsigned_b <= b[31]?(~b+1):b;
+            unsigned_a <= a_latch[31]?(~a_latch+1):a_latch;
+            unsigned_b <= b_latch[31]?(~b_latch+1):b_latch;
         end
     end
 

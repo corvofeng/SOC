@@ -60,13 +60,16 @@ module pipedereg(
 
     input cancel,
     output reg ecancel,
-    
+
     input rmem,
     input rio,
     input wio,
     output reg ermem,
     output reg erio,
-    output reg ewio
+    output reg ewio,
+
+    input[1:0] mfhilo,
+    output[1:0] emfhilo
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
@@ -91,6 +94,7 @@ module pipedereg(
             ermem   <= 1'b0;
             ewio    <= 1'b0;
             erio    <= 1'b0;
+            emfhilo <= 2'b00;
 		end else begin
 		    epc4    <= dpc4;
 	        ea      <= da;
@@ -113,6 +117,7 @@ module pipedereg(
             ermem   <= rmem;
             ewio    <= wio;
             erio    <= rio;
+            emfhilo <= mfhilo;
 		end
 	end
 endmodule

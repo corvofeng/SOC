@@ -26,7 +26,7 @@ module divider_sim(
 
        );
 reg clock = 0;
-reg resetn = 0;
+reg reset = 1;
 wire [31:0] A = 32'h8000_0000;
 wire [31:0] B = 32'h7d5f_8a74;
 reg start = 0;
@@ -38,7 +38,7 @@ reg symbol;
 
 divider uut(
             .clock(clock),
-            .resetn(resetn),
+            .reset(reset),
             .a(A),
             .b(B),
             .start(start),
@@ -48,7 +48,7 @@ divider uut(
             .r(r)
         );
 initial begin
-    #50 resetn = 1;
+    #50 reset = 0;
     #10 start = 1;symbol = 0;
     #50 start = 0;
     #1000 start = 1; symbol =1;
