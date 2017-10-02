@@ -97,5 +97,22 @@ alu_impl alu(
              .Zero(zero)
          );
 
+multiplier mul(
+    .a(),
+    .b(),
+    .symbol(),
+    .o()
+    );
 
+divider div(
+    .a(),
+    .b(),
+    .symbol(),
+    .start(),
+    .clk(),
+    .resetn(),
+    .q(),
+    .r(),
+    .busy()
+    );
 endmodule

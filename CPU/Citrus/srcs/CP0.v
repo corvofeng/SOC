@@ -82,9 +82,9 @@ reg[31:0] epc_sel_data;
 
 always @(posedge i_clk) begin
     if(i_reset==1) begin
-        status_reg = 8'b00000000;
-        cause_reg = 8'b00000000;
-        epc_reg = 8'b00000000;
+        status_reg = 32'h00000000;
+        cause_reg = 32'h00000000;
+        epc_reg = 32'h00000000;
     end else begin
         if(i_wsta==1)
             status_reg <= sta_reg_in;

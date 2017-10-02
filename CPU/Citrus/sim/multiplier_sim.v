@@ -40,6 +40,7 @@ multiplier uut(
 initial begin
      a = 32'hFa4b_7d9f;
      b = 32'h4d6c_4e3a;
+     #10 b = 32'h1111_1111;
      #1000 symbol = 1;
 end
 endmodule
