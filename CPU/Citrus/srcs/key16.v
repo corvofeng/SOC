@@ -47,6 +47,8 @@ reg[15:0] keystat;  //状态寄存器
 reg key_flag;   //按键标志位
 reg [2:0] state;  //状态标志
 
+reg[4:0] value;
+reg[4:0] startRead;
 
 reg[3:0] col_reg;
 reg[3:0] row_reg;
@@ -64,13 +66,18 @@ begin
             0:
             begin
                 o_row[3:0] <= 4'b0000;
-                key_flag <= 1'b0;
-                if(i_col[3:0] != 4'b1111) begin // 发现键盘被按下
-                    state <= 1;
-                    o_row[3:0] <= 4'b1110;  // 扫面第一列
-                end else
+                if(value == 0) begin
+                    key_flag <= 1'b0;
+                    value <= 4'd30;
+                end else 
                 begin
-                    state <= 0;
+                    if(i_col[3:0] != 4'b1111) begin // 发现键盘被按下
+                        state <= 1;
+                        o_row[3:0] <= 4'b1110;  // 扫面第一列
+                    end else
+                    begin
+                        state <= 0;
+                    end
                 end
             end
             1:
@@ -122,6 +129,15 @@ begin
     end
 end
 
+always @(clk)
+begin
+    if(ior == 1)
+        startRead <= 1;
+
+    if(startRead == 1)
+        value <= value - 1;
+end
+
 always @(clk or row_reg or col_reg)
 begin
     if(key_flag == 1'b1) begin
@@ -146,6 +162,8 @@ begin
             8'b0111_1011:o_data <= 4'h4;
             8'b0111_0111:o_data <= 4'h1;
         endcase
+        startRead <= 0;
+        value <= 4'd30;
     end
 end
 

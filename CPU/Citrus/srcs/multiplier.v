@@ -38,7 +38,7 @@ module multiplier(
 
     always @ (posedge clk) begin
         if(result == o)
-            busy = 0;
+            busy <= 0;
         else result <= o;
     end
 
@@ -63,7 +63,7 @@ module multiplier(
 
     wire [63:0] out;
 
-    xor(ab_symbol,a[31],b[31]);
+    xor(ab_symbol,a_latch[31],b_latch[31]);
 
     always @ ( * ) begin
         if(symbol == 0) begin

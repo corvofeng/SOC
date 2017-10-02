@@ -29,7 +29,8 @@ module divider(
     reset,
     q,
     r,
-    busy
+    busy,
+    busy2
     );
     integer i=0;
     input [31:0] a;
@@ -39,10 +40,11 @@ module divider(
     wire [31:0] out;
     output [31:0] r;
     output busy;
+    output busy2;
     reg [31:0] reg_q;
     reg [31:0] reg_r;
     reg [31:0] reg_b;
-    reg busy;
+    reg busy, busy2;
 
     input symbol;
     reg [31:0] unsigned_a;
@@ -63,6 +65,7 @@ module divider(
     always @ (posedge clock or posedge reset) begin
         if (reset == 1) begin
             busy <= 0;
+            busy2 <= 0;
             i = 0;
         end else begin
             if(start) begin
@@ -70,6 +73,7 @@ module divider(
                 reg_q <= unsigned_a;
                 reg_b <= unsigned_b;
                 busy <= 1'b1;
+                i = 0;
             end else if (busy) begin
                 reg_r <= mux_out;
                 reg_q <= {reg_q[30:0],~sub_out[32]};
@@ -80,6 +84,10 @@ module divider(
                 end
             end
         end
+    end
+
+    always @ ( negedge clock ) begin
+        busy2 <= busy;
     end
 
     xor(ab_symbol,a[31],b[31]);

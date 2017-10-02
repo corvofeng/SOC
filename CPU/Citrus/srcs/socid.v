@@ -203,7 +203,7 @@ wire symbol;
 wire mul_start;
 wire div_start;
 wire mul_busy;
-wire div_busy;
+wire div_busy,div_busy2;
 
 always @ ( mul_div or mul_out or div_r or div_q ) begin
     if(mul_div == 0) begin
@@ -283,7 +283,8 @@ cpuctr cpuctr0(
            .wlo(wlo),
            .mfhilo(mfhilo),
            .mul_busy(mul_busy),
-           .div_busy(div_busy)
+           .div_busy(div_busy),
+           .div_busy2(div_busy2)
        );
 
 reg32 regfil(
@@ -357,6 +358,7 @@ divider div(
     .reset(clrn),
     .q(div_q),
     .r(div_r),
-    .busy(div_busy)
+    .busy(div_busy),
+    .busy2(div_busy2)
     );
 endmodule
