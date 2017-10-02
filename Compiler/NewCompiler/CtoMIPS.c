@@ -1,9 +1,9 @@
 #include "definition.h"
 #include "y.tab.h"
 
+int err_count;
 int labelno;
 int tno; // 临时存储数组指针的寄存器的编号
-int err_count;
 struct stack *while1;
 struct stack *while2;
 
@@ -13,9 +13,9 @@ void alloc_all(FILE *fp, struct AST *t, int funcno);
 int getLabel();
 
 int generateMIPS() {
+    err_count = 0;
     labelno = 1;
     tno = 0;
-    err_count = 0;
     while1 = init_stack();
     while2 = init_stack();
     for (int i = 0; i < funcount; i++) {
@@ -28,12 +28,14 @@ int generateMIPS() {
     fp = fopen("mips_code.s", "w");
     fprintf(fp, ".data\n");
     for (int i = 0; i < gcount; i++) {
-        for (int j = 0; j < gcount; j++)
-            if (!strcmp(gVar[i]->name, gVar[j]->name) && i != j) {
-                fprintf(stderr, "var_decl: program error: duplicate global variable '%s'\n", gVar[i]->name);
-                err_count++;
-                break;
-            }
+        int count = 0;
+        for (int j = 0; j < i; j++)
+            if (!strcmp(gVar[i]->name, gVar[j]->name))
+                count++;
+        if (count == 1) {
+            fprintf(stderr, "var_decl: program error: duplicate global variable '%s'\n", gVar[i]->name);
+            err_count++;
+        }
         if (gVar[i]->space == 1)
             fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
         else
@@ -41,12 +43,14 @@ int generateMIPS() {
     }
     fprintf(fp, ".text\n");
     for (int i = 0; i < funcount; i++) {
-        for (int j = 0; j < funcount; j++)
-            if (!strcmp(ALL[i]->name, ALL[j]->name) && i != j) {
-                fprintf(stderr, "fun_decl: program error: duplicate function '%s'\n", ALL[i]->name);
-                err_count++;
-                break;
-            }
+        int count = 0;
+        for (int j = 0; j < i; j++)
+            if (!strcmp(ALL[i]->name, ALL[j]->name) && i != j)
+                count++;
+        if (count == 1) {
+            fprintf(stderr, "fun_decl: program error: duplicate function '%s'\n", ALL[i]->name);
+            err_count++;
+        }
         ALL[i]->st = makeST();
         ALL[i]->local_space = 0;
         deal_with_node(fp, ALL[i]->t, i);
@@ -124,7 +128,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 st_add(t->child[1]->txt, 1, select_space, funcno);
             else
                 st_add(t->child[1]->txt, 2, select_space - 4, funcno);
-            if (checkdup(t->child[1]->txt, funcno)) {
+            if (checkdup(t->child[1]->txt, funcno) == 2) {
                 fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
                 err_count++;
             }
@@ -811,7 +815,7 @@ void alloc_all(FILE *fp, struct AST *t, int funcno) {
             if (t->child[1]->procno == 2)
                 fprintf(fp, "\tsw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
         }
-        if (checkdup(t->child[1]->txt, funcno)) {
+        if (checkdup(t->child[1]->txt, funcno) == 2) {
             fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
             err_count++;
         }
@@ -819,7 +823,7 @@ void alloc_all(FILE *fp, struct AST *t, int funcno) {
         st_add(t->child[0]->txt, 3, 0, funcno); // 第一个变量
         if (t->child[0]->procno == 2)
             fprintf(fp, "\tadd $s0, $t%d, $zero\n", tno++);
-        if (checkdup(t->child[0]->txt, funcno)) {
+        if (checkdup(t->child[0]->txt, funcno) == 2) {
             fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[0]->txt);
             err_count++;
         }

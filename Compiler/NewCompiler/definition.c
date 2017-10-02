@@ -81,9 +81,7 @@ int checkdup(char *n, int funcno) {
     for (int i = 0; i < ALL[funcno]->st->count; i++)
         if (!strcmp(ALL[funcno]->st->item[i]->name, n))
             t++;
-    if (t > 1)
-        return 1;
-    return 0;
+    return t;
 }
 
 struct stack * init_stack() {

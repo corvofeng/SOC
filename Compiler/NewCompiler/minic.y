@@ -35,11 +35,11 @@ struct globalVar **gVar;
     struct AST *node;	/* 非终结符语义值类型 */
 }
 
-/* 终结符语义值的类型说明 */
+/* 终结符语义值类型说明 */
 %type <text> IDENT VOID INT WHILE IF ELSE RETURN EQ NE LE GE
 %type <text> AND OR DECNUM CONTINUE BREAK HEXNUM LSHIFT RSHIFT
 
-/* 非终结符语义值的类型说明 */
+/* 非终结符语义值类型说明 */
 %type <node> program
 %type <node> decl_list
 %type <node> decl
@@ -489,7 +489,8 @@ break_stmt
     ;
 %%
 /* 错误处理 */
-void yyerror(char *s)
+yyerror(s)
+char *s;
 {
     fprintf(stderr, "line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
     syntax_err++;

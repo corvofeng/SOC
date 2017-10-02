@@ -19,7 +19,7 @@
 
 #line 2 "minic.y"
 #include "definition.h"
-extern char * yytext;
+extern char *yytext;
 extern int yylineno;
 extern int total_err;
 int funcount, gcount, syntax_err, prg_err;
@@ -627,7 +627,8 @@ typedef struct {
 static YYSTACKDATA yystack;
 #line 491 "minic.y"
 /* 错误处理 */
-void yyerror(char *s)
+yyerror(s)
+char *s;
 {
     fprintf(stderr, "line %d: syntax error: unexpected token '%s'\n", yylineno, yytext);
     syntax_err++;
@@ -653,7 +654,7 @@ int main()
     }
     return 0;
 }
-#line 657 "y.tab.c"
+#line 658 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>	/* needed for printf */
@@ -1408,7 +1409,7 @@ case 102:
 #line 487 "minic.y"
 	{   yyval.node = makeNode(0); yyval.node->ntno = 24; yyval.node->procno = 1; }
 break;
-#line 1412 "y.tab.c"
+#line 1413 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
