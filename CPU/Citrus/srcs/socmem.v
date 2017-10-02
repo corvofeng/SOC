@@ -47,7 +47,7 @@ module socmem (
 wire clkn;
 assign clkn = ~clk;
 wire [15:0]caddr= malu[15:0];
-wire [7:0]mem_in= malu[7:0];
+wire [8:0]mem_in= malu[8:0];
 wire [31:0] ioout, memout;
 
 

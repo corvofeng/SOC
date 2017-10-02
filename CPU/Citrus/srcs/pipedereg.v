@@ -69,7 +69,7 @@ module pipedereg(
     output reg ewio,
 
     input[1:0] mfhilo,
-    output[1:0] emfhilo
+    output reg [1:0] emfhilo
     );
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin

@@ -63,7 +63,7 @@ always @ ( selpc or npc or epc ) begin
 end
 
 inst_rom instmem(
-           .a(tpc),
+           .a(tpc[8:0]),
            .spo(ins)
        );
 

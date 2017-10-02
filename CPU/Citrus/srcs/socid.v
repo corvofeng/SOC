@@ -187,6 +187,34 @@ wire[1:0] sepc;
 wire[1:0] selpc;
 wire [1:0] mfc0;
 
+//乘除法器相关
+reg[31:0] i_HI_data;
+reg[31:0] i_LO_data;
+wire [63:0] mul_out;
+wire [31:0] div_q;
+wire [31:0] div_r;
+
+wire mul_div;
+wire mthi;
+wire mtlo;
+wire whi;
+wire wlo;
+wire symbol;
+wire mul_start;
+wire div_start;
+wire mul_busy;
+wire div_busy;
+
+always @ ( mul_div or mul_out or div_r or div_q ) begin
+    if(mul_div == 0) begin
+        i_HI_data <= mul_out[63:32];
+        i_LO_data <= mul_out[31:0];
+    end else begin
+        i_HI_data <= div_r;
+        i_LO_data <= div_q;
+    end
+end
+
 cpuctr cpuctr0(
            .op(op),
            .rs(rs),
@@ -294,35 +322,8 @@ CP0 reg_CP0(
     .o_cause_data(cau)
     );
 
-reg[31:0] i_HI_data;
-reg[31:0] i_LO_data;
-wire [63:0] mul_out;
-wire [31:0] div_q;
-wire [31:0] div_r;
-
-wire mul_div;
-wire mthi;
-wire mtlo;
-wire whi;
-wire wlo;
-wire symbol;
-wire mul_start;
-wire div_start;
-wire mul_busy;
-wire div_busy;
-
-always @ ( mul_div or mul_out or div_r or div_q ) begin
-    if(mul_div == 0) begin
-        i_HI_data <= mul_out[63:32];
-        i_LO_data <= mul_out[31:0];
-    end else begin
-        i_HI_data <= div_r;
-        i_LO_data <= div_q;
-    end
-end
-
 HI_LO reg_HILO(
-    .i_clk(i_clk),
+    .i_clk(clk),
     .i_reset(clrn),
     .i_data(da),
     .i_HI_data(i_HI_data),
@@ -341,7 +342,7 @@ multiplier mul(
     .b(db),
     .symbol(symbol),
     .start(mul_start),
-    .clk(i_clk),
+    .clk(clkn),
     .reset(clrn),
     .o(mul_out),
     .busy(mul_busy)
@@ -352,7 +353,7 @@ divider div(
     .b(db),
     .symbol(symbol),
     .start(div_start),
-    .clk(i_clk),
+    .clock(clkn),
     .reset(clrn),
     .q(div_q),
     .r(div_r),

@@ -21,45 +21,36 @@
 
 module cpu(
       clk,clrn,
-      npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo,
-      aluc,ealuc,
-      wrn,mrn,ern,drn,ern0,
-      pcsource,
-      wpcir,fwda,fwdb,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg,
-      rs,rt,rd,shamt,op,func,
 
-      pcd,pce,pcm,mfc0,emfc0,selpc,ov,
 
       intr,inta,vector,
 
-      sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc,
-      cancel,ecancel,
       LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl,
       address,write_data,mread_data,
       ioread_data_key,ioread_data_ctc,ioread_data_uart
     );
 
     input clk,clrn;
-    output [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
-    output [3:0] aluc,ealuc;
-    output [4:0] wrn,mrn,ern,drn,ern0;
-    output [1:0] fwda,fwdb,pcsource;
-    output wpcir,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
-    output [4:0]rs,rt,rd,shamt;
-    output [5:0]op,func;
+    wire [31:0] npc,pc,bpc,dpc,jpc,pc4,ins,dpc4,inst,wdi,ealu,malu,mmo,da,db,dimm,epc4,ea,eb,eimm,mb,walu,wmo;
+    wire [3:0] aluc,ealuc;
+    wire [4:0] wrn,mrn,ern,drn,ern0;
+    wire [1:0] fwda,fwdb,pcsource;
+    wire wpcir,mm2reg,ewreg,wwreg,wreg,m2reg,wmem,jal,aluimm,shift,em2reg,ewmem,ejal,ealuimm,eshift,mwreg,mwmem,wm2reg;
+    wire [4:0]rs,rt,rd,shamt;
+    wire [5:0]op,func;
     assign dpc = da;
 
-    output [31:0] pcd,pce,pcm;
-    output [1:0] mfc0,emfc0;
-    output [31:0] sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc;
-    output [1:0] selpc;
+    wire [31:0] pcd,pce,pcm;
+    wire [1:0] mfc0,emfc0;
+    wire [31:0] sta,cau,epc,esta,ecau,eepc,msta,mcau,mepc,wsta,wcau,wepc;
+    wire [1:0] selpc;
 
-    output ov;
+    wire ov;
     input intr;
     output inta;
     input[7:0] vector;
 
-    output cancel,ecancel;
+    wire cancel,ecancel;
     wire mrmem,mrio,mwio,ermem,erio,ewio,rmem,rio,wio;
     output LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl;
     output[11:0] address;
