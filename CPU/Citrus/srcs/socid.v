@@ -253,7 +253,9 @@ cpuctr cpuctr0(
            .mtlo(mtlo),
            .whi(whi),
            .wlo(wlo),
-           .mfhilo(mfhilo)
+           .mfhilo(mfhilo),
+           .mul_busy(mul_busy),
+           .div_busy(div_busy)
        );
 
 reg32 regfil(
@@ -306,7 +308,8 @@ wire wlo;
 wire symbol;
 wire mul_start;
 wire div_start;
-
+wire mul_busy;
+wire div_busy;
 
 always @ ( mul_div or mul_out or div_r or div_q ) begin
     if(mul_div == 0) begin
@@ -340,7 +343,8 @@ multiplier mul(
     .start(mul_start),
     .clk(i_clk),
     .reset(clrn),
-    .o(mul_out)
+    .o(mul_out),
+    .busy(mul_busy)
     );
 
 divider div(
@@ -351,6 +355,7 @@ divider div(
     .clk(i_clk),
     .reset(clrn),
     .q(div_q),
-    .r(div_r)
+    .r(div_r),
+    .busy(div_busy)
     );
 endmodule

@@ -27,21 +27,32 @@ module multiplier(
     input start,
     input clk,
     input reset,
+    output busy,
     output[63:0] o
-
     );
 
     reg [31:0] a_latch;
     reg [31:0] b_latch;
+    reg [63:0] result;
+    reg busy;
+
+    always @ (posedge clk) begin
+        if(result == o)
+            busy = 0;
+        else result <= o;
+    end
 
     always @(posedge clk) begin
         if(reset==1) begin
             a_latch = 32'h00000000;
             b_latch = 32'h00000000;
+            result = 64'h0;
+            busy = 0;
         end else begin
             if(start==1) begin
                 a_latch <= a;
                 b_latch <= b;
+                busy <= 1;
             end
         end
     end

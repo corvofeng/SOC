@@ -41,7 +41,7 @@ module cpuctr(
            output rmem,
            output wio,
            output rio,
-           
+
            output [1:0] pcsource,
            output nostall,
            output reg [1:0] fwda,
@@ -75,8 +75,17 @@ module cpuctr(
            output [1:0] mfc0,
            output [1:0] selpc,
            output [1:0] sepc,
-           output [31:0] cause
+           output [31:0] cause,
 
+           output mul_div,
+           output symbol,
+           output mul_start,
+           output div_start,
+           output mthi,
+           output mtlo,
+           output whi,
+           output wlo,
+           output[1:0] mfhilo
        );
 wire clr=~clrn;
 wire r_type, iadd, iaddu, isub, isubu, imult, imultu, idiv, idivu, imfhi,
@@ -130,8 +139,6 @@ and(imtc0, c0_type, rs[2]); //mtc0 op=010000 rs=00100
 and(ieret, c0_type,~func[5], func[4], func[3],~func[2],~func[1],~func[0] );//eretfunc=011000
 //syscall
 //break
-
-
 
 
 
@@ -251,7 +258,7 @@ assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | ino
                   islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
                   ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |
                   ilh   | ilw    | ilbu   | ilhu  | islti | isltiu | imfhi | imflo |
-                  ijal  | imfc0 )&clr & nostall & ~ecancel & ~exc_ovr ;
+                  ijal  | imfc0  | imfhi  | imflo )&clr & nostall & ~ecancel & ~exc_ovr ;
 assign regrt   = (iaddi | iaddiu | iandi  | iori  | ixor  | ilw    | ilb   | ilbu  |
                   ilh   | ilhu   | ilui   | islti | isltiu | imfc0 | imtc0 )&clr;
 assign jal     = (ijal  | ijalr)&clr;
@@ -279,4 +286,15 @@ assign rio     = ((ilw | ilb | ilh | ilhu |ilbu  ) & (immehi == 8'hff) & nostall
 assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
 
 
+assign mul_div = idiv | idivu;
+assign symbol =  imult | idiv;
+assign mul_start = imult | imultu;
+assign div_start = idiv | idivu;
+assign mthi = imthi;
+assign mtlo = imtlo;
+assign whi = ;
+assign wlo = ;
+assign mfhilo[1] = imfhi | imflo; // 00选择原数据，10选择LO,11选择HI
+assign mfhilo[0] = imfhi;
+assign inop = !inst;
 endmodule

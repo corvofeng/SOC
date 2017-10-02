@@ -215,7 +215,7 @@ module cpu(
           .wio(wio),
           .ermem(ermem),
           .erio(erio),
-          .ewio(ewio)
+          .ewio(ewio),
 
           .mfhilo(mfhilo),
           .emfhilo(emfhilo)
