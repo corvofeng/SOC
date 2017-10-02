@@ -24,10 +24,9 @@ int generateMIPS() {
         else
             ALL[i]->param_count = 0;
     }
-    FILE *fp, *fp_data;
+    FILE *fp;
     fp = fopen("mips_code.s", "w");
-    fp_data = fopen("mips_data.s", "w");
-    fprintf(fp_data, ".data\n");
+    fprintf(fp, ".data\n");
     for (int i = 0; i < gcount; i++) {
         int count = 0;
         for (int j = 0; j < i; j++)
@@ -38,9 +37,9 @@ int generateMIPS() {
             err_count++;
         }
         if (gVar[i]->space == 1)
-            fprintf(fp_data, "\t%s: .word 0\n", gVar[i]->name);
+            fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
         else
-            fprintf(fp_data, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
+            fprintf(fp, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
     }
     fprintf(fp, ".text\n");
     for (int i = 0; i < funcount; i++) {
