@@ -24,13 +24,9 @@
 #endif
 #ifndef YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
-typedef union{
-        struct AST *node;	/* 非终结符语义值类型*/
-
-        struct terminal{	/* 终结符语义值类型*/
-            char *text;
-        } Sval;
-
+typedef union {
+    char *text;         /* 终结符语义值类型 */
+    struct AST *node;	/* 非终结符语义值类型 */
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

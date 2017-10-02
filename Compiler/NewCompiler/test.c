@@ -1,37 +1,74 @@
-
 /*
+// lexical error and syntax error
 void main(void)
 {
     int @a;
-    int a.b;
     int int;
-    if (a = b)
-        a = 1;
+    a = 1.1;
+    if (a = 1)
+        a = 2;
+    a != 3;
 }
 */
 
 /*
-int a[10];
-
-void main(void)
+// program error
+int a;
+int a;
+ 
+void fun(int v, int v)
 {
+    int v;
+    int v;
+}
+
+void fun(int n)
+{
+ 
+}
+ 
+int main(void)
+{
+    int a;
+    int b;
+    a = 1;
+    b = 1;
+    fun(a, b, a);
+    fun(c);
+    func(a);
+    return;
+}
+*/
+
+/*
+ // global array
+ int a[10];
+ 
+ void main(void)
+ {
     a[1] = 1;
     if (a[1] == 1)
         a[1] = 2;
     else
         a[1] = 3;
+ }
+ */
+
+/*
+// local array
+void main(void)
+{
+    int a;
+    int b[5];
+    int c;
+    int d[10];
+    a = 0;
+    b[1] = 1;
+    d[2] = 2;
+    c = d[2];
 }
 */
 
-/*
-int main(void)
-{
-    int a;
-    a = 1;
-    fun(b);
-    return;
-}
-*/
 
 int fib(int n) {
     int a;
@@ -61,3 +98,4 @@ void main(void)
     n = 5;
     v = fib(n);
 }
+
