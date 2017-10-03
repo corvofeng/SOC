@@ -75,7 +75,9 @@ char *instructions[] = {
     "mtc0", // R30 
 
     "j",    // J0
-    "jal"   // J1
+    "jal",  // J1
+
+    "nop"
 };
 
 // Size of array
@@ -121,7 +123,7 @@ int main (int argc, char *argv[])
             In = fopen(argv[1], "r");
             printf("Read from %d", argv[1]);
         } else {
-            In = fopen("input.asm", "r");
+            In = fopen("test.asm", "r");
         }
 
         if (In == NULL) {
@@ -141,44 +143,31 @@ int main (int argc, char *argv[])
             printf("Input file could not be opened.");
             exit(1);
         }
-        
-        FILE *outData;
 
-        outData = fopen("data.coe", "w");
-
-        if (outData == NULL) {
-            printf("Output file could not opened.");
+        FILE *outProg;      // 主程序coe文件
+        outProg = fopen("text.coe", "w");
+        if (outProg == NULL) {
+            printf("Output file could not created.");
             exit(1);
         }
-        
-//        FILE *outtest;
-//
-//        outtest = fopen("outtest.coe", "w");
-//
-//        if (outData == NULL) {
-//            printf("Output file could not opened.");
-//            exit(1);
-//        }
 
-//        FILE *Out1;
-//        if(argc >= 3) {
-//            Out1 = fopen(argv[2], "w");
-//            printf("Write to %d", argv[2]);
-//        } else {
-//            Out1 = fopen("out1.txt", "w");
-//        }
-//        if (Out1 == NULL) {
-//            printf("Output file could not opened.");
-//            exit(1);
-//        }
-        FILE *Out2;
-        if(argc >= 3) {
-            Out2 = fopen(argv[2], "w");
-            printf("Write to %d", argv[2]);
-        } else {
-            Out2 = fopen("text.coe", "w");
+        FILE *outProgInt;   // 中断处理函数coe文件
+        outProgInt = fopen("int.coe", "w");
+        if (outProg == NULL) {
+            printf("Output file could not created.");
+            exit(1);
         }
-        if (Out2 == NULL) {
+
+        FILE *outInt;       // 中断向量表文件
+        outInt = fopen("inttbl.coe", "w");
+        if(outInt == NULL) {
+            printf("Output file could not created.");
+            exit(1);
+        }
+
+        FILE *outData;      // 用户数据文件
+        outData = fopen("data.coe", "w");
+        if (outData == NULL) {
             printf("Output file could not opened.");
             exit(1);
         }
@@ -186,33 +175,32 @@ int main (int argc, char *argv[])
         // Sort the array using qsort for faster search
         qsort(instructions, inst_len, sizeof(char *), string_comp);
 
-
-
-		
         // Create a hash table of size 127
         hash_table_t *hash_table = create_hash_table(127);
         char *a = "memory_initialization_radix = 16";
         char *b = "memory_initialization_vector =";
         
-        fprintf(Out2, "%s;\n%s\n",a,b);
-        fprintf(outData, "%s;\n%s\n",a,b);
+        fprintf(outProg, "%s;\n%s\n",a,b);
+        fprintf(outInt, "%s;\n%s\n",a,b);
       //  fprintf(outtest, "%s;\n%s\n",a,b);
 //        for(int i=0;i<=65540;i++){
 //			fprintf(outtest,"%s,\n","00000000");
 //		}
         int passNumber = 1;
         // Parse in passes
-        parse_file(In, Inint,passNumber, instructions, inst_len, hash_table, Out2, outData);
+        parse_file(In, Inint, passNumber, instructions, inst_len, hash_table, outProg, outProgInt, outInt, outData);
         // Rewind input file & start pass 2
         rewind(In);
         passNumber = 2;
-        parse_file(In, Inint,passNumber, instructions, inst_len, hash_table, Out2, outData);
-        fprintf(outData, "%s",";");
-        fprintf(Out2, "%s",";");
+        parse_file(In, Inint, passNumber, instructions, inst_len, hash_table, outProg, outProgInt, outInt, outData);
+
         // Close files
         fclose(In);
         fclose(Inint);
-        fclose(Out2);
+
+        fclose(outProg);
+        fclose(outProgInt);
+        fclose(outInt);
         fclose(outData);
 
         return 0;

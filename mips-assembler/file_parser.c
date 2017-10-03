@@ -17,6 +17,10 @@ static int isFirst = 1;
 static int isFirst2 = 1;
 static int isFirst3 = 1;
 
+#define INT_START  400  // 中断处理程序从400行开始
+#define DATA_START 100  // 数据段从第101行开始
+#define INT_NAME   "EXC_BASE"   // 中断函数名称
+
 struct {
     const char *name;
     char *address;
@@ -130,7 +134,6 @@ struct {
     { "addiu", "001001" },
 
 
-
     { NULL, 0 }
 };
 
@@ -167,21 +170,34 @@ struct {
 
     {NULL, '0'}
 };
+
 char intchar[20][40] = {0};
-int iline,j = 0;
-void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t inst_len, hash_table_t *hash_table, FILE *Out, FILE *outData)
+int printProgCnt = 0;       // 记录当前打印的代码段的行数
+int printIntCnt = 0;        // 记录已经打印的中断处理程序的个数
+int iline,j = 0;            // j, what?? 这啥意思
+int intCnt = 0;             // 记录中断处理程序的个数
+
+void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
+        size_t inst_len, hash_table_t *hash_table,
+        FILE *outProg, FILE *outProgInt,        // 代码段, 中断处理程序
+        FILE *outInt, FILE *outData             // 中断向量表, 用户数据段
+    )
 {
-
-
     char line[MAX_LINE_LENGTH + 1];
     char *tok_ptr, *ret, *token, *int_ptr, *intoken = NULL;
     char intLine[MAX_LINE_LENGTH + 1];
     int32_t line_num = 1;
-    int32_t instruction_count = 0x000000000;
+    int32_t instruction_count = 0x000000000;        // 代码段偏移记录
+    int32_t instruction_int_count = INT_START;     // 中断向量表中的偏移记录
+    int32_t data_count = DATA_START;        // 数据段偏移
     int data_reached = 0;
+    int prog_int_reach = 0;                     // 是否到达中断处理程序
+    int curProgPos = 0;                             // 记录每个指令当前的地址, 方便进行beq, ben等的偏移运算
+    int curIntPos  = INT_START;                     // 记录当前的中断程序地址
 
     int intnum = 0;
 
+    // TODO: 关键代码注释啊, 为什么要读一遍, 这个时候要读读取扫描文件, 文档中要完善
     while(1) {
         if(fgets(intLine, MAX_LINE_LENGTH, intptr) == NULL)
             break;
@@ -193,24 +209,19 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
         while (1) {
             intoken = parse_token(int_ptr, " \n\t$,", &int_ptr, NULL);
 
-
             if (intoken == NULL || *intoken == '#') {
 
-                //free(intoken);
+                if(intoken != NULL)
+                    free(intoken);
                 break;
             }
             printf("inttoken: %s\n", intoken);
 
-            strcpy(intchar[j],intoken);
+            strcpy(intchar[j], intoken);
             j++;
+            intCnt ++;
         }
     }
-    for(int i = 0; i < j; i++) {
-        printf("intchar: %s\n", intchar[i]);
-
-    }
-
-
 
     while (1) {
         if ((ret = fgets(line, MAX_LINE_LENGTH, fptr)) == NULL)
@@ -220,51 +231,43 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
         tok_ptr = line;
         if (strlen(line) == MAX_LINE_LENGTH) {
-            fprintf(Out,
+            fprintf(outProg,
                     "line %d: line is too long. ignoring line ...\n", line_num);
             line_num++;
             continue;
         }
-        //if(parseN++ > 3)
-        //    exit(-1);
-
 
         /* parse the tokens within a line */
-        while (1) {
+       while (1) {
 
             token = parse_token(tok_ptr, " \n\t$,", &tok_ptr, NULL);
 
             /* blank line or comment begins here. go to the next line */
             if (token == NULL || *token == '#') {
                 line_num++;
-                free(token);
+                if(token != NULL)
+                    free(token);
                 break;
             }
 
-            printf("token: %s\n", token);
-            /*
-             * If token is "la", increment by 8, otherwise if it exists in instructions[],
-             * increment by 4.
-             */
+            printf("token: %s, tok_ptr is %s\n\n", token, tok_ptr);
+
             int x = search(token);
-            //int x = (binarySearch(instructions, 0, inst_len, token));
             if (x >= 0) {
-                if (strcmp(token, "la") == 0)
-                    instruction_count = instruction_count + 8;
-                else
-                    instruction_count = instruction_count + 4;
+                if( prog_int_reach == 0)        // 尚未到达中断向量段
+                    instruction_count += 4;
+                else 
+                    instruction_int_count += 4;
+                printf("It seems we have token %s\n", token);
             }
 
             // If token is ".data", reset instruction to .data starting address
             else if (strcmp(token, ".data") == 0) {
-                if(instruction_count <0x3c000 && pass ==2) {
-                    for(instruction_count; instruction_count <0x3c000; instruction_count=instruction_count+4)
-                        fprintf(Out, ",\n00000000");
-
-                }
-                instruction_count = 0x00003fffc;
                 data_reached = 1;
-                // printf("data_reached %d\n", data_reached);
+                free(token);
+                continue;
+            }  else if (strstr(token, INT_NAME)) {  // 检查是否到达中断处理程序
+                prog_int_reach = 1;
                 free(token);
                 continue;
             }
@@ -278,29 +281,27 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                 // if token has ':', then it is a label so add it to hash table
                 if (strstr(token, ":") && data_reached == 0) {
-
-                    printf("Label\n");
-
-                    // Strip out ':'
-                    //printf("Label: %s at %d with address %d: \n", token, line_num, instruction_count);
+                    printf("Label: %s\n", token);
                     size_t token_len = strlen(token);
                     token[token_len - 1] = '\0';
 
                     // Insert variable to hash table
                     uint32_t *inst_count;
                     inst_count = (uint32_t *)malloc(sizeof(uint32_t));
-                    *inst_count = instruction_count;
-                    int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
 
-                    if (insert != 1) {
-                        fprintf(Out, "Error inserting into hash table\n");
-                        exit(1);
+                    if(prog_int_reach == 1) {           // 中断入口函数采用不同的统计方式
+                        *inst_count = instruction_int_count;
+                    } else {
+                        *inst_count = instruction_count;
                     }
+
+                    int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
                 }
 
                 // If .data has been reached, increment instruction count accordingly
                 // and store to hash table
-                else {
+                // 数据段存放
+                else if (data_reached == 1){
 
                     char *var_tok = NULL;
                     char *var_tok_ptr = tok_ptr;
@@ -324,49 +325,43 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                             int num;
                             sscanf(var_tok, "%*s %d", &num);
 
-                            // Increment instruction count by freq
-                            instruction_count = instruction_count + (freq * 4);
-
                             // Strip out ':' from token
                             size_t token_len = strlen(token);
                             token[token_len - 1] = '\0';
 
-                            //printf("Key: '%s', len: %zd\n", token, strlen(token));
-
                             // Insert variable to hash table
-                            uint32_t *inst_count;
-                            inst_count = (uint32_t *)malloc(sizeof(uint32_t));
-                            *inst_count = instruction_count;
-                            int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
+                            uint32_t *d_count;
+                            d_count = (uint32_t *)malloc(sizeof(uint32_t));
+                            *d_count = data_count;
+                            int32_t insert = hash_insert(hash_table, token, strlen(token)+1, d_count);
 
-                            if (insert == 0) {
-                                fprintf(Out, "Error in hash table insertion\n");
-                                exit(1);
-                            }
+                            // Increment instruction count by freq
+                            data_count = data_count + (freq * 4);
 
                             printf("End array\n");
                         }
 
                         // Variable is a single variable
                         else {
-
-                            instruction_count = instruction_count + 4;
-
                             // Strip out ':' from token
                             size_t token_len = strlen(token);
                             token[token_len - 1] = '\0';
 
                             // Insert variable to hash table
-                            uint32_t *inst_count;
-                            inst_count = (uint32_t *)malloc(sizeof(uint32_t));
-                            *inst_count = instruction_count;
-                            int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
+                            uint32_t *d_count;
+                            d_count = (uint32_t *)malloc(sizeof(uint32_t));
+                            *d_count = data_count;
+                            int32_t insert = hash_insert(hash_table, token, strlen(token)+1, d_count);
                             //printf("The token is %s, The instCnt is %d\n", token, instruction_count);
 
+                            data_count = data_count + 4;
+
+                            /*
                             if (insert == 0) {
-                                fprintf(Out, "Error in hash table insertion\n");
+                                fprintf(outProg, "Error in hash table insertion\n");
                                 exit(1);
                             }
+                            */
 
                             printf("End singe var\n",insert);
                         }
@@ -376,27 +371,22 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                     else if (strstr(tok_ptr, ".asciiz")) {
 
                         // Store the ascii in var_tok
-                        var_tok_ptr+= 8;
+                        var_tok_ptr += 8;
                         var_tok = parse_token(var_tok_ptr, "\"", &var_tok_ptr, NULL);
 
                         // Increment instruction count by string length
                         size_t str_byte_len = strlen(var_tok);
-                        instruction_count = instruction_count + str_byte_len;
 
                         // Strip out ':' from token
                         size_t token_len = strlen(token);
                         token[token_len - 1] = '\0';
 
                         // Insert variable to hash table
-                        uint32_t *inst_count;
-                        inst_count = (uint32_t *)malloc(sizeof(uint32_t));
-                        *inst_count = instruction_count;
-                        int32_t insert = hash_insert(hash_table, token, strlen(token)+1, inst_count);
-
-                        if (insert == 0) {
-                            fprintf(Out, "Error in hash table insertion\n");
-                            exit(1);
-                        }
+                        uint32_t *d_count;
+                        d_count = (uint32_t *)malloc(sizeof(uint32_t));
+                        *d_count = data_count;
+                        int32_t insert = hash_insert(hash_table, token, strlen(token)+1, d_count);
+                        data_count = data_count + str_byte_len;
                     }
                 }
             }
@@ -408,25 +398,22 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                 // start interpreting here
                 // if j loop --> then instruction is: 000010 then immediate is insturction count in 26 bits??
-
                 // If in .text section
                 if (data_reached == 0) {
+
 
                     // Check instruction type
                     int instruction_supported = search(token);
                     char inst_type;
 
                     //  printf("This should not appear %d\n", instruction_count);
-                    // exit(-1);
-//                    int32_t instruct1 = instruction_count;
-//					for (instruct1; instruct1< 0x3c000; instruct1=instruct1+4) {
-//
-//                        fprintf(Out, ",\n00000000");
-
-                    //if(instruction_count <0x3c000)
-                    // If instruction is supported
                     if (instruction_supported != -1) {
 
+                        FILE* tmpFile = outProg;
+                        if(prog_int_reach == 1)
+                            outProg = outProgInt;
+                        else
+                            printProgCnt += 1;
 
                         // token contains the instruction
                         // tok_ptr points to the rest of the line
@@ -437,7 +424,13 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                         if (inst_type == 'r') {
                             //  printf("type r detected\n", data_reached);
                             // R-Type with $rd, $rs, $rt format
-                            if (strcmp(token, "MOV") == 0) {
+                            if (strcmp(token, "add")  == 0 || strcmp(token, "sub")  == 0
+                             || strcmp(token, "and")  == 0 || strcmp(token, "srav") == 0
+                             || strcmp(token, "or")   == 0 || strcmp(token, "slt")  == 0
+                             || strcmp(token, "xor")  == 0 || strcmp(token, "addu") == 0
+                             || strcmp(token, "subu") == 0 || strcmp(token, "nor")  == 0
+                             || strcmp(token, "sltu") == 0 || strcmp(token, "sllv") == 0
+                             || strcmp(token, "srlv") == 0 ) {
 
                                 // Parse the instructio - get rd, rs, rt registers
                                 char *inst_ptr = tok_ptr;
@@ -446,15 +439,15 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 // Create an array of char* that stores rt, rs
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
-                                if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                if (reg_store == NULL) {    // TODO: 全部将错误汇总后在进行报错
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
-                                for (int i = 0; i < 3; i++) {
+                                for (int i = 0; i < 3; i++) {   // TODO: 能不能把错误注明一下, 别人怎么知道这个是什么错误
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -466,6 +459,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                     reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
                                     if (reg == NULL || *reg == '#') {
+                                        if(reg != NULL) free(reg);
                                         break;
                                     }
 
@@ -475,69 +469,16 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 }
 
                                 // rt in position 0, rs in position 1 and immediate in position 2
-
-                                rtype_instruction("or", reg_store[1], "00000", reg_store[0], 0, Out);
-
-                                // Dealloc reg_store
-                                for (int i = 0; i < 3; i++) {
-                                    free(reg_store[i]);
+                                if (strcmp(token, "add")   == 0 || strcmp(token, "sub")  == 0
+                                  || strcmp(token, "and")  == 0 || strcmp(token, "or")   == 0
+                                  || strcmp(token, "slt")  == 0 || strcmp(token, "xor")  == 0
+                                  || strcmp(token, "addu") == 0 || strcmp(token, "subu") == 0
+                                  || strcmp(token, "nor")  == 0 || strcmp(token, "sltu") == 0) {
+                                    rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, outProg);
                                 }
-                                free(reg_store);
-                            }
-                            if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
-                                    || strcmp(token, "and") == 0
-                                    || strcmp(token, "or") == 0 || strcmp(token, "slt") == 0
-                                    || strcmp(token, "xor") == 0|| strcmp(token, "addu") == 0
-                                    || strcmp(token, "subu") == 0|| strcmp(token, "nor") == 0
-                                    || strcmp(token, "sltu") == 0|| strcmp(token, "sllv") == 0
-                                    || strcmp(token, "srlv") == 0|| strcmp(token, "srav") == 0) {
-
-                                // Parse the instructio - get rd, rs, rt registers
-                                char *inst_ptr = tok_ptr;
-                                char *reg = NULL;
-
-                                // Create an array of char* that stores rt, rs
-                                char **reg_store;
-                                reg_store = malloc(3 * sizeof(char*));
-                                if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
-                                    exit(1);
-                                }
-
-                                for (int i = 0; i < 3; i++) {
-                                    reg_store[i] = malloc(2 * sizeof(char));
-                                    if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
-                                        exit(1);
-                                    }
-                                }
-
-                                // Keeps a reference to which register has been parsed for storage
-                                int count = 0;
-                                while (1) {
-
-                                    reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-
-                                    if (reg == NULL || *reg == '#') {
-                                        break;
-                                    }
-
-                                    strcpy(reg_store[count], reg);
-                                    count++;
-                                    free(reg);
-                                }
-
-                                // rt in position 0, rs in position 1 and immediate in position 2
-                                if (strcmp(token, "add") == 0 || strcmp(token, "sub") == 0
-                                        || strcmp(token, "and") == 0|| strcmp(token, "or") == 0
-                                        || strcmp(token, "slt") == 0|| strcmp(token, "xor") == 0
-                                        || strcmp(token, "addu") == 0|| strcmp(token, "subu") == 0
-                                        || strcmp(token, "nor") == 0|| strcmp(token, "sltu") == 0) {
-                                    rtype_instruction(token, reg_store[1], reg_store[2], reg_store[0], 0, Out);
-                                }
-                                if (strcmp(token, "sllv") == 0|| strcmp(token, "srlv") == 0
-                                        || strcmp(token, "srav") == 0) {
-                                    rtype_instruction(token, reg_store[2], reg_store[1], reg_store[0], 0, Out);
+                                if (strcmp(token, "sllv")    == 0|| strcmp(token, "srlv") == 0
+                                    || strcmp(token, "srav") == 0) {
+                                    rtype_instruction(token, reg_store[2], reg_store[1], reg_store[0], 0, outProg);
                                 }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -547,8 +488,8 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                             }
 
                             // R-Type with $rd, $rs, shamt format
-                            else if (strcmp(token, "sll") == 0 || strcmp(token, "srl") == 0
-                                     || strcmp(token, "sra") == 0) {
+                            else if (strcmp(token, "sll")   == 0 || strcmp(token, "srl") == 0
+                                    || strcmp(token, "sra") == 0) {
 
                                 // Parse the instructio - get rd, rs, rt registers
                                 char *inst_ptr = tok_ptr;
@@ -558,14 +499,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -587,7 +528,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                                 // Send reg_store for output
                                 // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                rtype_instruction(token, "00000", reg_store[1], reg_store[0], atoi(reg_store[2]), Out);
+                                rtype_instruction(token, "00000", reg_store[1], reg_store[0], atoi(reg_store[2]), outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -606,14 +547,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -636,11 +577,11 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 // Send reg_store for output
                                 // rd is in position 0, rs is in position 1 and shamt is in position 2
                                 if (strcmp(token, "mfc0") == 0 ) {
-                                    rtype_instruction(token, "00000", reg_store[0], reg_store[1], 0, Out);
+                                    rtype_instruction(token, "00000", reg_store[0], reg_store[1], 0, outProg);
                                 }
 
                                 if (strcmp(token, "mtc0") == 0) {
-                                    rtype_instruction(token, "00100", reg_store[0], reg_store[1], 0, Out);
+                                    rtype_instruction(token, "00100", reg_store[0], reg_store[1], 0, outProg);
                                 }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -649,8 +590,8 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 free(reg_store);
                             }
 
-                            else if (strcmp(token, "mult") == 0|| strcmp(token, "multu") == 0
-                                     || strcmp(token, "div") == 0 || strcmp(token, "divu") == 0) {
+                            else if (strcmp(token, "mult")  == 0 || strcmp(token, "multu") == 0
+                                    || strcmp(token, "div") == 0 || strcmp(token, "divu")  == 0) {
 
                                 // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
@@ -660,14 +601,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -688,7 +629,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                                 // Send reg_store for output
                                 // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                rtype_instruction(token, reg_store[0], reg_store[1], "00000", 0, Out);
+                                rtype_instruction(token, reg_store[0], reg_store[1], "00000", 0, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -705,14 +646,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -733,7 +674,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                                 // Send reg_store for output
                                 // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                rtype_instruction(token, reg_store[1], "00000", reg_store[0], 0, Out);
+                                rtype_instruction(token, reg_store[1], "00000", reg_store[0], 0, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -747,9 +688,9 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char *reg = NULL;
                                 reg = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
-                                rtype_instruction(token, reg, "00000", "00000", 0, Out);
+                                rtype_instruction(token, reg, "00000", "00000", 0, outProg);
                             } else if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0
-                                       || strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
+                                    || strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
 
                                 // Parse the insturction,  rt - immediate
                                 char *inst_ptr = tok_ptr;
@@ -759,14 +700,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -787,13 +728,13 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 if (strcmp(token, "mfhi") == 0 || strcmp(token, "mflo") == 0) {
                                     // Send reg_store for output
                                     // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                    rtype_instruction(token, "00000", "00000", reg_store[0], 0, Out);
+                                    rtype_instruction(token, "00000", "00000", reg_store[0], 0, outProg);
                                 }
 
                                 if (strcmp(token, "mthi") == 0 || strcmp(token, "mtlo") == 0) {
                                     // Send reg_store for output
                                     // rd is in position 0, rs is in position 1 and shamt is in position 2
-                                    rtype_instruction(token, reg_store[0], "00000", "00000", 0, Out);
+                                    rtype_instruction(token, reg_store[0], "00000", "00000", 0, outProg);
                                 }
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -802,9 +743,9 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 free(reg_store);
                             } else if (strcmp(token, "eret") == 0) {
 
-                                rtype_instruction(token, "10000", "00000", "00000", 0, Out);
+                                rtype_instruction(token, "10000", "00000", "00000", 0, outProg);
                             }
-                        }
+                        }   // inst_type = 'r'
 
                         // I-Type
                         else if (inst_type == 'i') {
@@ -821,14 +762,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(2 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 2; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -872,13 +813,13 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 // Call the lui instruction with: lui $reg, upperBits
                                 // Convert upperBits binary to int
                                 int immediate = getDec(upperBits);
-                                itype_instruction("lui", "00000", reg_store[0], immediate, Out);
+                                itype_instruction("lui", "00000", reg_store[0], immediate, outProg);
 
 
                                 // Call the ori instruction with: ori $reg, $reg, lowerBits
                                 // Convert lowerBits binary to int
                                 immediate = getDec(lowerBits);
-                                itype_instruction("ori", reg_store[0], reg_store[0], immediate, Out);
+                                itype_instruction("ori", reg_store[0], reg_store[0], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 2; i++) {
@@ -888,10 +829,10 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                             }
 
                             // I-Type $rt, i($rs)
-                            else if (strcmp(token, "lw") == 0 || strcmp(token, "sw") == 0
-                                     || strcmp(token, "lb") == 0 || strcmp(token, "lbu") == 0
-                                     || strcmp(token, "lh") == 0 || strcmp(token, "lhu") == 0
-                                     || strcmp(token, "sb") == 0 || strcmp(token, "sh") == 0) {
+                            else if (strcmp(token, "lw") == 0 || strcmp(token, "sw")  == 0
+                                  || strcmp(token, "lb") == 0 || strcmp(token, "lbu") == 0
+                                  || strcmp(token, "lh") == 0 || strcmp(token, "lhu") == 0
+                                  || strcmp(token, "sb") == 0 || strcmp(token, "sh")  == 0) {
 
                                 // Parse the instructio - rt, immediate and rs
                                 char *inst_ptr = tok_ptr;
@@ -901,14 +842,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -928,9 +869,18 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                     free(reg);
                                 }
 
+                                // TODO: 这些命令均会判断该数字是否属于数据段, 如果属于数据段将会对其进行运算查找
+                                int *address = hash_find(hash_table, reg_store[1], strlen(reg_store[1])+1); // 从hash表中寻找该字符串
+                                int immediate = 0;
+                                if(address != NULL) {
+                                    immediate = *address;
+                                    printf("The address is %d\n", *address);
+                                } else{
+                                    immediate = atoi(reg_store[1]);
+                                }
+
                                 // rt in position 0, immediate in position 1 and rs in position2
-                                int immediate = atoi(reg_store[1]);
-                                itype_instruction(token, reg_store[2], reg_store[0], immediate, Out);
+                                itype_instruction(token, reg_store[2], reg_store[0], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -949,14 +899,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -978,7 +928,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                                 // rt in position 0, rs in position 1 and immediate in position 2
                                 int immediate = atoi(reg_store[1]);
-                                itype_instruction("ori", "00000", reg_store[0], immediate, Out);
+                                itype_instruction("ori", "00000", reg_store[0], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -987,10 +937,10 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 free(reg_store);
                             }
                             // I-Type rt, rs, im
-                            else if (strcmp(token, "andi") == 0 || strcmp( token, "ori") == 0
-                                     || strcmp(token, "slti") == 0 || strcmp(token, "addi") == 0
-                                     || strcmp(token, "xori") == 0 || strcmp(token, "sltiu") == 0
-                                     || strcmp(token, "addiu") == 0) {
+                            else if (strcmp(token, "andi") == 0 || strcmp( token, "ori")  == 0
+                                || strcmp(token, "slti")   == 0 || strcmp(token, "addi")  == 0
+                                || strcmp(token, "xori")   == 0 || strcmp(token, "sltiu") == 0
+                                || strcmp(token, "addiu")  == 0) {
 
                                 // Parse the instruction - rt, rs, immediate
                                 char *inst_ptr = tok_ptr;
@@ -1000,14 +950,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(3 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 3; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -1028,8 +978,13 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 }
 
                                 // rt in position 0, rs in position 1 and immediate in position 2
-                                int immediate = atoi(reg_store[2]);
-                                itype_instruction(token, reg_store[1], reg_store[0], immediate, Out);
+                                int immediate = 0;
+                                if(0 == strncmp(reg_store[2], "0x", 2)) {
+                                    immediate = strtol(reg_store[2], NULL, 16);
+                                } else {
+                                    immediate = atoi(reg_store[2]);
+                                }
+                                itype_instruction(token, reg_store[1], reg_store[0], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -1049,14 +1004,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(2 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 2; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -1079,7 +1034,7 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
 
                                 // rt in position 0, immediate in position 1
                                 int immediate = atoi(reg_store[1]);
-                                itype_instruction(token, "00000", reg_store[0], immediate, Out);
+                                itype_instruction(token, "00000", reg_store[0], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 3; i++) {
@@ -1088,9 +1043,9 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 free(reg_store);
                             }
 
-                            else if (strcmp(token, "bgez") == 0|| strcmp(token, "bgtz") == 0
-                                     || strcmp(token, "blez") == 0 || strcmp(token, "bltz") == 0
-                                     || strcmp(token, "bgezal") == 0 || strcmp(token, "bltzal") == 0) {
+                            else if (strcmp(token, "bgez") == 0 || strcmp(token, "bgtz")   == 0
+                                || strcmp(token, "blez")   == 0 || strcmp(token, "bltz")   == 0
+                                || strcmp(token, "bgezal") == 0 || strcmp(token, "bltzal") == 0) {
 
                                 // Parse the instruction - rs, rt
                                 char *inst_ptr = tok_ptr;
@@ -1105,24 +1060,30 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 // Find hash address for a register and put in an immediate
                                 int *address = hash_find(hash_table, reg2, strlen(reg2)+1);
 
-                                int immediate = *address + instruction_count;
+                                int immediate;
+                                if(prog_int_reach == 1) {       // 计算offset
+                                    immediate = instruction_int_count - *address ;
+                                } else {
+                                    immediate = instruction_count - *address ;
+                                }
+                                immediate = immediate >> 2;     // 有符号的右移运算
 
                                 if (strcmp(token, "bgez") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg1, "00001", immediate, Out);
+                                    itype_instruction(token, reg1, "00001", immediate, outProg);
                                 }
                                 if (strcmp(token, "bgtz") == 0|| strcmp(token, "blez") == 0
                                         || strcmp(token, "bltz") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg1, "00000", immediate, Out);
+                                    itype_instruction(token, reg1, "00000", immediate, outProg);
                                 }
                                 if (strcmp(token, "bgezal") == 0 ) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg1, "10001", immediate, Out);
+                                    itype_instruction(token, reg1, "10001", immediate, outProg);
                                 }
                                 if (strcmp(token, "bltzal") == 0) {
                                     // Send instruction to itype function
-                                    itype_instruction(token, reg1, "10000", immediate, Out);
+                                    itype_instruction(token, reg1, "10000", immediate, outProg);
                                 }
 
                             }
@@ -1138,14 +1099,14 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 char **reg_store;
                                 reg_store = malloc(2 * sizeof(char*));
                                 if (reg_store == NULL) {
-                                    fprintf(Out, "Out of memory\n");
+                                    fprintf(outProg, "outProg of memory\n");
                                     exit(1);
                                 }
 
                                 for (int i = 0; i < 2; i++) {
                                     reg_store[i] = malloc(2 * sizeof(char));
                                     if (reg_store[i] == NULL) {
-                                        fprintf(Out, "Out of memory\n");
+                                        fprintf(outProg, "outProg of memory\n");
                                         exit(1);
                                     }
                                 }
@@ -1173,10 +1134,19 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                                 // Find hash address for a register and put in an immediate
                                 int *address = hash_find(hash_table, reg, strlen(reg)+1);
 
-                                int immediate = *address + instruction_count;
+                                int immediate;
+                                if(prog_int_reach == 1) {
+                                    immediate = instruction_int_count - *address;
+                                } else {
+                                    immediate = instruction_count - *address;
+                                }
+                                immediate = immediate >> 2;
 
                                 // Send instruction to itype function
-                                itype_instruction(token, reg_store[0], reg_store[1], immediate, Out);
+                                if(prog_int_reach == 1)
+                                    itype_instruction(token, reg_store[0], reg_store[1], immediate, outProgInt);
+                                else
+                                    itype_instruction(token, reg_store[0], reg_store[1], immediate, outProg);
 
                                 // Dealloc reg_store
                                 for (int i = 0; i < 2; i++) {
@@ -1218,100 +1188,48 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                             }
 
                             // Find hash address for a label and put in an immediate
-                            int *address = hash_find(hash_table, inst_ptr, strlen(inst_ptr)+1);
+                            int *address = hash_find(hash_table, tok_ptr, strlen(tok_ptr)+1);
+
+                            int immediate = *address >> 2;
 
                             // Send to jtype function
-                            jtype_instruction(token, *address, Out);
+                            jtype_instruction(token, immediate, outProg);
+                        } 
+                        
+                        // NOP
+                        else if(inst_type == 'n') {
+                            fprintf(outProg, "00000000");
                         }
-//                        else
-//                        if (strcmp(token, intchar[1]) == 0) {
-//                            char s[50],out[50];
-//                            size_t token_len = strlen(token);
-//                            token[token_len - 1] = '\0';
-//                            intnum++;
-//                            char immediate[17];
-//                            int *address = hash_find(hash_table, token, strlen(token)+1);
-//                            char *opcode = "0000000000000000";
-//                            int immediateStr = *address;
-//                            printf("wtf");
-//                            getBin(immediateStr, immediate, 16);
-//                            fprintf(outData, "%s%s\n", opcode, immediate);
-//
-//                        }
-
-
-                    }
-//					else
-//					{int32_t instruct1 = instruction_count;
-//					for (instruct1; instruct1< 0x3c000; instruct1=instruct1+4) {
-//
-//                        fprintf(Out, ",\n00000000");
-//                    }
-//					 printf("instruct1: ",instruct1);
-//					}
-
-
-
-                    if (strcmp(token, "nop") == 0) {
-                        if(isFirst == 1 )
-                            isFirst = 0;
-                        else
-                            fprintf(Out, "%s,\n","");
-                        fprintf(Out, "00000000");
+                        outProg = tmpFile;
                     }
 
-                    for(int i=0; i<j; i++) {
+                    // 遍历中断向量表, 查看该函数是否属于中断处理函数
+                    for(int i = 0; i < intCnt; i++) {
 
                         if (strcmp(token, intchar[i]) == 0) {
-                            if(isFirst3 == 1 )
-                                isFirst3 = 0;
-                            else
-                                fprintf(outData, "%s,\n","");
-
                             char s[50],out[50];
                             char opcode[20]= {0};
 
                             size_t token_len = strlen(token);
                             token[token_len - 1] = '\0';
-                            intnum++;
+                            intnum ++;
                             char immediate[17];
                             int *address = hash_find(hash_table, token, strlen(token)+1);
                             // char *opcode = intchar[i+1];
-                            strcpy(opcode,intchar[i+1]);
+                            strcpy(opcode,intchar[i + 1]);
                             int immediateStr = *address;
                             getBin(immediateStr, immediate, 16);
                             sprintf(s, "%s%s\n", opcode, immediate);
                             parseHex(s,out);
-                            fprintf(outData, "%s",out);
+                            fprintf(outInt, "%s,\n", out);
                         }
                     }
-
                 }
 
                 // If .data part reached
                 else {
-
-
-                    instruction_count = intnum * 0x40000 + instruction_count;
-//								if(isFirst3 == 1 )
-//                                isFirst3 = 0;
-//                                else
-//                                fprintf(outData, "%s,","");
-                    printf("00000000,\n");
-                    for (instruction_count; instruction_count< 0x010000000; instruction_count=instruction_count+0x40000) {
-                        //printf("intnum: %s\n",intnum);
-                        if(isFirst3 == 1 )
-                            isFirst3 = 0;
-                        else
-                            fprintf(outData, "%s,\n","");
-
-                        fprintf(outData, "00000000");
-                    }
-
-
                     char *var_tok = NULL;
                     char *var_tok_ptr = tok_ptr;
-
 
                     /**
                      * for example:
@@ -1397,9 +1315,23 @@ void parse_file(FILE *fptr,FILE *intptr, int pass, char *instructions[], size_t 
                         }
                     }
                 }
+
             }
 
             free(token);
+        }
+    }
+
+    if(pass == 2) { // 在第二次解析完成后, 各个文件中补充0
+
+        // 填充用户程序
+        for(int i = printProgCnt; i < INT_START; i++) {
+            fprintf(outProg, "00000000,\n");
+        }
+
+        // 填充中断向量表
+        for(int i = intnum; i < DATA_START; i++) {
+            fprintf(outInt, "00000000,\n");
         }
     }
 }
@@ -1410,7 +1342,6 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 
     int mid = low + (high - low) / 2;
     int comp = strcmp(instructions[mid], string);
-    \
 
     if (comp == 0)
         return mid;
@@ -1439,46 +1370,50 @@ int binarySearch(char *instructions[], int low, int high, char *string)
 char instruction_type(char *instruction)
 {
 
-    if (strcmp(instruction, "add") == 0 || strcmp(instruction, "sub") == 0
-            || strcmp(instruction, "and") == 0
-            || strcmp(instruction, "or") == 0 || strcmp(instruction, "sll") == 0
-            || strcmp(instruction, "slt") == 0 || strcmp(instruction, "srl") == 0
-            || strcmp(instruction, "jr") == 0 || strcmp(instruction, "xor") == 0
-            || strcmp(instruction, "addu") == 0 || strcmp(instruction, "subu") == 0
-            || strcmp(instruction, "nor") == 0 || strcmp(instruction, "sltu") == 0
-            || strcmp(instruction, "sra") == 0 || strcmp(instruction, "sllv") == 0
-            || strcmp(instruction, "srlv") == 0 || strcmp(instruction, "srav") == 0
-            || strcmp(instruction, "mult") == 0 || strcmp(instruction, "multu") == 0
-            || strcmp(instruction, "div") == 0 || strcmp(instruction, "divu") == 0
-            || strcmp(instruction, "mthi") == 0 || strcmp(instruction, "mtlo") == 0
-            || strcmp(instruction, "mfhi") == 0 || strcmp(instruction, "mflo") == 0
-            || strcmp(instruction, "jalr") == 0 || strcmp(instruction, "eret") == 0
-            || strcmp(instruction, "MOV") == 0 || strcmp(instruction, "mfc0") == 0
-            || strcmp(instruction, "mtc0") == 0) {
+    if (strcmp(instruction, "add")    == 0 || strcmp(instruction, "sub")   == 0
+       || strcmp(instruction, "and")  == 0 || strcmp(instruction, "mtc0")  == 0
+       || strcmp(instruction, "or")   == 0 || strcmp(instruction, "sll")   == 0
+       || strcmp(instruction, "slt")  == 0 || strcmp(instruction, "srl")   == 0
+       || strcmp(instruction, "jr")   == 0 || strcmp(instruction, "xor")   == 0
+       || strcmp(instruction, "addu") == 0 || strcmp(instruction, "subu")  == 0
+       || strcmp(instruction, "nor")  == 0 || strcmp(instruction, "sltu")  == 0
+       || strcmp(instruction, "sra")  == 0 || strcmp(instruction, "sllv")  == 0
+       || strcmp(instruction, "srlv") == 0 || strcmp(instruction, "srav")  == 0
+       || strcmp(instruction, "mult") == 0 || strcmp(instruction, "multu") == 0
+       || strcmp(instruction, "div")  == 0 || strcmp(instruction, "divu")  == 0
+       || strcmp(instruction, "mthi") == 0 || strcmp(instruction, "mtlo")  == 0
+       || strcmp(instruction, "mfhi") == 0 || strcmp(instruction, "mflo")  == 0
+       || strcmp(instruction, "jalr") == 0 || strcmp(instruction, "eret")  == 0
+       || strcmp(instruction, "MOV")  == 0 || strcmp(instruction, "mfc0")  == 0
+        ) {
 
         return 'r';
     }
 
-    else if (strcmp(instruction, "lw") == 0 || strcmp(instruction, "sw") == 0
-             || strcmp(instruction, "andi") == 0
-             || strcmp(instruction, "ori") == 0 || strcmp(instruction, "lui") == 0
-             || strcmp(instruction, "beq") == 0 || strcmp(instruction, "slti") == 0
-             || strcmp(instruction, "addi") == 0 || strcmp(instruction, "la") == 0
-             || strcmp(instruction, "xori") == 0 || strcmp(instruction, "lb") == 0
-             || strcmp(instruction, "lbu") == 0 || strcmp(instruction, "lh") == 0
-             || strcmp(instruction, "lhu") == 0 || strcmp(instruction, "sb") == 0
-             || strcmp(instruction, "sh") == 0 || strcmp(instruction, "sltiu") == 0
-             || strcmp(instruction, "bne") == 0|| strcmp(instruction, "bgez") == 0
-             || strcmp(instruction, "li") == 0|| strcmp(instruction, "addiu") == 0
-             || strcmp(instruction, "bgtz") == 0 || strcmp(instruction, "blez") == 0
-             || strcmp(instruction, "bltz") == 0 || strcmp(instruction, "bgezal") == 0
-             || strcmp(instruction, "bltzal") == 0) {
+    else if (strcmp(instruction, "lw")  == 0 || strcmp(instruction, "sw")     == 0
+         || strcmp(instruction, "andi") == 0 || strcmp(instruction, "bltzal") == 0
+         || strcmp(instruction, "ori")  == 0 || strcmp(instruction, "lui")    == 0
+         || strcmp(instruction, "beq")  == 0 || strcmp(instruction, "slti")   == 0
+         || strcmp(instruction, "addi") == 0 || strcmp(instruction, "la")     == 0
+         || strcmp(instruction, "xori") == 0 || strcmp(instruction, "lb")     == 0
+         || strcmp(instruction, "lbu")  == 0 || strcmp(instruction, "lh")     == 0
+         || strcmp(instruction, "lhu")  == 0 || strcmp(instruction, "sb")     == 0
+         || strcmp(instruction, "sh")   == 0 || strcmp(instruction, "sltiu")  == 0
+         || strcmp(instruction, "bne")  == 0 || strcmp(instruction, "bgez")   == 0
+         || strcmp(instruction, "li")   == 0 || strcmp(instruction, "addiu")  == 0
+         || strcmp(instruction, "bgtz") == 0 || strcmp(instruction, "blez")   == 0
+         || strcmp(instruction, "bltz") == 0 || strcmp(instruction, "bgezal") == 0
+             ) {
 
         return 'i';
     }
 
     else if (strcmp(instruction, "j") == 0 || strcmp(instruction, "jal") == 0) {
         return 'j';
+    }
+
+    else if (strcmp(instruction, "nop")) {
+        return 'n';
     }
 
     // Failsafe return statement
@@ -1500,13 +1435,8 @@ char *register_address(char *registerName)
 }
 
 // Write out the R-Type instruction
-void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int shamt, FILE *Out)
+void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int shamt, FILE *outProg)
 {
-    if(isFirst == 1 )
-        isFirst = 0;
-    else
-        fprintf(Out, "%s,\n","");
-
     // Set the instruction bits
     char *opcode = "000000";
     char s[50],out[50];
@@ -1548,16 +1478,19 @@ void rtype_instruction(char *instruction, char *rs, char *rt, char *rd, int sham
     sprintf(s, "%s%s%s%s%s%s", opcode, rsBin, rtBin, rdBin, shamtBin, func);
     // Print out the instruction to the file
     parseHex(s,out);
-    fprintf(Out, "%s",out);
+    fprintf(outProg, "%s,\n",out);
+    printf("write =>%s\n", out);
 }
 
 // Write out the I-Type instruction
-void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, FILE *Out)
+void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, FILE *outProg)
 {
+    /*
     if(isFirst == 1 )
         isFirst = 0;
     else
-        fprintf(Out, "%s,\n","");
+        fprintf(outProg, "%s,\n","");
+    */
 
     char s[50],out[50];
     // Set the instruction bit
@@ -1591,16 +1524,19 @@ void itype_instruction(char *instruction, char *rs, char *rt, int immediateNum, 
     sprintf(s, "%s%s%s%s,\n", opcode, rsBin, rtBin, immediate);
     // Print out the instruction to the file
     parseHex(s,out);
-    fprintf(Out, "%s",out);
+    fprintf(outProg, "%s,\n",out);
+    printf("write =>%s\n", out);
 }
 
 // Write out the J-Type instruction
-void jtype_instruction(char *instruction, int immediate, FILE *Out)
+void jtype_instruction(char *instruction, int immediate, FILE *outProg)
 {
+    /*
     if(isFirst == 1 )
         isFirst = 0;
     else
-        fprintf(Out, "%s,\n","");
+        fprintf(outProg, "%s,\n","");
+   */
 
     // Set the instruction bits
     char *opcode = NULL;
@@ -1619,17 +1555,16 @@ void jtype_instruction(char *instruction, int immediate, FILE *Out)
     sprintf(s,"%s%s\n", opcode, immediateStr);
     // Print out the instruction to the file
     parseHex(s,out);
-    fprintf(Out, "%s",out);
+    fprintf(outProg, "%s,\n",out);
+    printf("write =>%s\n", out);
 }
 
 
 // Write out the variable in binary
 // input number
 // output char[]
-void word_rep(int binary_rep, FILE *Out)
+void word_rep(int binary_rep, FILE *outData)
 {
-
-    fprintf(Out, "%s,\n","");
 
     char s[33] =  {0};
     char out[33] = {0};
@@ -1642,16 +1577,15 @@ void word_rep(int binary_rep, FILE *Out)
     }
 
     parseHex(s,out);
-    fprintf(Out, "%s",out);
+    fprintf(outData, "%s,\n",out);
 }
 
 // Write out the ascii string
-void ascii_rep(char string[], FILE *Out)
+void ascii_rep(char string[], FILE *outData)
 {
 //    if(isFirst3 == 1 )
 //        isFirst3 = 0;
 //    else
-    fprintf(Out, "%s,\n","");
     // Separate the string, and put each four characters in an element of an array of strings
     size_t str_length = strlen(string);
     str_length++;
@@ -1666,14 +1600,14 @@ void ascii_rep(char string[], FILE *Out)
     char **sep_str;
     sep_str = malloc(num_strs * sizeof(char*));
     if (sep_str == NULL) {
-        fprintf(Out, "Out of memory\n");
+        fprintf(outData, "outProg of memory\n");
         exit(1);
     }
 
     for (int i = 0; i < num_strs; i++) {
         sep_str[i] = malloc(4 * sizeof(char));
         if (sep_str[i] == NULL) {
-            fprintf(Out, "Out of memory\n");
+            fprintf(outData, "outProg of memory\n");
             exit(1);
         }
     }
@@ -1698,12 +1632,6 @@ void ascii_rep(char string[], FILE *Out)
         }
     }
 
-//        while(i >= 0) {
-//        s[i] = (binary_rep & 0x1) ? '1' : '0';
-//        i --;
-//        binary_rep = binary_rep >> 1;
-//    }
-//
     char s[33] =  {0};
     char out[33] = {0};
     // Convert into binary
@@ -1712,11 +1640,11 @@ void ascii_rep(char string[], FILE *Out)
         for (int j = 0; j < 4; j++) {
             char c = sep_str[i][j];
             for (int k = 7; k >= 0; k--) {
-                fprintf(Out, "%c", (c & (1 << k)) ? '1' : '0');
+                fprintf(outData, "%c", (c & (1 << k)) ? '1' : '0');
             }
         }
-        //fprintf(Out, "\n");
     }
+    fprintf(outData, ",\n");
 
     // Deallocate sep_str
     for (int i = 0; i < num_strs; i++) {
@@ -1788,11 +1716,12 @@ char getHex(char *bin)
     return cvt_tbl[i].dst;
 }
 
+
 /**
- * @brief ��2���Ƶ��ַ���ת��Ϊ16������ʽ�ı�ʾ
+ * @brief 将2进制的字符串转换为16进制形式的表示
  *
- * @param bin �����32Ϊ�ַ���
- * @param hex ���ת��������ַ���
+ * @param bin 输入的32为字符串
+ * @param hex 存放转换过后的字符串
  */
 void parseHex(char *bin, char *hex)
 {
