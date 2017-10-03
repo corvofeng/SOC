@@ -258,10 +258,10 @@ compound_stmt
                                     $$->child[1] = $3; $3->parent = $$;
                                     $$->ntno = 15; $$->procno = 1;
                                 }
-    | '{' stmt_list '}'         {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
+    | '{' local_decls '}'       {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
                                     $$->ntno = 15; $$->procno = 2;
                                 }
-    | '{' local_decls '}'       {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
+    | '{' stmt_list '}'         {   $$ = makeNode(1); $$->child[0] = $2; $2->parent = $$;
                                     $$->ntno = 15; $$->procno = 3;
                                 }
     | '{' '}'                   {   $$ = makeNode(0);

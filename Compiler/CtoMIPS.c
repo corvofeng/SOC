@@ -23,11 +23,15 @@ int generateMIPS() {
             ALL[i]->param_count = ALL[i]->t->child[1]->child[0]->multiplicity;
         else
             ALL[i]->param_count = 0;
+        if (ALL[i]->t->child[2]->procno < 3)
+            ALL[i]->local_count = ALL[i]->t->child[2]->child[0]->multiplicity;
+        else
+            ALL[i]->local_count = 0;
     }
-    FILE *fp, *fp_data;
+    
+    FILE *fp;
     fp = fopen("mips_code.s", "w");
-    fp_data = fopen("mips_data.s", "w");
-    fprintf(fp_data, ".data\n");
+    fprintf(fp, ".data\n");
     for (int i = 0; i < gcount; i++) {
         int count = 0;
         for (int j = 0; j < i; j++)
@@ -38,10 +42,11 @@ int generateMIPS() {
             err_count++;
         }
         if (gVar[i]->space == 1)
-            fprintf(fp_data, "\t%s: .word 0\n", gVar[i]->name);
+            fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
         else
-            fprintf(fp_data, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
+            fprintf(fp, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
     }
+    
     fprintf(fp, ".text\n");
     for (int i = 0; i < funcount; i++) {
         int count = 0;
@@ -75,17 +80,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
         if (t->procno == 1) {
             fprintf(fp, "%s:\n", t->txt);
-            if (strcmp(ALL[funcno]->name, "main") != 0) {
+            int need = ALL[funcno]->local_count;
+            if (need > 8)
+                need = 8;
+            if (strcmp(ALL[funcno]->name, "main") != 0 && need != 0) {
                 // 保存寄存器
-                fprintf(fp, "\taddi $sp, $sp, -32\n");
-                fprintf(fp, "\tsw $s7, 28($sp)\n"); // 保存寄存器s7
-                fprintf(fp, "\tsw $s6, 24($sp)\n"); // 保存寄存器s6
-                fprintf(fp, "\tsw $s5, 20($sp)\n"); // 保存寄存器s5
-                fprintf(fp, "\tsw $s4, 16($sp)\n"); // 保存寄存器s4
-                fprintf(fp, "\tsw $s3, 12($sp)\n"); // 保存寄存器s3
-                fprintf(fp, "\tsw $s2, 8($sp)\n");  // 保存寄存器s2
-                fprintf(fp, "\tsw $s1, 4($sp)\n");  // 保存寄存器s1
-                fprintf(fp, "\tsw $s0, 0($sp)\n");  // 保存寄存器s0
+                fprintf(fp, "\taddi $sp, $sp, -%d\n", need * 4);
+                for (int i = need - 1; i >=0; i--)
+                    fprintf(fp, "\tsw $s%d, %d($sp)\n", i, i * 4); // 保存寄存器
             }
             
             deal_with_node(fp, t->child[0], funcno); // type_spec部分，记录返回类型
@@ -99,17 +101,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             }
             
             if (ALL[funcno]->type == 0) {
-                if (strcmp(ALL[funcno]->name, "main") != 0) {
+                if (strcmp(ALL[funcno]->name, "main") != 0 && need != 0) {
                     // 恢复寄存器
-                    fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-                    fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-                    fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-                    fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-                    fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-                    fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-                    fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-                    fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-                    fprintf(fp, "\taddi $sp, $sp, 32\n");
+                    for (int i = 0; i < need ; i++)
+                        fprintf(fp, "\tlw $s%d, %d($sp)\n", i, i * 4);  // 恢复寄存器
+                    fprintf(fp, "\taddi $sp, $sp, %d\n", need * 4);
                 }
                 fprintf(fp, "\tjr $ra\n");
             }
@@ -200,7 +196,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[0], funcno);
             fprintf(fp, "\tsw $t1, 0($t0)\n");
             
-        } else if (t->procno == 4) {
+        } else if (t->procno == 4) { // IDENT(arg_list);
             
             int name_found = 0;
             int pcount_matched = 0;
@@ -214,15 +210,16 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
             if (pcount_matched == 1) {
                 
-                // 保存寄存器
-                fprintf(fp, "\taddi $sp, $sp, -24\n");
-                fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
-                fprintf(fp, "\tsw $t9, 16($sp)\n"); // 保存参数部分指针地址
-                fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
-                fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
-                fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
-                fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
+                int need = ALL[funcno]->param_count;
+                if (need > 4)
+                    need = 4;
                 
+                // 保存寄存器
+                fprintf(fp, "\taddi $sp, $sp, -%d\n", (need + 2) * 4);
+                fprintf(fp, "\tsw $ra, %d($sp)\n", (need + 1) * 4); // 保存返回地址
+                fprintf(fp, "\tsw $t9, %d($sp)\n", need * 4); // 保存参数部分指针地址
+                for (int i = need - 1; i >= 0; i--)
+                    fprintf(fp, "\tsw $a%d, %d($sp)\n", i, i * 4); // 保存寄存器
                 
                 int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
                 if (arg_space > 0) {
@@ -242,13 +239,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
                 
                 // 恢复寄存器
-                fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
-                fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
-                fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
-                fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
-                fprintf(fp, "\tlw $t9, 16($sp)\n"); // 恢复参数部分指针地址
-                fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
-                fprintf(fp, "\taddi $sp, $sp, 24\n");
+                for (int i = 0; i < need; i++)
+                    fprintf(fp, "\tlw $a%d, %d($sp)\n", i, i * 4);  // 恢复寄存器
+                fprintf(fp, "\tlw $t9, %d($sp)\n", need * 4); // 恢复参数部分指针地址
+                fprintf(fp, "\tlw $ra, %d($sp)\n", (need + 1) * 4); // 恢复返回地址
+                fprintf(fp, "\taddi $sp, $sp, %d\n", (need + 2) * 4);
                 
             } else if (name_found == 1) {
                 fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
@@ -259,7 +254,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 err_count++;
             }
             
-        } else if (t->procno == 5) {
+        } else if (t->procno == 5) { // IDENT();
             
             int name_found = 0;
             int pcount_matched = 0;
@@ -376,17 +371,14 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 err_count++;
             }
         }
-        if (strcmp(ALL[funcno]->name, "main") != 0) {
+        int need = ALL[funcno]->local_count;
+        if (need > 8)
+            need = 8;
+        if (strcmp(ALL[funcno]->name, "main") != 0 && need != 0) {
             // 恢复寄存器
-            fprintf(fp, "\tlw $s0, 0($sp)\n");  // 恢复寄存器s0
-            fprintf(fp, "\tlw $s1, 4($sp)\n");  // 恢复寄存器s1
-            fprintf(fp, "\tlw $s2, 8($sp)\n");  // 恢复寄存器s2
-            fprintf(fp, "\tlw $s3, 12($sp)\n"); // 恢复寄存器s3
-            fprintf(fp, "\tlw $s4, 16($sp)\n"); // 恢复寄存器s4
-            fprintf(fp, "\tlw $s5, 20($sp)\n"); // 恢复寄存器s5
-            fprintf(fp, "\tlw $s6, 24($sp)\n"); // 恢复寄存器s6
-            fprintf(fp, "\tlw $s7, 28($sp)\n"); // 恢复寄存器s7
-            fprintf(fp, "\taddi $sp, $sp, 32\n");
+            for (int i = 0; i < need ; i++)
+                fprintf(fp, "\tlw $s%d, %d($sp)\n", i, i * 4);  // 恢复寄存器
+            fprintf(fp, "\taddi $sp, $sp, %d\n", need * 4);
         }
         fprintf(fp, "\tjr $ra\n");
         
@@ -650,15 +642,16 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 
                 if (pcount_matched == 1) {
                     
-                    // 保存寄存器
-                    fprintf(fp, "\taddi $sp, $sp, -24\n");
-                    fprintf(fp, "\tsw $ra, 20($sp)\n"); // 保存返回地址
-                    fprintf(fp, "\tsw $t9, 16($sp)\n"); // 保存参数部分指针地址
-                    fprintf(fp, "\tsw $a3, 12($sp)\n"); // 保存寄存器a3
-                    fprintf(fp, "\tsw $a2, 8($sp)\n");  // 保存寄存器a2
-                    fprintf(fp, "\tsw $a1, 4($sp)\n");  // 保存寄存器a1
-                    fprintf(fp, "\tsw $a0, 0($sp)\n");  // 保存寄存器a0
+                    int need = ALL[funcno]->param_count;
+                    if (need > 4)
+                        need = 4;
                     
+                    // 保存寄存器
+                    fprintf(fp, "\taddi $sp, $sp, -%d\n", (need + 2) * 4);
+                    fprintf(fp, "\tsw $ra, %d($sp)\n", (need + 1) * 4); // 保存返回地址
+                    fprintf(fp, "\tsw $t9, %d($sp)\n", need * 4); // 保存参数部分指针地址
+                    for (int i = need - 1; i >= 0; i--)
+                        fprintf(fp, "\tsw $a%d, %d($sp)\n", i, i * 4); // 保存寄存器
                     
                     int arg_space = t->child[0]->multiplicity - 4; // 4个寄存器是否足够
                     if (arg_space > 0) {
@@ -678,13 +671,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                         fprintf(fp, "\taddi $sp, $sp, %d\n", arg_space);
                     
                     // 恢复寄存器
-                    fprintf(fp, "\tlw $a0, 0($sp)\n");  // 恢复寄存器a0
-                    fprintf(fp, "\tlw $a1, 4($sp)\n");  // 恢复寄存器a1
-                    fprintf(fp, "\tlw $a2, 8($sp)\n");  // 恢复寄存器a2
-                    fprintf(fp, "\tlw $a3, 12($sp)\n"); // 恢复寄存器a3
-                    fprintf(fp, "\tlw $t9, 16($sp)\n"); // 恢复参数部分指针地址
-                    fprintf(fp, "\tlw $ra, 20($sp)\n"); // 恢复返回地址
-                    fprintf(fp, "\taddi $sp, $sp, 24\n");
+                    for (int i = 0; i < need; i++)
+                        fprintf(fp, "\tlw $a%d, %d($sp)\n", i, i * 4);  // 恢复寄存器
+                    fprintf(fp, "\tlw $t9, %d($sp)\n", need * 4); // 恢复参数部分指针地址
+                    fprintf(fp, "\tlw $ra, %d($sp)\n", (need + 1) * 4); // 恢复返回地址
+                    fprintf(fp, "\taddi $sp, $sp, %d\n", (need + 2) * 4);
                     
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
