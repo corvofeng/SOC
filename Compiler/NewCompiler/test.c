@@ -69,6 +69,20 @@ void main(void)
 }
 */
 
+int key;
+
+void keyread(void) {
+    key = 10;
+}
+void print(int x) {
+    $0xff00 = x;
+}
+
+void delay(void) {
+    int c;
+    c = 3000000;
+    while(c > 0) c = c - 1;
+}
 
 int fib(int n) {
     int a;
@@ -96,6 +110,11 @@ void main(void)
     int n;
     int v;
     n = 5;
-    v = fib(n);
+    while(1) {
+      //  if(key > 0)
+      //      v = fib(key);
+        print(v);
+        delay();
+    }
 }
 
