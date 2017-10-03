@@ -32,20 +32,20 @@ module key16(
 input reset;
 input cs;
 input clk;      // 100Mhz
-input ior;      // 读信号
-input[1:0] address;  // 端口号
+input ior;      // 读信�?
+input[1:0] address;  // 端口�?
 input[3:0] i_col;  // 列线
 output[3:0] o_row;  // 行线
-output[3:0] o_data;  //输出到系统总线上的数据
-output key_flag;  // 键盘是否被按下, 将作为中断控制器的输入
+output[3:0] o_data;  //输出到系统�?�线上的数据
+output key_flag;  // 键盘是否被按�?, 将作为中断控制器的输�?
 
 reg[3:0] o_data;
 reg[3:0] o_row;
 
-reg[15:0] keyvalue =16'h0000;  //键值寄存器,初始化为0
-reg[15:0] keystat;  //状态寄存器
-reg key_flag;   //按键标志位
-reg [2:0] state;  //状态标志
+reg[15:0] keyvalue =16'h0000;  //键�?�寄存器,初始化为0
+reg[15:0] keystat;  //状�?�寄存器
+reg key_flag;   //按键标志�?
+reg [2:0] state;  //状�?�标�?
 
 reg[4:0] value;
 reg[4:0] startRead;
@@ -71,9 +71,9 @@ begin
                     value <= 4'd30;
                 end else 
                 begin
-                    if(i_col[3:0] != 4'b1111) begin // 发现键盘被按下
+                    if(i_col[3:0] != 4'b1111) begin // 发现键盘被按�?
                         state <= 1;
-                        o_row[3:0] <= 4'b1110;  // 扫面第一列
+                        o_row[3:0] <= 4'b1110;  // 扫面第一�?
                     end else
                     begin
                         state <= 0;
@@ -82,9 +82,9 @@ begin
             end
             1:
             begin
-                if(i_col != 4'b1111) begin  // 判断是否是第一行
+                if(i_col != 4'b1111) begin  // 判断是否是第�?�?
                     state <= 5;
-                end else begin  // 扫描第二行
+                end else begin  // 扫描第二�?
                     state <= 2;
                     o_row <= 4'b1101;
                 end
@@ -92,7 +92,7 @@ begin
             2:
             begin
                 if(i_col != 4'b1111) begin state <= 5; end  /// 判断是否是第二行
-                else begin  // 扫描第三行
+                else begin  // 扫描第三�?
                     state <= 3;
                     o_row <= 4'b1011;
                 end
