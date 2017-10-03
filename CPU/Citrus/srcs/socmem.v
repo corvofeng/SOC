@@ -34,10 +34,10 @@ module socmem (
            output LEDCtrl,
            output KEYCtrl,
            output CTCCtrl,
-           output PWMCtrl,
-           output UARTCtrl,
+           //output PWMCtrl,
+           output ICUCtrl,
            output WDTCtrl,
-           output[11:0] address,
+           output[15:0] address,
            output[31:0] write_data,
            input [31:0] mread_data,
            input [15:0] ioread_data_key,
@@ -64,15 +64,15 @@ MiniSysBus bus(
     .LEDCtrl(LEDCtrl),
     .KEYCtrl(KEYCtrl),
     .CTCCtrl(CTCCtrl),
-    .PWMCtrl(PWMCtrl),
-    .UARTCtrl(UARTCtrl),
+  //  .PWMCtrl(PWMCtrl),
+    .ICUCtrl(ICUCtrl),
     .WDTCtrl(WDTCtrl),
     .address(address),
     .write_data(write_data),
     .mread_data(mread_data),
     .ioread_data_key(ioread_data_key),
-    .ioread_data_ctc(ioread_data_ctc),
-    .ioread_data_uart(ioread_data_uart)
+    .ioread_data_ctc(ioread_data_ctc)
+   // .ioread_data_uart(ioread_data_uart)
     );
 
 mem_ram mem(
@@ -82,7 +82,8 @@ mem_ram mem(
     .we(mwmem),
     .spo(memout)
        );
-always @(posedge clk or negedge clk) begin
+
+always @(mrio or mwio or memout or ioout ) begin
    if( mrio| mwio ) begin
        mmo<=ioout;
    end else begin

@@ -25,9 +25,10 @@ module cpu(
 
       intr,inta,vector,
 
-      LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl,
+      LEDCtrl,KEYCtrl,CTCCtrl,ICUCtrl,WDTCtrl,
       address,write_data,mread_data,
-      ioread_data_key,ioread_data_ctc,ioread_data_uart
+      ioread_data_key,ioread_data_ctc,//ioread_data_uart,
+      mrio,mwio
     );
 
     input clk,clrn;
@@ -51,12 +52,13 @@ module cpu(
     input[7:0] vector;
 
     wire cancel,ecancel;
-    wire mrmem,mrio,mwio,ermem,erio,ewio,rmem,rio,wio;
-    output LEDCtrl,KEYCtrl,CTCCtrl,PWMCtrl,UARTCtrl,WDTCtrl;
-    output[11:0] address;
+    wire mrmem,ermem,erio,ewio,rmem,rio,wio;
+    output LEDCtrl,KEYCtrl,CTCCtrl,ICUCtrl,WDTCtrl;
+    output[15:0] address;
     output[31:0] write_data;
     input [31:0] mread_data;
-    input [15:0] ioread_data_key,ioread_data_ctc,ioread_data_uart;
+    input [15:0] ioread_data_key,ioread_data_ctc;//,ioread_data_uart;
+    output mrio,mwio;
 
     wire[1:0] mfhilom,emfhilo;
     wire[31:0] HI_data;
@@ -271,15 +273,15 @@ module cpu(
           .LEDCtrl(LEDCtrl),
           .KEYCtrl(KEYCtrl),
           .CTCCtrl(CTCCtrl),
-          .PWMCtrl(PWMCtrl),
-          .UARTCtrl(UARTCtrl),
+          .ICUCtrl(ICUCtrl),
+        //  .UARTCtrl(UARTCtrl),
           .WDTCtrl(WDTCtrl),
           .address(address),
           .write_data(write_data),
           .mread_data(mread_data),
           .ioread_data_key(ioread_data_key),
-          .ioread_data_ctc(ioread_data_ctc),
-          .ioread_data_uart(ioread_data_uart)
+          .ioread_data_ctc(ioread_data_ctc)
+        //  .ioread_data_uart(ioread_data_uart)
          );
       pipemwreg p9(
           .malu(malu),

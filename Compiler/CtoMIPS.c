@@ -166,7 +166,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\tsw $t0, %s\n", m->pos);
             } else {
                 if (lookup_global(t->txt) == 1)
-                    fprintf(fp, "\tsw $t0, %s\n", t->txt);
+                    fprintf(fp, "\tsw $t0, %s($zero)\n", t->txt);
                 else {
                     fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
                     err_count++;
@@ -198,7 +198,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[1], funcno);
             fprintf(fp, "\tadd $t1, $t0, $zero\n");
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tsw $t1, ($t0)\n");
+            fprintf(fp, "\tsw $t1, 0($t0)\n");
             
         } else if (t->procno == 4) {
             
@@ -554,7 +554,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else if (t->procno == 17) { // $
                 
                 deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\tlw $t0, ($t0)\n");
+                fprintf(fp, "\tlw $t0, 0($t0)\n");
                 
             } else if (t->procno == 18) { // ()
             
@@ -611,7 +611,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tlw $t0, %s\n", m->pos);
                 else {
                     if (lookup_global(t->txt) == 1)
-                        fprintf(fp, "\tlw $t0, %s\n", t->txt);
+                        fprintf(fp, "\tlw $t0, %s($zero)\n", t->txt);
                     else {
                         fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
                         err_count++;

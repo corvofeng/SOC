@@ -252,12 +252,7 @@ always @ (ewreg or mwreg or ern or mrn or em2reg or mm2reg or rs or rt or clr) b
         end
     end
 end
-always @ (clr) begin
-    if(clr==0) begin
-        fwda = 2'b00;
-        fwda = 2'b00;
-    end
-end
+
 assign wreg    = (iadd  | isub   | iaddu  | isubu | iand  | ior    | ixor  | inor  |
                   islt  | isltu  | isll   | isrl  | isra  | isllv  | isrlv | israv |
                   ijalr | iaddi  | iaddiu | iandi | iori  | ixori  | ilui  | ilb   |

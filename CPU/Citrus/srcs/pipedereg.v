@@ -71,6 +71,7 @@ module pipedereg(
     input[1:0] mfhilo,
     output reg [1:0] emfhilo
     );
+    
 	always @ ( posedge clk ) begin
 	    if ( clrn != 0 ) begin
 		    epc4    <= 32'h0000_0000;
