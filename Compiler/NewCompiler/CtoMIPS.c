@@ -554,7 +554,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             } else if (t->procno == 17) { // $
                 
                 deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\tlw $t0, ($t0)\n");
+                fprintf(fp, "\tlw $t0, 0($t0)\n");
                 
             } else if (t->procno == 18) { // ()
             
