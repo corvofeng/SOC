@@ -1,0 +1,3971 @@
+Terminals unused in grammar
+
+   PTR_OP
+   INC_OP
+   DEC_OP
+   FLOAT
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 var: IDENTIFIER
+    2    | IDENTIFIER '[' CONSTANT ']'
+    3    | IDENTIFIER '[' CONSTANT ']' '[' CONSTANT ']'
+
+    4 variables: var
+    5          | '*' var
+    6          | variables ',' var
+    7          | variables ',' '*' var
+
+    8 type: INT
+    9     | CHAR
+   10     | VOID
+
+   11 arg_var: IDENTIFIER
+   12        | '*' IDENTIFIER
+
+   13 struct_var: IDENTIFIER
+   14           | IDENTIFIER '[' CONSTANT ']'
+   15           | struct_var ',' IDENTIFIER
+   16           | struct_var ',' IDENTIFIER '[' CONSTANT ']'
+
+   17 inside_dec: IDENTIFIER
+   18           | inside_dec ',' IDENTIFIER
+
+   19 struct_declaration: type inside_dec ';'
+
+   20 struct_list: struct_declaration
+   21            | struct_list struct_declaration
+
+   22 struct: STRUCT IDENTIFIER '{' struct_list '}'
+
+   23 declaration: type variables ';'
+   24            | struct ';'
+   25            | STRUCT IDENTIFIER struct_var ';'
+   26            | struct struct_var ';'
+
+   27 argument_list: argument_list ',' type arg_var
+   28              | type arg_var
+   29              | argument_list ',' STRUCT IDENTIFIER IDENTIFIER
+
+   30 read: READ '(' type ',' IDENTIFIER ')'
+
+   31 print: PRINT '(' type ',' IDENTIFIER ')'
+
+   32 max: MAX '(' IDENTIFIER ',' IDENTIFIER ')'
+
+   33 min: MIN '(' IDENTIFIER ',' IDENTIFIER ')'
+
+   34 swap: SWAP '(' IDENTIFIER ',' IDENTIFIER ')'
+
+   35 myfunction: read ';'
+   36           | print ';'
+   37           | swap ';'
+
+   38 statement: body
+   39          | jump_statement
+   40          | iteration_statement
+   41          | selection_statement
+   42          | expression_statement
+   43          | declaration
+   44          | myfunction
+
+   45 istart: '{'
+
+   46 iend: '}'
+
+   47 iteration_statement: WHILE '(' expression ')' istart statement_list iend
+   48                    | FOR '(' expression_statement expression_statement ')' istart statement_list iend
+   49                    | FOR '(' expression_statement expression_statement expression ')' istart statement_list iend
+
+   50 selection_statement: IF '(' expression ')' body
+   51                    | IF '(' expression ')' body ELSE statement
+
+   52 jump_statement: CONTINUE ';'
+   53               | BREAK ';'
+   54               | RETURN ';'
+   55               | RETURN expression ';'
+
+   56 ass_operator: '='
+   57             | MUL_ASSIGN
+   58             | DIV_ASSIGN
+   59             | MOD_ASSIGN
+   60             | ADD_ASSIGN
+   61             | SUB_ASSIGN
+   62             | LEFT_ASSIGN
+   63             | RIGHT_ASSIGN
+   64             | AND_ASSIGN
+   65             | XOR_ASSIGN
+   66             | OR_ASSIGN
+
+   67 expression_statement: ';'
+   68                     | expression ';'
+
+   69 arg_list: expression
+   70         | arg_list ',' expression
+
+   71 starting: IDENTIFIER
+   72         | CONSTANT
+   73         | STRING_LITERAL
+   74         | '(' expression ')'
+   75         | max
+   76         | min
+
+   77 main_exp: starting
+   78         | IDENTIFIER '[' expression ']'
+   79         | IDENTIFIER '[' expression ']' '[' expression ']'
+   80         | IDENTIFIER '(' ')'
+   81         | IDENTIFIER '(' arg_list ')'
+   82         | IDENTIFIER '.' IDENTIFIER
+   83         | IDENTIFIER '[' expression ']' '.' IDENTIFIER
+
+   84 unary_op: '+'
+   85         | '-'
+   86         | '!'
+   87         | '~'
+   88         | '*'
+   89         | '&'
+
+   90 unary_exp: main_exp
+   91          | unary_op unary_exp
+   92          | SIZEOF '(' type ')'
+
+   93 mul_div_mod: unary_exp
+   94            | mul_div_mod '*' unary_exp
+   95            | mul_div_mod '/' unary_exp
+   96            | mul_div_mod '%' unary_exp
+
+   97 plus_minus: mul_div_mod
+   98           | plus_minus '+' mul_div_mod
+   99           | plus_minus '-' mul_div_mod
+
+  100 shift: plus_minus
+  101      | shift LEFT_OP plus_minus
+  102      | shift RIGHT_OP plus_minus
+
+  103 lt_gt_lte_gte: shift
+  104              | lt_gt_lte_gte '<' shift
+  105              | lt_gt_lte_gte '>' shift
+  106              | lt_gt_lte_gte LE_OP shift
+  107              | lt_gt_lte_gte GE_OP shift
+
+  108 eq_neq: lt_gt_lte_gte
+  109       | eq_neq EQ_OP lt_gt_lte_gte
+  110       | eq_neq NE_OP lt_gt_lte_gte
+
+  111 and: eq_neq
+  112    | and '&' eq_neq
+
+  113 xor: and
+  114    | xor '^' and
+
+  115 or: xor
+  116   | or '|' xor
+
+  117 andand: or
+  118       | andand AND_OP or
+
+  119 oror: andand
+  120     | oror OR_OP andand
+
+  121 conditional_exp: oror
+
+  122 expression: conditional_exp
+  123           | unary_exp ass_operator expression
+
+  124 statement_list: statement
+  125               | statement_list statement
+
+  126 openB: '{'
+
+  127 closeB: '}'
+
+  128 body: openB statement_list closeB
+
+  129 function_name: type IDENTIFIER
+  130              | STRUCT IDENTIFIER IDENTIFIER
+  131              | type '*' IDENTIFIER
+
+  132 function: function_name '(' argument_list ')' body
+  133         | function_name '(' ')' body
+
+  134 program: declaration
+  135        | function
+  136        | program declaration
+  137        | program function
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 86
+'%' (37) 96
+'&' (38) 89 112
+'(' (40) 30 31 32 33 34 47 48 49 50 51 74 80 81 92 132 133
+')' (41) 30 31 32 33 34 47 48 49 50 51 74 80 81 92 132 133
+'*' (42) 5 7 12 88 94 131
+'+' (43) 84 98
+',' (44) 6 7 15 16 18 27 29 30 31 32 33 34 70
+'-' (45) 85 99
+'.' (46) 82 83
+'/' (47) 95
+';' (59) 19 23 24 25 26 35 36 37 52 53 54 55 67 68
+'<' (60) 104
+'=' (61) 56
+'>' (62) 105
+'[' (91) 2 3 14 16 78 79 83
+']' (93) 2 3 14 16 78 79 83
+'^' (94) 114
+'{' (123) 22 45 126
+'|' (124) 116
+'}' (125) 22 46 127
+'~' (126) 87
+error (256)
+IDENTIFIER (258) 1 2 3 11 12 13 14 15 16 17 18 22 25 29 30 31 32 33
+    34 71 78 79 80 81 82 83 129 130 131
+CONSTANT (259) 2 3 14 16 72
+STRING_LITERAL (260) 73
+SIZEOF (261) 92
+PTR_OP (262)
+INC_OP (263)
+DEC_OP (264)
+LEFT_OP (265) 101
+RIGHT_OP (266) 102
+LE_OP (267) 106
+GE_OP (268) 107
+EQ_OP (269) 109
+NE_OP (270) 110
+AND_OP (271) 118
+OR_OP (272) 120
+MUL_ASSIGN (273) 57
+DIV_ASSIGN (274) 58
+MOD_ASSIGN (275) 59
+ADD_ASSIGN (276) 60
+SUB_ASSIGN (277) 61
+LEFT_ASSIGN (278) 62
+RIGHT_ASSIGN (279) 63
+AND_ASSIGN (280) 64
+XOR_ASSIGN (281) 65
+OR_ASSIGN (282) 66
+IF (283) 50 51
+ELSE (284) 51
+WHILE (285) 47
+FOR (286) 48 49
+CONTINUE (287) 52
+BREAK (288) 53
+RETURN (289) 54 55
+READ (290) 30
+PRINT (291) 31
+CHAR (292) 9
+INT (293) 8
+FLOAT (294)
+VOID (295) 10
+STRUCT (296) 22 25 29 130
+MIN (297) 33
+MAX (298) 32
+SWAP (299) 34
+
+
+Nonterminals, with rules where they appear
+
+$accept (67)
+    on left: 0
+var (68)
+    on left: 1 2 3, on right: 4 5 6 7
+variables (69)
+    on left: 4 5 6 7, on right: 6 7 23
+type (70)
+    on left: 8 9 10, on right: 19 23 27 28 30 31 92 129 131
+arg_var (71)
+    on left: 11 12, on right: 27 28
+struct_var (72)
+    on left: 13 14 15 16, on right: 15 16 25 26
+inside_dec (73)
+    on left: 17 18, on right: 18 19
+struct_declaration (74)
+    on left: 19, on right: 20 21
+struct_list (75)
+    on left: 20 21, on right: 21 22
+struct (76)
+    on left: 22, on right: 24 26
+declaration (77)
+    on left: 23 24 25 26, on right: 43 134 136
+argument_list (78)
+    on left: 27 28 29, on right: 27 29 132
+read (79)
+    on left: 30, on right: 35
+print (80)
+    on left: 31, on right: 36
+max (81)
+    on left: 32, on right: 75
+min (82)
+    on left: 33, on right: 76
+swap (83)
+    on left: 34, on right: 37
+myfunction (84)
+    on left: 35 36 37, on right: 44
+statement (85)
+    on left: 38 39 40 41 42 43 44, on right: 51 124 125
+istart (86)
+    on left: 45, on right: 47 48 49
+iend (87)
+    on left: 46, on right: 47 48 49
+iteration_statement (88)
+    on left: 47 48 49, on right: 40
+selection_statement (89)
+    on left: 50 51, on right: 41
+jump_statement (90)
+    on left: 52 53 54 55, on right: 39
+ass_operator (91)
+    on left: 56 57 58 59 60 61 62 63 64 65 66, on right: 123
+expression_statement (92)
+    on left: 67 68, on right: 42 48 49
+arg_list (93)
+    on left: 69 70, on right: 70 81
+starting (94)
+    on left: 71 72 73 74 75 76, on right: 77
+main_exp (95)
+    on left: 77 78 79 80 81 82 83, on right: 90
+unary_op (96)
+    on left: 84 85 86 87 88 89, on right: 91
+unary_exp (97)
+    on left: 90 91 92, on right: 91 93 94 95 96 123
+mul_div_mod (98)
+    on left: 93 94 95 96, on right: 94 95 96 97 98 99
+plus_minus (99)
+    on left: 97 98 99, on right: 98 99 100 101 102
+shift (100)
+    on left: 100 101 102, on right: 101 102 103 104 105 106 107
+lt_gt_lte_gte (101)
+    on left: 103 104 105 106 107, on right: 104 105 106 107 108 109
+    110
+eq_neq (102)
+    on left: 108 109 110, on right: 109 110 111 112
+and (103)
+    on left: 111 112, on right: 112 113 114
+xor (104)
+    on left: 113 114, on right: 114 115 116
+or (105)
+    on left: 115 116, on right: 116 117 118
+andand (106)
+    on left: 117 118, on right: 118 119 120
+oror (107)
+    on left: 119 120, on right: 120 121
+conditional_exp (108)
+    on left: 121, on right: 122
+expression (109)
+    on left: 122 123, on right: 47 49 50 51 55 68 69 70 74 78 79 83
+    123
+statement_list (110)
+    on left: 124 125, on right: 47 48 49 125 128
+openB (111)
+    on left: 126, on right: 128
+closeB (112)
+    on left: 127, on right: 128
+body (113)
+    on left: 128, on right: 38 50 51 132 133
+function_name (114)
+    on left: 129 130 131, on right: 132 133
+function (115)
+    on left: 132 133, on right: 135 137
+program (116)
+    on left: 134 135 136 137, on right: 0 136 137
+
+
+State 0
+
+    0 $accept: . program $end
+
+    CHAR    shift, and go to state 1
+    INT     shift, and go to state 2
+    VOID    shift, and go to state 3
+    STRUCT  shift, and go to state 4
+
+    type           go to state 5
+    struct         go to state 6
+    declaration    go to state 7
+    function_name  go to state 8
+    function       go to state 9
+    program        go to state 10
+
+
+State 1
+
+    9 type: CHAR .
+
+    $default  reduce using rule 9 (type)
+
+
+State 2
+
+    8 type: INT .
+
+    $default  reduce using rule 8 (type)
+
+
+State 3
+
+   10 type: VOID .
+
+    $default  reduce using rule 10 (type)
+
+
+State 4
+
+   22 struct: STRUCT . IDENTIFIER '{' struct_list '}'
+   25 declaration: STRUCT . IDENTIFIER struct_var ';'
+  130 function_name: STRUCT . IDENTIFIER IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 11
+
+
+State 5
+
+   23 declaration: type . variables ';'
+  129 function_name: type . IDENTIFIER
+  131              | type . '*' IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 12
+    '*'         shift, and go to state 13
+
+    var        go to state 14
+    variables  go to state 15
+
+
+State 6
+
+   24 declaration: struct . ';'
+   26            | struct . struct_var ';'
+
+    IDENTIFIER  shift, and go to state 16
+    ';'         shift, and go to state 17
+
+    struct_var  go to state 18
+
+
+State 7
+
+  134 program: declaration .
+
+    $default  reduce using rule 134 (program)
+
+
+State 8
+
+  132 function: function_name . '(' argument_list ')' body
+  133         | function_name . '(' ')' body
+
+    '('  shift, and go to state 19
+
+
+State 9
+
+  135 program: function .
+
+    $default  reduce using rule 135 (program)
+
+
+State 10
+
+    0 $accept: program . $end
+  136 program: program . declaration
+  137        | program . function
+
+    $end    shift, and go to state 20
+    CHAR    shift, and go to state 1
+    INT     shift, and go to state 2
+    VOID    shift, and go to state 3
+    STRUCT  shift, and go to state 4
+
+    type           go to state 5
+    struct         go to state 6
+    declaration    go to state 21
+    function_name  go to state 8
+    function       go to state 22
+
+
+State 11
+
+   22 struct: STRUCT IDENTIFIER . '{' struct_list '}'
+   25 declaration: STRUCT IDENTIFIER . struct_var ';'
+  130 function_name: STRUCT IDENTIFIER . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 23
+    '{'         shift, and go to state 24
+
+    struct_var  go to state 25
+
+
+State 12
+
+    1 var: IDENTIFIER .
+    2    | IDENTIFIER . '[' CONSTANT ']'
+    3    | IDENTIFIER . '[' CONSTANT ']' '[' CONSTANT ']'
+  129 function_name: type IDENTIFIER .
+
+    '['  shift, and go to state 26
+
+    '('       reduce using rule 129 (function_name)
+    $default  reduce using rule 1 (var)
+
+
+State 13
+
+    5 variables: '*' . var
+  131 function_name: type '*' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 27
+
+    var  go to state 28
+
+
+State 14
+
+    4 variables: var .
+
+    $default  reduce using rule 4 (variables)
+
+
+State 15
+
+    6 variables: variables . ',' var
+    7          | variables . ',' '*' var
+   23 declaration: type variables . ';'
+
+    ','  shift, and go to state 29
+    ';'  shift, and go to state 30
+
+
+State 16
+
+   13 struct_var: IDENTIFIER .
+   14           | IDENTIFIER . '[' CONSTANT ']'
+
+    '['  shift, and go to state 31
+
+    $default  reduce using rule 13 (struct_var)
+
+
+State 17
+
+   24 declaration: struct ';' .
+
+    $default  reduce using rule 24 (declaration)
+
+
+State 18
+
+   15 struct_var: struct_var . ',' IDENTIFIER
+   16           | struct_var . ',' IDENTIFIER '[' CONSTANT ']'
+   26 declaration: struct struct_var . ';'
+
+    ','  shift, and go to state 32
+    ';'  shift, and go to state 33
+
+
+State 19
+
+  132 function: function_name '(' . argument_list ')' body
+  133         | function_name '(' . ')' body
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+    ')'   shift, and go to state 34
+
+    type           go to state 35
+    argument_list  go to state 36
+
+
+State 20
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 21
+
+  136 program: program declaration .
+
+    $default  reduce using rule 136 (program)
+
+
+State 22
+
+  137 program: program function .
+
+    $default  reduce using rule 137 (program)
+
+
+State 23
+
+   13 struct_var: IDENTIFIER .
+   14           | IDENTIFIER . '[' CONSTANT ']'
+  130 function_name: STRUCT IDENTIFIER IDENTIFIER .
+
+    '['  shift, and go to state 31
+
+    '('       reduce using rule 130 (function_name)
+    $default  reduce using rule 13 (struct_var)
+
+
+State 24
+
+   22 struct: STRUCT IDENTIFIER '{' . struct_list '}'
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+
+    type                go to state 37
+    struct_declaration  go to state 38
+    struct_list         go to state 39
+
+
+State 25
+
+   15 struct_var: struct_var . ',' IDENTIFIER
+   16           | struct_var . ',' IDENTIFIER '[' CONSTANT ']'
+   25 declaration: STRUCT IDENTIFIER struct_var . ';'
+
+    ','  shift, and go to state 32
+    ';'  shift, and go to state 40
+
+
+State 26
+
+    2 var: IDENTIFIER '[' . CONSTANT ']'
+    3    | IDENTIFIER '[' . CONSTANT ']' '[' CONSTANT ']'
+
+    CONSTANT  shift, and go to state 41
+
+
+State 27
+
+    1 var: IDENTIFIER .
+    2    | IDENTIFIER . '[' CONSTANT ']'
+    3    | IDENTIFIER . '[' CONSTANT ']' '[' CONSTANT ']'
+  131 function_name: type '*' IDENTIFIER .
+
+    '['  shift, and go to state 26
+
+    '('       reduce using rule 131 (function_name)
+    $default  reduce using rule 1 (var)
+
+
+State 28
+
+    5 variables: '*' var .
+
+    $default  reduce using rule 5 (variables)
+
+
+State 29
+
+    6 variables: variables ',' . var
+    7          | variables ',' . '*' var
+
+    IDENTIFIER  shift, and go to state 42
+    '*'         shift, and go to state 43
+
+    var  go to state 44
+
+
+State 30
+
+   23 declaration: type variables ';' .
+
+    $default  reduce using rule 23 (declaration)
+
+
+State 31
+
+   14 struct_var: IDENTIFIER '[' . CONSTANT ']'
+
+    CONSTANT  shift, and go to state 45
+
+
+State 32
+
+   15 struct_var: struct_var ',' . IDENTIFIER
+   16           | struct_var ',' . IDENTIFIER '[' CONSTANT ']'
+
+    IDENTIFIER  shift, and go to state 46
+
+
+State 33
+
+   26 declaration: struct struct_var ';' .
+
+    $default  reduce using rule 26 (declaration)
+
+
+State 34
+
+  133 function: function_name '(' ')' . body
+
+    '{'  shift, and go to state 47
+
+    openB  go to state 48
+    body   go to state 49
+
+
+State 35
+
+   28 argument_list: type . arg_var
+
+    IDENTIFIER  shift, and go to state 50
+    '*'         shift, and go to state 51
+
+    arg_var  go to state 52
+
+
+State 36
+
+   27 argument_list: argument_list . ',' type arg_var
+   29              | argument_list . ',' STRUCT IDENTIFIER IDENTIFIER
+  132 function: function_name '(' argument_list . ')' body
+
+    ','  shift, and go to state 53
+    ')'  shift, and go to state 54
+
+
+State 37
+
+   19 struct_declaration: type . inside_dec ';'
+
+    IDENTIFIER  shift, and go to state 55
+
+    inside_dec  go to state 56
+
+
+State 38
+
+   20 struct_list: struct_declaration .
+
+    $default  reduce using rule 20 (struct_list)
+
+
+State 39
+
+   21 struct_list: struct_list . struct_declaration
+   22 struct: STRUCT IDENTIFIER '{' struct_list . '}'
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+    '}'   shift, and go to state 57
+
+    type                go to state 37
+    struct_declaration  go to state 58
+
+
+State 40
+
+   25 declaration: STRUCT IDENTIFIER struct_var ';' .
+
+    $default  reduce using rule 25 (declaration)
+
+
+State 41
+
+    2 var: IDENTIFIER '[' CONSTANT . ']'
+    3    | IDENTIFIER '[' CONSTANT . ']' '[' CONSTANT ']'
+
+    ']'  shift, and go to state 59
+
+
+State 42
+
+    1 var: IDENTIFIER .
+    2    | IDENTIFIER . '[' CONSTANT ']'
+    3    | IDENTIFIER . '[' CONSTANT ']' '[' CONSTANT ']'
+
+    '['  shift, and go to state 26
+
+    $default  reduce using rule 1 (var)
+
+
+State 43
+
+    7 variables: variables ',' '*' . var
+
+    IDENTIFIER  shift, and go to state 42
+
+    var  go to state 60
+
+
+State 44
+
+    6 variables: variables ',' var .
+
+    $default  reduce using rule 6 (variables)
+
+
+State 45
+
+   14 struct_var: IDENTIFIER '[' CONSTANT . ']'
+
+    ']'  shift, and go to state 61
+
+
+State 46
+
+   15 struct_var: struct_var ',' IDENTIFIER .
+   16           | struct_var ',' IDENTIFIER . '[' CONSTANT ']'
+
+    '['  shift, and go to state 62
+
+    $default  reduce using rule 15 (struct_var)
+
+
+State 47
+
+  126 openB: '{' .
+
+    $default  reduce using rule 126 (openB)
+
+
+State 48
+
+  128 body: openB . statement_list closeB
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 95
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    statement_list        go to state 116
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 49
+
+  133 function: function_name '(' ')' body .
+
+    $default  reduce using rule 133 (function)
+
+
+State 50
+
+   11 arg_var: IDENTIFIER .
+
+    $default  reduce using rule 11 (arg_var)
+
+
+State 51
+
+   12 arg_var: '*' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 118
+
+
+State 52
+
+   28 argument_list: type arg_var .
+
+    $default  reduce using rule 28 (argument_list)
+
+
+State 53
+
+   27 argument_list: argument_list ',' . type arg_var
+   29              | argument_list ',' . STRUCT IDENTIFIER IDENTIFIER
+
+    CHAR    shift, and go to state 1
+    INT     shift, and go to state 2
+    VOID    shift, and go to state 3
+    STRUCT  shift, and go to state 119
+
+    type  go to state 120
+
+
+State 54
+
+  132 function: function_name '(' argument_list ')' . body
+
+    '{'  shift, and go to state 47
+
+    openB  go to state 48
+    body   go to state 121
+
+
+State 55
+
+   17 inside_dec: IDENTIFIER .
+
+    $default  reduce using rule 17 (inside_dec)
+
+
+State 56
+
+   18 inside_dec: inside_dec . ',' IDENTIFIER
+   19 struct_declaration: type inside_dec . ';'
+
+    ','  shift, and go to state 122
+    ';'  shift, and go to state 123
+
+
+State 57
+
+   22 struct: STRUCT IDENTIFIER '{' struct_list '}' .
+
+    $default  reduce using rule 22 (struct)
+
+
+State 58
+
+   21 struct_list: struct_list struct_declaration .
+
+    $default  reduce using rule 21 (struct_list)
+
+
+State 59
+
+    2 var: IDENTIFIER '[' CONSTANT ']' .
+    3    | IDENTIFIER '[' CONSTANT ']' . '[' CONSTANT ']'
+
+    '['  shift, and go to state 124
+
+    $default  reduce using rule 2 (var)
+
+
+State 60
+
+    7 variables: variables ',' '*' var .
+
+    $default  reduce using rule 7 (variables)
+
+
+State 61
+
+   14 struct_var: IDENTIFIER '[' CONSTANT ']' .
+
+    $default  reduce using rule 14 (struct_var)
+
+
+State 62
+
+   16 struct_var: struct_var ',' IDENTIFIER '[' . CONSTANT ']'
+
+    CONSTANT  shift, and go to state 125
+
+
+State 63
+
+   71 starting: IDENTIFIER .
+   78 main_exp: IDENTIFIER . '[' expression ']'
+   79         | IDENTIFIER . '[' expression ']' '[' expression ']'
+   80         | IDENTIFIER . '(' ')'
+   81         | IDENTIFIER . '(' arg_list ')'
+   82         | IDENTIFIER . '.' IDENTIFIER
+   83         | IDENTIFIER . '[' expression ']' '.' IDENTIFIER
+
+    '['  shift, and go to state 126
+    '('  shift, and go to state 127
+    '.'  shift, and go to state 128
+
+    $default  reduce using rule 71 (starting)
+
+
+State 64
+
+   72 starting: CONSTANT .
+
+    $default  reduce using rule 72 (starting)
+
+
+State 65
+
+   73 starting: STRING_LITERAL .
+
+    $default  reduce using rule 73 (starting)
+
+
+State 66
+
+   92 unary_exp: SIZEOF . '(' type ')'
+
+    '('  shift, and go to state 129
+
+
+State 67
+
+   50 selection_statement: IF . '(' expression ')' body
+   51                    | IF . '(' expression ')' body ELSE statement
+
+    '('  shift, and go to state 130
+
+
+State 68
+
+   47 iteration_statement: WHILE . '(' expression ')' istart statement_list iend
+
+    '('  shift, and go to state 131
+
+
+State 69
+
+   48 iteration_statement: FOR . '(' expression_statement expression_statement ')' istart statement_list iend
+   49                    | FOR . '(' expression_statement expression_statement expression ')' istart statement_list iend
+
+    '('  shift, and go to state 132
+
+
+State 70
+
+   52 jump_statement: CONTINUE . ';'
+
+    ';'  shift, and go to state 133
+
+
+State 71
+
+   53 jump_statement: BREAK . ';'
+
+    ';'  shift, and go to state 134
+
+
+State 72
+
+   54 jump_statement: RETURN . ';'
+   55               | RETURN . expression ';'
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 135
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 136
+
+
+State 73
+
+   30 read: READ . '(' type ',' IDENTIFIER ')'
+
+    '('  shift, and go to state 137
+
+
+State 74
+
+   31 print: PRINT . '(' type ',' IDENTIFIER ')'
+
+    '('  shift, and go to state 138
+
+
+State 75
+
+   22 struct: STRUCT . IDENTIFIER '{' struct_list '}'
+   25 declaration: STRUCT . IDENTIFIER struct_var ';'
+
+    IDENTIFIER  shift, and go to state 139
+
+
+State 76
+
+   33 min: MIN . '(' IDENTIFIER ',' IDENTIFIER ')'
+
+    '('  shift, and go to state 140
+
+
+State 77
+
+   32 max: MAX . '(' IDENTIFIER ',' IDENTIFIER ')'
+
+    '('  shift, and go to state 141
+
+
+State 78
+
+   34 swap: SWAP . '(' IDENTIFIER ',' IDENTIFIER ')'
+
+    '('  shift, and go to state 142
+
+
+State 79
+
+   88 unary_op: '*' .
+
+    $default  reduce using rule 88 (unary_op)
+
+
+State 80
+
+   67 expression_statement: ';' .
+
+    $default  reduce using rule 67 (expression_statement)
+
+
+State 81
+
+   74 starting: '(' . expression ')'
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 143
+
+
+State 82
+
+   84 unary_op: '+' .
+
+    $default  reduce using rule 84 (unary_op)
+
+
+State 83
+
+   85 unary_op: '-' .
+
+    $default  reduce using rule 85 (unary_op)
+
+
+State 84
+
+   86 unary_op: '!' .
+
+    $default  reduce using rule 86 (unary_op)
+
+
+State 85
+
+   87 unary_op: '~' .
+
+    $default  reduce using rule 87 (unary_op)
+
+
+State 86
+
+   89 unary_op: '&' .
+
+    $default  reduce using rule 89 (unary_op)
+
+
+State 87
+
+   23 declaration: type . variables ';'
+
+    IDENTIFIER  shift, and go to state 42
+    '*'         shift, and go to state 144
+
+    var        go to state 14
+    variables  go to state 15
+
+
+State 88
+
+   43 statement: declaration .
+
+    $default  reduce using rule 43 (statement)
+
+
+State 89
+
+   35 myfunction: read . ';'
+
+    ';'  shift, and go to state 145
+
+
+State 90
+
+   36 myfunction: print . ';'
+
+    ';'  shift, and go to state 146
+
+
+State 91
+
+   75 starting: max .
+
+    $default  reduce using rule 75 (starting)
+
+
+State 92
+
+   76 starting: min .
+
+    $default  reduce using rule 76 (starting)
+
+
+State 93
+
+   37 myfunction: swap . ';'
+
+    ';'  shift, and go to state 147
+
+
+State 94
+
+   44 statement: myfunction .
+
+    $default  reduce using rule 44 (statement)
+
+
+State 95
+
+  124 statement_list: statement .
+
+    $default  reduce using rule 124 (statement_list)
+
+
+State 96
+
+   40 statement: iteration_statement .
+
+    $default  reduce using rule 40 (statement)
+
+
+State 97
+
+   41 statement: selection_statement .
+
+    $default  reduce using rule 41 (statement)
+
+
+State 98
+
+   39 statement: jump_statement .
+
+    $default  reduce using rule 39 (statement)
+
+
+State 99
+
+   42 statement: expression_statement .
+
+    $default  reduce using rule 42 (statement)
+
+
+State 100
+
+   77 main_exp: starting .
+
+    $default  reduce using rule 77 (main_exp)
+
+
+State 101
+
+   90 unary_exp: main_exp .
+
+    $default  reduce using rule 90 (unary_exp)
+
+
+State 102
+
+   91 unary_exp: unary_op . unary_exp
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max        go to state 91
+    min        go to state 92
+    starting   go to state 100
+    main_exp   go to state 101
+    unary_op   go to state 102
+    unary_exp  go to state 148
+
+
+State 103
+
+   93 mul_div_mod: unary_exp .
+  123 expression: unary_exp . ass_operator expression
+
+    MUL_ASSIGN    shift, and go to state 149
+    DIV_ASSIGN    shift, and go to state 150
+    MOD_ASSIGN    shift, and go to state 151
+    ADD_ASSIGN    shift, and go to state 152
+    SUB_ASSIGN    shift, and go to state 153
+    LEFT_ASSIGN   shift, and go to state 154
+    RIGHT_ASSIGN  shift, and go to state 155
+    AND_ASSIGN    shift, and go to state 156
+    XOR_ASSIGN    shift, and go to state 157
+    OR_ASSIGN     shift, and go to state 158
+    '='           shift, and go to state 159
+
+    $default  reduce using rule 93 (mul_div_mod)
+
+    ass_operator  go to state 160
+
+
+State 104
+
+   94 mul_div_mod: mul_div_mod . '*' unary_exp
+   95            | mul_div_mod . '/' unary_exp
+   96            | mul_div_mod . '%' unary_exp
+   97 plus_minus: mul_div_mod .
+
+    '*'  shift, and go to state 161
+    '/'  shift, and go to state 162
+    '%'  shift, and go to state 163
+
+    $default  reduce using rule 97 (plus_minus)
+
+
+State 105
+
+   98 plus_minus: plus_minus . '+' mul_div_mod
+   99           | plus_minus . '-' mul_div_mod
+  100 shift: plus_minus .
+
+    '+'  shift, and go to state 164
+    '-'  shift, and go to state 165
+
+    $default  reduce using rule 100 (shift)
+
+
+State 106
+
+  101 shift: shift . LEFT_OP plus_minus
+  102      | shift . RIGHT_OP plus_minus
+  103 lt_gt_lte_gte: shift .
+
+    LEFT_OP   shift, and go to state 166
+    RIGHT_OP  shift, and go to state 167
+
+    $default  reduce using rule 103 (lt_gt_lte_gte)
+
+
+State 107
+
+  104 lt_gt_lte_gte: lt_gt_lte_gte . '<' shift
+  105              | lt_gt_lte_gte . '>' shift
+  106              | lt_gt_lte_gte . LE_OP shift
+  107              | lt_gt_lte_gte . GE_OP shift
+  108 eq_neq: lt_gt_lte_gte .
+
+    LE_OP  shift, and go to state 168
+    GE_OP  shift, and go to state 169
+    '<'    shift, and go to state 170
+    '>'    shift, and go to state 171
+
+    $default  reduce using rule 108 (eq_neq)
+
+
+State 108
+
+  109 eq_neq: eq_neq . EQ_OP lt_gt_lte_gte
+  110       | eq_neq . NE_OP lt_gt_lte_gte
+  111 and: eq_neq .
+
+    EQ_OP  shift, and go to state 172
+    NE_OP  shift, and go to state 173
+
+    $default  reduce using rule 111 (and)
+
+
+State 109
+
+  112 and: and . '&' eq_neq
+  113 xor: and .
+
+    '&'  shift, and go to state 174
+
+    $default  reduce using rule 113 (xor)
+
+
+State 110
+
+  114 xor: xor . '^' and
+  115 or: xor .
+
+    '^'  shift, and go to state 175
+
+    $default  reduce using rule 115 (or)
+
+
+State 111
+
+  116 or: or . '|' xor
+  117 andand: or .
+
+    '|'  shift, and go to state 176
+
+    $default  reduce using rule 117 (andand)
+
+
+State 112
+
+  118 andand: andand . AND_OP or
+  119 oror: andand .
+
+    AND_OP  shift, and go to state 177
+
+    $default  reduce using rule 119 (oror)
+
+
+State 113
+
+  120 oror: oror . OR_OP andand
+  121 conditional_exp: oror .
+
+    OR_OP  shift, and go to state 178
+
+    $default  reduce using rule 121 (conditional_exp)
+
+
+State 114
+
+  122 expression: conditional_exp .
+
+    $default  reduce using rule 122 (expression)
+
+
+State 115
+
+   68 expression_statement: expression . ';'
+
+    ';'  shift, and go to state 179
+
+
+State 116
+
+  125 statement_list: statement_list . statement
+  128 body: openB statement_list . closeB
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '}'             shift, and go to state 180
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 181
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    openB                 go to state 48
+    closeB                go to state 182
+    body                  go to state 117
+
+
+State 117
+
+   38 statement: body .
+
+    $default  reduce using rule 38 (statement)
+
+
+State 118
+
+   12 arg_var: '*' IDENTIFIER .
+
+    $default  reduce using rule 12 (arg_var)
+
+
+State 119
+
+   29 argument_list: argument_list ',' STRUCT . IDENTIFIER IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 183
+
+
+State 120
+
+   27 argument_list: argument_list ',' type . arg_var
+
+    IDENTIFIER  shift, and go to state 50
+    '*'         shift, and go to state 51
+
+    arg_var  go to state 184
+
+
+State 121
+
+  132 function: function_name '(' argument_list ')' body .
+
+    $default  reduce using rule 132 (function)
+
+
+State 122
+
+   18 inside_dec: inside_dec ',' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 185
+
+
+State 123
+
+   19 struct_declaration: type inside_dec ';' .
+
+    $default  reduce using rule 19 (struct_declaration)
+
+
+State 124
+
+    3 var: IDENTIFIER '[' CONSTANT ']' '[' . CONSTANT ']'
+
+    CONSTANT  shift, and go to state 186
+
+
+State 125
+
+   16 struct_var: struct_var ',' IDENTIFIER '[' CONSTANT . ']'
+
+    ']'  shift, and go to state 187
+
+
+State 126
+
+   78 main_exp: IDENTIFIER '[' . expression ']'
+   79         | IDENTIFIER '[' . expression ']' '[' expression ']'
+   83         | IDENTIFIER '[' . expression ']' '.' IDENTIFIER
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 188
+
+
+State 127
+
+   80 main_exp: IDENTIFIER '(' . ')'
+   81         | IDENTIFIER '(' . arg_list ')'
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    ')'             shift, and go to state 189
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    arg_list         go to state 190
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 191
+
+
+State 128
+
+   82 main_exp: IDENTIFIER '.' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 192
+
+
+State 129
+
+   92 unary_exp: SIZEOF '(' . type ')'
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+
+    type  go to state 193
+
+
+State 130
+
+   50 selection_statement: IF '(' . expression ')' body
+   51                    | IF '(' . expression ')' body ELSE statement
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 194
+
+
+State 131
+
+   47 iteration_statement: WHILE '(' . expression ')' istart statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 195
+
+
+State 132
+
+   48 iteration_statement: FOR '(' . expression_statement expression_statement ')' istart statement_list iend
+   49                    | FOR '(' . expression_statement expression_statement expression ')' istart statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max                   go to state 91
+    min                   go to state 92
+    expression_statement  go to state 196
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+
+
+State 133
+
+   52 jump_statement: CONTINUE ';' .
+
+    $default  reduce using rule 52 (jump_statement)
+
+
+State 134
+
+   53 jump_statement: BREAK ';' .
+
+    $default  reduce using rule 53 (jump_statement)
+
+
+State 135
+
+   54 jump_statement: RETURN ';' .
+
+    $default  reduce using rule 54 (jump_statement)
+
+
+State 136
+
+   55 jump_statement: RETURN expression . ';'
+
+    ';'  shift, and go to state 197
+
+
+State 137
+
+   30 read: READ '(' . type ',' IDENTIFIER ')'
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+
+    type  go to state 198
+
+
+State 138
+
+   31 print: PRINT '(' . type ',' IDENTIFIER ')'
+
+    CHAR  shift, and go to state 1
+    INT   shift, and go to state 2
+    VOID  shift, and go to state 3
+
+    type  go to state 199
+
+
+State 139
+
+   22 struct: STRUCT IDENTIFIER . '{' struct_list '}'
+   25 declaration: STRUCT IDENTIFIER . struct_var ';'
+
+    IDENTIFIER  shift, and go to state 16
+    '{'         shift, and go to state 24
+
+    struct_var  go to state 25
+
+
+State 140
+
+   33 min: MIN '(' . IDENTIFIER ',' IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 200
+
+
+State 141
+
+   32 max: MAX '(' . IDENTIFIER ',' IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 201
+
+
+State 142
+
+   34 swap: SWAP '(' . IDENTIFIER ',' IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 202
+
+
+State 143
+
+   74 starting: '(' expression . ')'
+
+    ')'  shift, and go to state 203
+
+
+State 144
+
+    5 variables: '*' . var
+
+    IDENTIFIER  shift, and go to state 42
+
+    var  go to state 28
+
+
+State 145
+
+   35 myfunction: read ';' .
+
+    $default  reduce using rule 35 (myfunction)
+
+
+State 146
+
+   36 myfunction: print ';' .
+
+    $default  reduce using rule 36 (myfunction)
+
+
+State 147
+
+   37 myfunction: swap ';' .
+
+    $default  reduce using rule 37 (myfunction)
+
+
+State 148
+
+   91 unary_exp: unary_op unary_exp .
+
+    $default  reduce using rule 91 (unary_exp)
+
+
+State 149
+
+   57 ass_operator: MUL_ASSIGN .
+
+    $default  reduce using rule 57 (ass_operator)
+
+
+State 150
+
+   58 ass_operator: DIV_ASSIGN .
+
+    $default  reduce using rule 58 (ass_operator)
+
+
+State 151
+
+   59 ass_operator: MOD_ASSIGN .
+
+    $default  reduce using rule 59 (ass_operator)
+
+
+State 152
+
+   60 ass_operator: ADD_ASSIGN .
+
+    $default  reduce using rule 60 (ass_operator)
+
+
+State 153
+
+   61 ass_operator: SUB_ASSIGN .
+
+    $default  reduce using rule 61 (ass_operator)
+
+
+State 154
+
+   62 ass_operator: LEFT_ASSIGN .
+
+    $default  reduce using rule 62 (ass_operator)
+
+
+State 155
+
+   63 ass_operator: RIGHT_ASSIGN .
+
+    $default  reduce using rule 63 (ass_operator)
+
+
+State 156
+
+   64 ass_operator: AND_ASSIGN .
+
+    $default  reduce using rule 64 (ass_operator)
+
+
+State 157
+
+   65 ass_operator: XOR_ASSIGN .
+
+    $default  reduce using rule 65 (ass_operator)
+
+
+State 158
+
+   66 ass_operator: OR_ASSIGN .
+
+    $default  reduce using rule 66 (ass_operator)
+
+
+State 159
+
+   56 ass_operator: '=' .
+
+    $default  reduce using rule 56 (ass_operator)
+
+
+State 160
+
+  123 expression: unary_exp ass_operator . expression
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 204
+
+
+State 161
+
+   94 mul_div_mod: mul_div_mod '*' . unary_exp
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max        go to state 91
+    min        go to state 92
+    starting   go to state 100
+    main_exp   go to state 101
+    unary_op   go to state 102
+    unary_exp  go to state 205
+
+
+State 162
+
+   95 mul_div_mod: mul_div_mod '/' . unary_exp
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max        go to state 91
+    min        go to state 92
+    starting   go to state 100
+    main_exp   go to state 101
+    unary_op   go to state 102
+    unary_exp  go to state 206
+
+
+State 163
+
+   96 mul_div_mod: mul_div_mod '%' . unary_exp
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max        go to state 91
+    min        go to state 92
+    starting   go to state 100
+    main_exp   go to state 101
+    unary_op   go to state 102
+    unary_exp  go to state 207
+
+
+State 164
+
+   98 plus_minus: plus_minus '+' . mul_div_mod
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 209
+
+
+State 165
+
+   99 plus_minus: plus_minus '-' . mul_div_mod
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 210
+
+
+State 166
+
+  101 shift: shift LEFT_OP . plus_minus
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 211
+
+
+State 167
+
+  102 shift: shift RIGHT_OP . plus_minus
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 212
+
+
+State 168
+
+  106 lt_gt_lte_gte: lt_gt_lte_gte LE_OP . shift
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 105
+    shift        go to state 213
+
+
+State 169
+
+  107 lt_gt_lte_gte: lt_gt_lte_gte GE_OP . shift
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 105
+    shift        go to state 214
+
+
+State 170
+
+  104 lt_gt_lte_gte: lt_gt_lte_gte '<' . shift
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 105
+    shift        go to state 215
+
+
+State 171
+
+  105 lt_gt_lte_gte: lt_gt_lte_gte '>' . shift
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max          go to state 91
+    min          go to state 92
+    starting     go to state 100
+    main_exp     go to state 101
+    unary_op     go to state 102
+    unary_exp    go to state 208
+    mul_div_mod  go to state 104
+    plus_minus   go to state 105
+    shift        go to state 216
+
+
+State 172
+
+  109 eq_neq: eq_neq EQ_OP . lt_gt_lte_gte
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 217
+
+
+State 173
+
+  110 eq_neq: eq_neq NE_OP . lt_gt_lte_gte
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 218
+
+
+State 174
+
+  112 and: and '&' . eq_neq
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 107
+    eq_neq         go to state 219
+
+
+State 175
+
+  114 xor: xor '^' . and
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 107
+    eq_neq         go to state 108
+    and            go to state 220
+
+
+State 176
+
+  116 or: or '|' . xor
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 107
+    eq_neq         go to state 108
+    and            go to state 109
+    xor            go to state 221
+
+
+State 177
+
+  118 andand: andand AND_OP . or
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 107
+    eq_neq         go to state 108
+    and            go to state 109
+    xor            go to state 110
+    or             go to state 222
+
+
+State 178
+
+  120 oror: oror OR_OP . andand
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max            go to state 91
+    min            go to state 92
+    starting       go to state 100
+    main_exp       go to state 101
+    unary_op       go to state 102
+    unary_exp      go to state 208
+    mul_div_mod    go to state 104
+    plus_minus     go to state 105
+    shift          go to state 106
+    lt_gt_lte_gte  go to state 107
+    eq_neq         go to state 108
+    and            go to state 109
+    xor            go to state 110
+    or             go to state 111
+    andand         go to state 223
+
+
+State 179
+
+   68 expression_statement: expression ';' .
+
+    $default  reduce using rule 68 (expression_statement)
+
+
+State 180
+
+  127 closeB: '}' .
+
+    $default  reduce using rule 127 (closeB)
+
+
+State 181
+
+  125 statement_list: statement_list statement .
+
+    $default  reduce using rule 125 (statement_list)
+
+
+State 182
+
+  128 body: openB statement_list closeB .
+
+    $default  reduce using rule 128 (body)
+
+
+State 183
+
+   29 argument_list: argument_list ',' STRUCT IDENTIFIER . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 224
+
+
+State 184
+
+   27 argument_list: argument_list ',' type arg_var .
+
+    $default  reduce using rule 27 (argument_list)
+
+
+State 185
+
+   18 inside_dec: inside_dec ',' IDENTIFIER .
+
+    $default  reduce using rule 18 (inside_dec)
+
+
+State 186
+
+    3 var: IDENTIFIER '[' CONSTANT ']' '[' CONSTANT . ']'
+
+    ']'  shift, and go to state 225
+
+
+State 187
+
+   16 struct_var: struct_var ',' IDENTIFIER '[' CONSTANT ']' .
+
+    $default  reduce using rule 16 (struct_var)
+
+
+State 188
+
+   78 main_exp: IDENTIFIER '[' expression . ']'
+   79         | IDENTIFIER '[' expression . ']' '[' expression ']'
+   83         | IDENTIFIER '[' expression . ']' '.' IDENTIFIER
+
+    ']'  shift, and go to state 226
+
+
+State 189
+
+   80 main_exp: IDENTIFIER '(' ')' .
+
+    $default  reduce using rule 80 (main_exp)
+
+
+State 190
+
+   70 arg_list: arg_list . ',' expression
+   81 main_exp: IDENTIFIER '(' arg_list . ')'
+
+    ','  shift, and go to state 227
+    ')'  shift, and go to state 228
+
+
+State 191
+
+   69 arg_list: expression .
+
+    $default  reduce using rule 69 (arg_list)
+
+
+State 192
+
+   82 main_exp: IDENTIFIER '.' IDENTIFIER .
+
+    $default  reduce using rule 82 (main_exp)
+
+
+State 193
+
+   92 unary_exp: SIZEOF '(' type . ')'
+
+    ')'  shift, and go to state 229
+
+
+State 194
+
+   50 selection_statement: IF '(' expression . ')' body
+   51                    | IF '(' expression . ')' body ELSE statement
+
+    ')'  shift, and go to state 230
+
+
+State 195
+
+   47 iteration_statement: WHILE '(' expression . ')' istart statement_list iend
+
+    ')'  shift, and go to state 231
+
+
+State 196
+
+   48 iteration_statement: FOR '(' expression_statement . expression_statement ')' istart statement_list iend
+   49                    | FOR '(' expression_statement . expression_statement expression ')' istart statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max                   go to state 91
+    min                   go to state 92
+    expression_statement  go to state 232
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+
+
+State 197
+
+   55 jump_statement: RETURN expression ';' .
+
+    $default  reduce using rule 55 (jump_statement)
+
+
+State 198
+
+   30 read: READ '(' type . ',' IDENTIFIER ')'
+
+    ','  shift, and go to state 233
+
+
+State 199
+
+   31 print: PRINT '(' type . ',' IDENTIFIER ')'
+
+    ','  shift, and go to state 234
+
+
+State 200
+
+   33 min: MIN '(' IDENTIFIER . ',' IDENTIFIER ')'
+
+    ','  shift, and go to state 235
+
+
+State 201
+
+   32 max: MAX '(' IDENTIFIER . ',' IDENTIFIER ')'
+
+    ','  shift, and go to state 236
+
+
+State 202
+
+   34 swap: SWAP '(' IDENTIFIER . ',' IDENTIFIER ')'
+
+    ','  shift, and go to state 237
+
+
+State 203
+
+   74 starting: '(' expression ')' .
+
+    $default  reduce using rule 74 (starting)
+
+
+State 204
+
+  123 expression: unary_exp ass_operator expression .
+
+    $default  reduce using rule 123 (expression)
+
+
+State 205
+
+   94 mul_div_mod: mul_div_mod '*' unary_exp .
+
+    $default  reduce using rule 94 (mul_div_mod)
+
+
+State 206
+
+   95 mul_div_mod: mul_div_mod '/' unary_exp .
+
+    $default  reduce using rule 95 (mul_div_mod)
+
+
+State 207
+
+   96 mul_div_mod: mul_div_mod '%' unary_exp .
+
+    $default  reduce using rule 96 (mul_div_mod)
+
+
+State 208
+
+   93 mul_div_mod: unary_exp .
+
+    $default  reduce using rule 93 (mul_div_mod)
+
+
+State 209
+
+   94 mul_div_mod: mul_div_mod . '*' unary_exp
+   95            | mul_div_mod . '/' unary_exp
+   96            | mul_div_mod . '%' unary_exp
+   98 plus_minus: plus_minus '+' mul_div_mod .
+
+    '*'  shift, and go to state 161
+    '/'  shift, and go to state 162
+    '%'  shift, and go to state 163
+
+    $default  reduce using rule 98 (plus_minus)
+
+
+State 210
+
+   94 mul_div_mod: mul_div_mod . '*' unary_exp
+   95            | mul_div_mod . '/' unary_exp
+   96            | mul_div_mod . '%' unary_exp
+   99 plus_minus: plus_minus '-' mul_div_mod .
+
+    '*'  shift, and go to state 161
+    '/'  shift, and go to state 162
+    '%'  shift, and go to state 163
+
+    $default  reduce using rule 99 (plus_minus)
+
+
+State 211
+
+   98 plus_minus: plus_minus . '+' mul_div_mod
+   99           | plus_minus . '-' mul_div_mod
+  101 shift: shift LEFT_OP plus_minus .
+
+    '+'  shift, and go to state 164
+    '-'  shift, and go to state 165
+
+    $default  reduce using rule 101 (shift)
+
+
+State 212
+
+   98 plus_minus: plus_minus . '+' mul_div_mod
+   99           | plus_minus . '-' mul_div_mod
+  102 shift: shift RIGHT_OP plus_minus .
+
+    '+'  shift, and go to state 164
+    '-'  shift, and go to state 165
+
+    $default  reduce using rule 102 (shift)
+
+
+State 213
+
+  101 shift: shift . LEFT_OP plus_minus
+  102      | shift . RIGHT_OP plus_minus
+  106 lt_gt_lte_gte: lt_gt_lte_gte LE_OP shift .
+
+    LEFT_OP   shift, and go to state 166
+    RIGHT_OP  shift, and go to state 167
+
+    $default  reduce using rule 106 (lt_gt_lte_gte)
+
+
+State 214
+
+  101 shift: shift . LEFT_OP plus_minus
+  102      | shift . RIGHT_OP plus_minus
+  107 lt_gt_lte_gte: lt_gt_lte_gte GE_OP shift .
+
+    LEFT_OP   shift, and go to state 166
+    RIGHT_OP  shift, and go to state 167
+
+    $default  reduce using rule 107 (lt_gt_lte_gte)
+
+
+State 215
+
+  101 shift: shift . LEFT_OP plus_minus
+  102      | shift . RIGHT_OP plus_minus
+  104 lt_gt_lte_gte: lt_gt_lte_gte '<' shift .
+
+    LEFT_OP   shift, and go to state 166
+    RIGHT_OP  shift, and go to state 167
+
+    $default  reduce using rule 104 (lt_gt_lte_gte)
+
+
+State 216
+
+  101 shift: shift . LEFT_OP plus_minus
+  102      | shift . RIGHT_OP plus_minus
+  105 lt_gt_lte_gte: lt_gt_lte_gte '>' shift .
+
+    LEFT_OP   shift, and go to state 166
+    RIGHT_OP  shift, and go to state 167
+
+    $default  reduce using rule 105 (lt_gt_lte_gte)
+
+
+State 217
+
+  104 lt_gt_lte_gte: lt_gt_lte_gte . '<' shift
+  105              | lt_gt_lte_gte . '>' shift
+  106              | lt_gt_lte_gte . LE_OP shift
+  107              | lt_gt_lte_gte . GE_OP shift
+  109 eq_neq: eq_neq EQ_OP lt_gt_lte_gte .
+
+    LE_OP  shift, and go to state 168
+    GE_OP  shift, and go to state 169
+    '<'    shift, and go to state 170
+    '>'    shift, and go to state 171
+
+    $default  reduce using rule 109 (eq_neq)
+
+
+State 218
+
+  104 lt_gt_lte_gte: lt_gt_lte_gte . '<' shift
+  105              | lt_gt_lte_gte . '>' shift
+  106              | lt_gt_lte_gte . LE_OP shift
+  107              | lt_gt_lte_gte . GE_OP shift
+  110 eq_neq: eq_neq NE_OP lt_gt_lte_gte .
+
+    LE_OP  shift, and go to state 168
+    GE_OP  shift, and go to state 169
+    '<'    shift, and go to state 170
+    '>'    shift, and go to state 171
+
+    $default  reduce using rule 110 (eq_neq)
+
+
+State 219
+
+  109 eq_neq: eq_neq . EQ_OP lt_gt_lte_gte
+  110       | eq_neq . NE_OP lt_gt_lte_gte
+  112 and: and '&' eq_neq .
+
+    EQ_OP  shift, and go to state 172
+    NE_OP  shift, and go to state 173
+
+    $default  reduce using rule 112 (and)
+
+
+State 220
+
+  112 and: and . '&' eq_neq
+  114 xor: xor '^' and .
+
+    '&'  shift, and go to state 174
+
+    $default  reduce using rule 114 (xor)
+
+
+State 221
+
+  114 xor: xor . '^' and
+  116 or: or '|' xor .
+
+    '^'  shift, and go to state 175
+
+    $default  reduce using rule 116 (or)
+
+
+State 222
+
+  116 or: or . '|' xor
+  118 andand: andand AND_OP or .
+
+    '|'  shift, and go to state 176
+
+    $default  reduce using rule 118 (andand)
+
+
+State 223
+
+  118 andand: andand . AND_OP or
+  120 oror: oror OR_OP andand .
+
+    AND_OP  shift, and go to state 177
+
+    $default  reduce using rule 120 (oror)
+
+
+State 224
+
+   29 argument_list: argument_list ',' STRUCT IDENTIFIER IDENTIFIER .
+
+    $default  reduce using rule 29 (argument_list)
+
+
+State 225
+
+    3 var: IDENTIFIER '[' CONSTANT ']' '[' CONSTANT ']' .
+
+    $default  reduce using rule 3 (var)
+
+
+State 226
+
+   78 main_exp: IDENTIFIER '[' expression ']' .
+   79         | IDENTIFIER '[' expression ']' . '[' expression ']'
+   83         | IDENTIFIER '[' expression ']' . '.' IDENTIFIER
+
+    '['  shift, and go to state 238
+    '.'  shift, and go to state 239
+
+    $default  reduce using rule 78 (main_exp)
+
+
+State 227
+
+   70 arg_list: arg_list ',' . expression
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 240
+
+
+State 228
+
+   81 main_exp: IDENTIFIER '(' arg_list ')' .
+
+    $default  reduce using rule 81 (main_exp)
+
+
+State 229
+
+   92 unary_exp: SIZEOF '(' type ')' .
+
+    $default  reduce using rule 92 (unary_exp)
+
+
+State 230
+
+   50 selection_statement: IF '(' expression ')' . body
+   51                    | IF '(' expression ')' . body ELSE statement
+
+    '{'  shift, and go to state 47
+
+    openB  go to state 48
+    body   go to state 241
+
+
+State 231
+
+   47 iteration_statement: WHILE '(' expression ')' . istart statement_list iend
+
+    '{'  shift, and go to state 242
+
+    istart  go to state 243
+
+
+State 232
+
+   48 iteration_statement: FOR '(' expression_statement expression_statement . ')' istart statement_list iend
+   49                    | FOR '(' expression_statement expression_statement . expression ')' istart statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    ')'             shift, and go to state 244
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 245
+
+
+State 233
+
+   30 read: READ '(' type ',' . IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 246
+
+
+State 234
+
+   31 print: PRINT '(' type ',' . IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 247
+
+
+State 235
+
+   33 min: MIN '(' IDENTIFIER ',' . IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 248
+
+
+State 236
+
+   32 max: MAX '(' IDENTIFIER ',' . IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 249
+
+
+State 237
+
+   34 swap: SWAP '(' IDENTIFIER ',' . IDENTIFIER ')'
+
+    IDENTIFIER  shift, and go to state 250
+
+
+State 238
+
+   79 main_exp: IDENTIFIER '[' expression ']' '[' . expression ']'
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    '*'             shift, and go to state 79
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    max              go to state 91
+    min              go to state 92
+    starting         go to state 100
+    main_exp         go to state 101
+    unary_op         go to state 102
+    unary_exp        go to state 103
+    mul_div_mod      go to state 104
+    plus_minus       go to state 105
+    shift            go to state 106
+    lt_gt_lte_gte    go to state 107
+    eq_neq           go to state 108
+    and              go to state 109
+    xor              go to state 110
+    or               go to state 111
+    andand           go to state 112
+    oror             go to state 113
+    conditional_exp  go to state 114
+    expression       go to state 251
+
+
+State 239
+
+   83 main_exp: IDENTIFIER '[' expression ']' '.' . IDENTIFIER
+
+    IDENTIFIER  shift, and go to state 252
+
+
+State 240
+
+   70 arg_list: arg_list ',' expression .
+
+    $default  reduce using rule 70 (arg_list)
+
+
+State 241
+
+   50 selection_statement: IF '(' expression ')' body .
+   51                    | IF '(' expression ')' body . ELSE statement
+
+    ELSE  shift, and go to state 253
+
+    $default  reduce using rule 50 (selection_statement)
+
+
+State 242
+
+   45 istart: '{' .
+
+    $default  reduce using rule 45 (istart)
+
+
+State 243
+
+   47 iteration_statement: WHILE '(' expression ')' istart . statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 95
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    statement_list        go to state 254
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 244
+
+   48 iteration_statement: FOR '(' expression_statement expression_statement ')' . istart statement_list iend
+
+    '{'  shift, and go to state 242
+
+    istart  go to state 255
+
+
+State 245
+
+   49 iteration_statement: FOR '(' expression_statement expression_statement expression . ')' istart statement_list iend
+
+    ')'  shift, and go to state 256
+
+
+State 246
+
+   30 read: READ '(' type ',' IDENTIFIER . ')'
+
+    ')'  shift, and go to state 257
+
+
+State 247
+
+   31 print: PRINT '(' type ',' IDENTIFIER . ')'
+
+    ')'  shift, and go to state 258
+
+
+State 248
+
+   33 min: MIN '(' IDENTIFIER ',' IDENTIFIER . ')'
+
+    ')'  shift, and go to state 259
+
+
+State 249
+
+   32 max: MAX '(' IDENTIFIER ',' IDENTIFIER . ')'
+
+    ')'  shift, and go to state 260
+
+
+State 250
+
+   34 swap: SWAP '(' IDENTIFIER ',' IDENTIFIER . ')'
+
+    ')'  shift, and go to state 261
+
+
+State 251
+
+   79 main_exp: IDENTIFIER '[' expression ']' '[' expression . ']'
+
+    ']'  shift, and go to state 262
+
+
+State 252
+
+   83 main_exp: IDENTIFIER '[' expression ']' '.' IDENTIFIER .
+
+    $default  reduce using rule 83 (main_exp)
+
+
+State 253
+
+   51 selection_statement: IF '(' expression ')' body ELSE . statement
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 263
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 254
+
+   47 iteration_statement: WHILE '(' expression ')' istart statement_list . iend
+  125 statement_list: statement_list . statement
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '}'             shift, and go to state 264
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 181
+    iend                  go to state 265
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 255
+
+   48 iteration_statement: FOR '(' expression_statement expression_statement ')' istart . statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 95
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    statement_list        go to state 266
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 256
+
+   49 iteration_statement: FOR '(' expression_statement expression_statement expression ')' . istart statement_list iend
+
+    '{'  shift, and go to state 242
+
+    istart  go to state 267
+
+
+State 257
+
+   30 read: READ '(' type ',' IDENTIFIER ')' .
+
+    $default  reduce using rule 30 (read)
+
+
+State 258
+
+   31 print: PRINT '(' type ',' IDENTIFIER ')' .
+
+    $default  reduce using rule 31 (print)
+
+
+State 259
+
+   33 min: MIN '(' IDENTIFIER ',' IDENTIFIER ')' .
+
+    $default  reduce using rule 33 (min)
+
+
+State 260
+
+   32 max: MAX '(' IDENTIFIER ',' IDENTIFIER ')' .
+
+    $default  reduce using rule 32 (max)
+
+
+State 261
+
+   34 swap: SWAP '(' IDENTIFIER ',' IDENTIFIER ')' .
+
+    $default  reduce using rule 34 (swap)
+
+
+State 262
+
+   79 main_exp: IDENTIFIER '[' expression ']' '[' expression ']' .
+
+    $default  reduce using rule 79 (main_exp)
+
+
+State 263
+
+   51 selection_statement: IF '(' expression ')' body ELSE statement .
+
+    $default  reduce using rule 51 (selection_statement)
+
+
+State 264
+
+   46 iend: '}' .
+
+    $default  reduce using rule 46 (iend)
+
+
+State 265
+
+   47 iteration_statement: WHILE '(' expression ')' istart statement_list iend .
+
+    $default  reduce using rule 47 (iteration_statement)
+
+
+State 266
+
+   48 iteration_statement: FOR '(' expression_statement expression_statement ')' istart statement_list . iend
+  125 statement_list: statement_list . statement
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '}'             shift, and go to state 264
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 181
+    iend                  go to state 268
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 267
+
+   49 iteration_statement: FOR '(' expression_statement expression_statement expression ')' istart . statement_list iend
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 95
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    statement_list        go to state 269
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 268
+
+   48 iteration_statement: FOR '(' expression_statement expression_statement ')' istart statement_list iend .
+
+    $default  reduce using rule 48 (iteration_statement)
+
+
+State 269
+
+   49 iteration_statement: FOR '(' expression_statement expression_statement expression ')' istart statement_list . iend
+  125 statement_list: statement_list . statement
+
+    IDENTIFIER      shift, and go to state 63
+    CONSTANT        shift, and go to state 64
+    STRING_LITERAL  shift, and go to state 65
+    SIZEOF          shift, and go to state 66
+    IF              shift, and go to state 67
+    WHILE           shift, and go to state 68
+    FOR             shift, and go to state 69
+    CONTINUE        shift, and go to state 70
+    BREAK           shift, and go to state 71
+    RETURN          shift, and go to state 72
+    READ            shift, and go to state 73
+    PRINT           shift, and go to state 74
+    CHAR            shift, and go to state 1
+    INT             shift, and go to state 2
+    VOID            shift, and go to state 3
+    STRUCT          shift, and go to state 75
+    MIN             shift, and go to state 76
+    MAX             shift, and go to state 77
+    SWAP            shift, and go to state 78
+    '*'             shift, and go to state 79
+    ';'             shift, and go to state 80
+    '{'             shift, and go to state 47
+    '}'             shift, and go to state 264
+    '('             shift, and go to state 81
+    '+'             shift, and go to state 82
+    '-'             shift, and go to state 83
+    '!'             shift, and go to state 84
+    '~'             shift, and go to state 85
+    '&'             shift, and go to state 86
+
+    type                  go to state 87
+    struct                go to state 6
+    declaration           go to state 88
+    read                  go to state 89
+    print                 go to state 90
+    max                   go to state 91
+    min                   go to state 92
+    swap                  go to state 93
+    myfunction            go to state 94
+    statement             go to state 181
+    iend                  go to state 270
+    iteration_statement   go to state 96
+    selection_statement   go to state 97
+    jump_statement        go to state 98
+    expression_statement  go to state 99
+    starting              go to state 100
+    main_exp              go to state 101
+    unary_op              go to state 102
+    unary_exp             go to state 103
+    mul_div_mod           go to state 104
+    plus_minus            go to state 105
+    shift                 go to state 106
+    lt_gt_lte_gte         go to state 107
+    eq_neq                go to state 108
+    and                   go to state 109
+    xor                   go to state 110
+    or                    go to state 111
+    andand                go to state 112
+    oror                  go to state 113
+    conditional_exp       go to state 114
+    expression            go to state 115
+    openB                 go to state 48
+    body                  go to state 117
+
+
+State 270
+
+   49 iteration_statement: FOR '(' expression_statement expression_statement expression ')' istart statement_list iend .
+
+    $default  reduce using rule 49 (iteration_statement)
