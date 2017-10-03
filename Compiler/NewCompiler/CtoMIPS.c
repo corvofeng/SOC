@@ -198,7 +198,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             deal_with_node(fp, t->child[1], funcno);
             fprintf(fp, "\tadd $t1, $t0, $zero\n");
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tsw $t1, ($t0)\n");
+            fprintf(fp, "\tsw $t1, 0($t0)\n");
             
         } else if (t->procno == 4) {
             
