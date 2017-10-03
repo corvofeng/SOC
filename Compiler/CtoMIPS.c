@@ -29,9 +29,10 @@ int generateMIPS() {
             ALL[i]->local_count = 0;
     }
     
-    FILE *fp;
+    FILE *fp, *fp_data;
     fp = fopen("mips_code.s", "w");
-    fprintf(fp, ".data\n");
+    fp_data = fopen("mips_data.s", "w");
+    fprintf(fp_data, ".data\n");
     for (int i = 0; i < gcount; i++) {
         int count = 0;
         for (int j = 0; j < i; j++)
@@ -42,9 +43,9 @@ int generateMIPS() {
             err_count++;
         }
         if (gVar[i]->space == 1)
-            fprintf(fp, "\t%s: .word 0\n", gVar[i]->name);
+            fprintf(fp_data, "\t%s: .word 0\n", gVar[i]->name);
         else
-            fprintf(fp, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
+            fprintf(fp_data, "\t%s: .word 0:%d\n", gVar[i]->name, gVar[i]->space);
     }
     
     fprintf(fp, ".text\n");
@@ -79,7 +80,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
     } else if (t->ntno == 6) { // fun_decl
         
         if (t->procno == 1) {
-            fprintf(fp, "%s:\n", t->txt);
+            fprintf(fp, "\n%s:\n", t->txt);
             int need = ALL[funcno]->local_count;
             if (need > 8)
                 need = 8;
