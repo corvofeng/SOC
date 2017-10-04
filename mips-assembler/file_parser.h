@@ -6,6 +6,9 @@
  */
 
 #include "hash_table.h"
+#include <stdio.h>  
+#include <stdarg.h>  
+
 
 #ifndef FILE_PARSER_H_
 #define FILE_PARSER_H_
@@ -25,4 +28,11 @@ void getBin(int num, char *str, int padding);
 int getDec(char *bin);
 void parseHex(char *bin, char *hex);
 void unit_test(FILE* out, FILE* check);
+
+void debug_print(const char *cmd, ...);
+void trim_string(char *str);
+int token_search(char *instruction);
+
+
+
 #endif /* FILE_PARSER_H_ */
