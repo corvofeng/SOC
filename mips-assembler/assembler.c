@@ -83,8 +83,7 @@ char *instructions[] = {
 // Size of array
 size_t inst_len = sizeof(instructions)/sizeof(char *);
 
-int search(char *instruction)
-{
+int token_search(char *instruction) {
 
     int found = 0;
 
