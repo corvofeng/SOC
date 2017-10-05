@@ -282,9 +282,11 @@ assign pcsource[0] = ((ibeq & rerteqe )| (ibne & rerteqe) | ij | ijal | ijalr)&c
 
 assign rmem    = ((ilw | ilb | ilbu  | ilh | ilhu ) & (immehi != 8'hff) & nostall)&clr & ~ecancel;
 assign wmem    = ((isw | isb | ish ) & (immehi != 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
-assign rio     = ((ilw | ilb | ilh | ilhu |ilbu  ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
-assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
+//assign rio     = ((ilw | ilb | ilh | ilhu |ilbu  ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
+//assign wio     = ((isw | isb | ish ) & (immehi == 8'hff) & nostall)&clr & ~ecancel & ~exc_ovr;
 
+assign rio     = ((ilw | ilb | ilh | ilhu |ilbu  ) & nostall)&clr & ~ecancel & ~exc_ovr & ~ijr & ~ijalr & ~ijr;
+assign wio     = ((isw | isb | ish ) & nostall)&clr & ~ecancel & ~exc_ovr & ~ijr & ~ijalr & ~ijr;
 
 assign mul_div = idiv | idivu;
 assign symbol =  imult | idiv;

@@ -41,7 +41,7 @@ module MiniSysBus(
     
     assign address = caddress[15:0];
     assign rdata = ( memread == 1 )? mread_data : {16'h0000,ioread_data[15:0]};
-    assign iorw = ( ioread || iowrite || 1);
+    assign iorw = ( ioread || iowrite);
     
     assign LEDCtrl = ((iorw==1) && (caddress[15:4]==12'hff0))?1'b1:1'b0;
     assign KEYCtrl = ((iorw==1) && (caddress[15:4]==12'hff1))?1'b1:1'b0;
