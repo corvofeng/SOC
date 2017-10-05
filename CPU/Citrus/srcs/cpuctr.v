@@ -224,7 +224,8 @@ wire irs   = iadd  | iaddu  | isub  | isubu | imfhi | imflo | iand   | ior   | i
 wire irt   = iaddi | iaddiu | iandi | iori  | ixori | ilui  | ilb    | ilh   | ilw   |
      ilbu  | ilhu   | isw   | isb   | ish   | islti | isltiu | ij | ijal | ibeq |
      ibne  | ibgez  | ibgtz | iblez | ibltz | ibgezal | ibltzal;
-assign nostall = ~(((ewreg & em2reg & ( ern != 0 ) & (irs & ( ern == rs )| irt & ( ern == rt )))&clr)|mul_busy|div_busy);
+//assign nostall = ~(((ewreg & em2reg & ( ern != 0 ) & (irs & ( ern == rs )| irt & ( ern == rt )))&clr)|mul_busy|div_busy);
+assign nostall = ~(clr & (mul_busy|div_busy));
 always @ (ewreg or mwreg or ern or mrn or em2reg or mm2reg or rs or rt or clr) begin
 
     fwda = 2'b00; //default

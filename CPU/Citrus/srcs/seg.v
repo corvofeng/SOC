@@ -9,7 +9,7 @@
 // Project Name:
 // Target Devices:
 // Tool Versions:
-// Description: 用一�?32位的寄存器存输入的数据，对应8个数码管，寄存器初始化为0，目前是这样想的，后面可能不�?要寄存器，直接输�?
+// Description: 用一�?32位的寄存器存输入的数据，对应8个数码管，寄存器初始化为0，目前是这样想的，后面可能不�?要寄存器，直接输�?
 // 复位按钮还没有绑定，目前是一个临时的
 // Dependencies:
 //
@@ -26,7 +26,7 @@ module seg(
            seg_n,
            clk,  //系统时钟100mhz
            rst,
-           cs  //复位,低电平有�?
+           cs  //复位,低电平有�?
        );
 input clk;
 input rst;
@@ -90,16 +90,16 @@ endfunction
 always@(scanner) begin
     if (cs) begin
     case(scanner)
-        3'b000: begin sel_n<=8'b11111110;seg_n=dataToSeg(input_data[3:0]); end
-        3'b001: begin sel_n<=8'b11111101;seg_n=dataToSeg(input_data[7:4]); end
-        3'b010: begin sel_n<=8'b11111011;seg_n=dataToSeg(input_data[11:8]); end
-        3'b011: begin sel_n<=8'b11110111;seg_n=dataToSeg(input_data[15:12]); end
-        3'b100: begin sel_n<=8'b11101111;seg_n=dataToSeg(input_data[19:16]); end
-        3'b101: begin sel_n<=8'b11011111;seg_n=dataToSeg(input_data[23:20]); end
-        3'b110: begin sel_n<=8'b10111111;seg_n=dataToSeg(input_data[27:24]); end
-        3'b111: begin sel_n<=8'b01111111;seg_n=dataToSeg(input_data[31:28]); end
+        3'b000: begin sel_n<=8'b11111110;seg_n<=dataToSeg(input_data[3:0]); end
+        3'b001: begin sel_n<=8'b11111101;seg_n<=dataToSeg(input_data[7:4]); end
+        3'b010: begin sel_n<=8'b11111011;seg_n<=dataToSeg(input_data[11:8]); end
+        3'b011: begin sel_n<=8'b11110111;seg_n<=dataToSeg(input_data[15:12]); end
+        3'b100: begin sel_n<=8'b11101111;seg_n<=dataToSeg(input_data[19:16]); end
+        3'b101: begin sel_n<=8'b11011111;seg_n<=dataToSeg(input_data[23:20]); end
+        3'b110: begin sel_n<=8'b10111111;seg_n<=dataToSeg(input_data[27:24]); end
+        3'b111: begin sel_n<=8'b01111111;seg_n<=dataToSeg(input_data[31:28]); end
         default: sel_n<=8'b11111111;
     endcase
-    end
+   end
 end
 endmodule
