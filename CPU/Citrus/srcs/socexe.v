@@ -43,7 +43,8 @@ module socexe (
            input[31:0] HI_data,
            input [31:0] LO_data
        );
-wire epc8 = epc4 + 3'b100;//pc+4
+wire [31:0] epc8;
+assign epc8 = epc4 + 32'h4;//pc+4
 reg [31:0] ia,ib;
 wire [31:0]out;
 wire ov,zero;
@@ -77,16 +78,16 @@ always @ ( emfc0 or epc8 or esta or ecau or eepc ) begin
     endcase
 end
 
-always @ ( emfhilo or LO_data or HI_data) begin
+always @ ( emfhilo or LO_data or HI_data or mfc0_out) begin
     case(emfhilo)
         2'b00:mfhilo_out <= mfc0_out;
         2'b10:mfhilo_out <= LO_data;
         2'b11:mfhilo_out <= HI_data;
-        default:mfhilo_out <= mfc0_out;
+        default:mfhilo_out <= 32'h0000_0000;
     endcase
 end
 
-always @ (mfc0_out or out or ejal) begin //jal
+always @ (mfc0_out or out or ejal or mfhilo_out) begin //jal
     if(ejal|emfc0[1]|emfc0[0]|emfhilo[1])begin
         ealu <= mfhilo_out;
     end else begin

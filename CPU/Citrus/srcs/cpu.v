@@ -60,7 +60,7 @@ module cpu(
     input [15:0] ioread_data_key,ioread_data_ctc;//,ioread_data_uart;
     output mrio,mwio;
 
-    wire[1:0] mfhilom,emfhilo;
+    wire[1:0] mfhilo,emfhilo;
     wire[31:0] HI_data;
     wire[31:0] LO_data;
 

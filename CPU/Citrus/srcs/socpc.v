@@ -35,7 +35,7 @@ module socpc (
            input [31:0] epc,
            output[31:0] next_pc
        );
-assign pc4 = pc + 31'h4;
+assign pc4 = pc + 32'h4;
 wire[31:0] tpc;
 assign tpc[29:0]=pc[31:2],
        tpc[31:30]=2'b00;
