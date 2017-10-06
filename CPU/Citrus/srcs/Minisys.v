@@ -23,7 +23,8 @@
 module Minisys(
     sel_n,seg_n,
     i_col,o_row,
-    clk,clrn
+    clk,clrn,
+    key_test, key_test_col, key_test_row, key_reset
     );
 
 wire [7:0] vector;
@@ -43,12 +44,23 @@ wire [15:0] wdata16 = wdata[15:0];
 output [7:0] sel_n,seg_n;
 input[3:0] i_col;
 output[3:0] o_row;
+
+output[3:0] key_test;
+output[3:0] key_test_col;
+output[3:0] key_test_row;
+output key_reset;
+
 wire [3:0] key_value=key_data[3:0];
 wire [7:0] icwn;
 
+assign key_test = key_value;
+assign key_test_col = i_col;
+assign key_test_row = o_row;
+assign key_reset = clrn;
+
 cpu cpu(
     .clk(clk),
-    .clrn(clrn),
+    .clrn(~clrn),
     .intr(intr),
     .inta(inta),
     .vector(vector),
@@ -91,11 +103,12 @@ ctc16 ctc(
     );
    
 seg seg(
+    .cs(LEDCtrl),
     .input_data(wdata),
     .sel_n(sel_n),
     .seg_n(seg_n),
     .clk(clk),  //系统时钟100mhz
-    .rst(clrn)  //复位,低电平有�?
+    .rst(clrn)  //复位,低电平有�?
     );
     
 key16 key(

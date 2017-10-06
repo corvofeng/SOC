@@ -301,7 +301,7 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
             continue;
         }
 
-        debug_print("pc in: %d\n", instruction_count);
+        debug_print("Pc in: %d\n", instruction_count);
 
         // If first pass, then add labels to hash table
         if (pass == 1) {
@@ -445,7 +445,6 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
                     // Determine instruction type
                     inst_type = instruction_type(token);
 
-                    // 申请足够的空间存储指令中可能的字符
                     char ** reg_store = NULL;
                     reg_store = (char **)malloc(3 * sizeof(char*));
 
@@ -453,7 +452,8 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
                         fprintf(outProg, "outProg of memory\n");
                         exit(1);
                     }
-                
+
+                    // 申请足够的空间存储指令中可能的字符
                     for (int i = 0; i < 3; i++) {
                         reg_store[i] = malloc(20 * sizeof(char));
                         memset(reg_store[i], 0, 20);
@@ -467,6 +467,7 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
                     char *inst_ptr = tok_ptr;
 
                     // Keeps a reference to which register has been parsed for storage
+                    // 分割指令中的参数, 并将其保存到reg_store数组中
                     int count = 0;
                     char *reg = NULL;
                     while (1) {
@@ -665,13 +666,10 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
 
                             // Parse the instruction - rs, rt
                             char *inst_ptr = tok_ptr;
-                            char *reg1 = NULL;
-                            char *reg2 = NULL;
+                            char *reg1 = reg_store[0];
+                            char *reg2 = reg_store[1];
 
                             // Create an array of char* that stores rs
-
-                            reg1 = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
-                            reg2 = parse_token(inst_ptr, " $,\n\t", &inst_ptr, NULL);
 
                             // Find hash address for a register and put in an immediate
                             int *address = hash_find(hash_table, reg2, strlen(reg2)+1);
@@ -701,8 +699,6 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
                                 // Send instruction to itype function
                                 itype_instruction(token, reg1, "10000", immediate, outProg);
                             }
-                            free(reg1);
-                            free(reg2);
                         }
 
                         // I-Type $rs, $rt, label
@@ -711,20 +707,18 @@ void parse_file(FILE *fptr, FILE *intptr, int pass, char *instructions[],
                             // Find hash address for a register and put in an immediate
                             int *address = hash_find(hash_table, reg_store[2], strlen(reg_store[2])+1);
 
+                            debug_print("The jump pos is %d\n", *address);  // 打印跳转地址
+
                             int immediate;
                             if(prog_int_reach == 1) {
-                                immediate = instruction_int_count - *address;
+                                immediate = *address - instruction_int_count;
                             } else {
-                                immediate = instruction_count - *address;
+                                immediate = *address - instruction_count;
                             }
-                            immediate = immediate >> 2;
+                            //  immediate = immediate >> 2; CPU中实现有问题, 我也不打算解决了
 
                             // Send instruction to itype function
-                            if(prog_int_reach == 1)
-                                itype_instruction(token, reg_store[0], reg_store[1], immediate, outProgInt);
-                            else
-                                itype_instruction(token, reg_store[0], reg_store[1], immediate, outProg);
-                            free(reg);
+                           itype_instruction(token, reg_store[0], reg_store[1], immediate, outProg);
                         }
                     }
 
