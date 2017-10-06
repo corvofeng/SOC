@@ -8,7 +8,7 @@ hex         0(x|X)({letter}|[0-9])*
 #include "y.tab.h"
 #include "definition.h"
 extern YYSTYPE yylval;
-int total_err = 0;
+int lex_err = 0;
 %}
 
 %%
@@ -85,13 +85,11 @@ comment2()
 lexerror()
 {
     fprintf(stderr, "line %d: lexical error: invalid '%s'\n", yylineno, yytext);
-    total_err++;
+    lex_err++;
 }
 
 yywrap()
 {
-    if (total_err > 0)
-    fprintf(stderr, "Total count of lexical error: %d\n", total_err);
     return(1);
 }
 

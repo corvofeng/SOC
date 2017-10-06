@@ -39,7 +39,7 @@ int generateMIPS() {
             if (!strcmp(gVar[i]->name, gVar[j]->name))
                 count++;
         if (count == 1) {
-            fprintf(stderr, "var_decl: program error: duplicate global variable '%s'\n", gVar[i]->name);
+            fprintf(stderr, "line %d: error: redefinition of global variable '%s'\n", gVar[i]->t->lineno, gVar[i]->name);
             err_count++;
         }
         if (gVar[i]->space == 1)
@@ -54,8 +54,8 @@ int generateMIPS() {
         for (int j = 0; j < i; j++)
             if (!strcmp(ALL[i]->name, ALL[j]->name) && i != j)
                 count++;
-        if (count == 1) {
-            fprintf(stderr, "fun_decl: program error: duplicate function '%s'\n", ALL[i]->name);
+        if (count > 0) {
+            fprintf(stderr, "line %d: error: redefinition of function '%s'\n", ALL[i]->t->lineno, ALL[i]->name);
             err_count++;
         }
         ALL[i]->st = makeST();
@@ -128,8 +128,8 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 st_add(t->child[1]->txt, 1, select_space, funcno);
             else
                 st_add(t->child[1]->txt, 2, select_space - 4, funcno);
-            if (checkdup(t->child[1]->txt, funcno) == 2) {
-                fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
+            if (checkdup(t->child[1]->txt, funcno) > 1) {
+                fprintf(stderr, "line %d: error: redefinition of variable '%s'\n", t->lineno, t->child[1]->txt);
                 err_count++;
             }
         } else if (t->multiplicity == 1) {
@@ -167,7 +167,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tsw $t0, %s($zero)\n", t->txt);
                 else {
-                    fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: use of undeclared identifier '%s'\n", t->lineno, t->txt);
                     err_count++;
                 }
             }
@@ -185,19 +185,17 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 if (lookup_global(t->txt) == 1)
                     fprintf(fp, "\tla $t0, %s\n", t->txt);
                 else {
-                    fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: use of undeclared identifier '%s'\n", t->lineno, t->txt);
                     err_count++;
                 }
             }
             int o = atoi(t->numtxt);
             fprintf(fp, "\tsw $t1, %d($t0)\n", 4 * o);
         
-        } else if (t->procno == 3) { // $expr = expr;
+        } else if (t->procno == 3) { // $HEXNUM = expr;
             
-            deal_with_node(fp, t->child[1], funcno);
-            fprintf(fp, "\tadd $t1, $t0, $zero\n");
             deal_with_node(fp, t->child[0], funcno);
-            fprintf(fp, "\tsw $t1, 0($t0)\n");
+            fprintf(fp, "\tsw $t0, %s($zero)\n", t->numtxt);
             
         } else if (t->procno == 4) { // IDENT(arg_list);
             
@@ -251,11 +249,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\taddi $sp, $sp, %d\n", (need + 2) * 4);
                 
             } else if (name_found == 1) {
-                fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
+                fprintf(stderr, "line %d: error: argument count mismatch of function '%s'\n", t->lineno, t->txt);
                 err_count++;
             }
             else {
-                fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                fprintf(stderr, "line %d: error: undeclared function '%s'\n", t->lineno, t->txt);
                 err_count++;
             }
             
@@ -289,11 +287,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 fprintf(fp, "\taddi $sp, $sp, 8\n");
                 
             } else if (name_found == 1) {
-                fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
+                fprintf(stderr, "line %d: error: argument count mismatch of function '%s'\n", t->lineno, t->txt);
                 err_count++;
             }
             else {
-                fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                fprintf(stderr, "line %d: error: undefined function '%s'\n", t->lineno, t->txt);
                 err_count++;
             }
             
@@ -373,7 +371,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
         
         if (t->procno == 1) {
             if (ALL[funcno]->type == 1) {
-                fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
+                fprintf(stderr, "line %d: error: return type mismatch of function '%s'\n", t->lineno, ALL[funcno]->name);
                 err_count++;
             }
         } else if (t->procno == 2) {
@@ -381,7 +379,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                 deal_with_node(fp, t->child[0], funcno);
                 fprintf(fp, "\tadd $v0, $t0, $zero\n");
             } else {
-                fprintf(stderr, "%s: program error: return type mismatch\n", ALL[funcno]->name);
+                fprintf(stderr, "line %d: error: return type mismatch of function '%s'\n", t->lineno, ALL[funcno]->name);
                 err_count++;
             }
         }
@@ -576,11 +574,6 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
                 deal_with_node(fp, t->child[0], funcno);
             
-            } else if (t->procno == 17) { // $
-                
-                deal_with_node(fp, t->child[0], funcno);
-                fprintf(fp, "\tlw $t0, 0($t0)\n");
-                
             } else if (t->procno == 18) { // ()
             
                 deal_with_node(fp, t->child[0], funcno);
@@ -627,7 +620,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
             
             }
         } else {
-            if (t->procno == 19) { // IDENT
+            if (t->procno == 17) { // $
+                
+                fprintf(fp, "\tlw $t0, %s($zero)\n", t->numtxt);
+                
+            } else if (t->procno == 19) { // IDENT
                 
                 struct messenger *m = lookup(t->txt, funcno);
                 if (m->type == 1)
@@ -638,7 +635,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tlw $t0, %s($zero)\n", t->txt);
                     else {
-                        fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                        fprintf(stderr, "line %d: error: use of undeclared identifier '%s'\n", t->lineno, t->txt);
                         err_count++;
                     }
                 }
@@ -654,7 +651,7 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     if (lookup_global(t->txt) == 1)
                         fprintf(fp, "\tla $t0, %s\n", t->txt);
                     else {
-                        fprintf(stderr, "%s: program error: use of undeclared identifier '%s'\n", ALL[funcno]->name, t->txt);
+                        fprintf(stderr, "line %d: error: use of undeclared identifier '%s'\n", t->lineno, t->txt);
                         err_count++;
                     }
                 }
@@ -715,11 +712,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1) {
-                    fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: argument count mismatch of function '%s'\n", t->lineno, t->txt);
                     err_count++;
                 }
                 else {
-                    fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: undefined function '%s'\n", t->lineno, t->txt);
                     err_count++;
                 }
                 
@@ -755,11 +752,11 @@ void deal_with_node(FILE *fp, struct AST *t, int funcno) {
                     fprintf(fp, "\tadd $t0, $v0, $zero\n");
                     
                 } else if (name_found == 1) {
-                    fprintf(stderr, "%s: program error: parameter count mismatch for function '%s'\n'", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: argument count mismatch of function '%s'\n'", t->lineno, t->txt);
                     err_count++;
                 }
                 else {
-                    fprintf(stderr, "%s: program error: undefined function '%s'\n", ALL[funcno]->name, t->txt);
+                    fprintf(stderr, "line %d: error: undefined function '%s'\n", t->lineno, t->txt);
                     err_count++;
                 }
                 
@@ -848,16 +845,16 @@ void alloc_all(FILE *fp, struct AST *t, int funcno) {
             if (t->child[1]->procno == 2)
                 fprintf(fp, "\tsw $t%d, %d($sp)\n", tno++, (select_space - 8) * 4);
         }
-        if (checkdup(t->child[1]->txt, funcno) == 2) {
-            fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[1]->txt);
+        if (checkdup(t->child[1]->txt, funcno) > 1) {
+            fprintf(stderr, "line %d: error: redefinition of variable '%s'\n", t->lineno, t->child[1]->txt);
             err_count++;
         }
     } else if (t->multiplicity == 1) {
         st_add(t->child[0]->txt, 3, 0, funcno); // 第一个变量
         if (t->child[0]->procno == 2)
             fprintf(fp, "\tadd $s0, $t%d, $zero\n", tno++);
-        if (checkdup(t->child[0]->txt, funcno) == 2) {
-            fprintf(stderr, "%s: program error: duplicate variable '%s'\n", ALL[funcno]->name, t->child[0]->txt);
+        if (checkdup(t->child[0]->txt, funcno) > 1) {
+            fprintf(stderr, "line %d: error: redefinition of variable '%s'\n", t->lineno, t->child[0]->txt);
             err_count++;
         }
     }

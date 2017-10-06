@@ -13,6 +13,7 @@ struct AST {
     int procno;
     int multiplicity;
     int contain_expr;
+    int lineno;
     struct AST *parent;
     struct AST **child;
 };
@@ -30,6 +31,7 @@ struct allFunc {
 struct globalVar {
     char name[50];
     int space;
+    struct AST *t;
 };
 
 struct symbolTable {
